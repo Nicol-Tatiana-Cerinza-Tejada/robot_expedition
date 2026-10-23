@@ -1,0 +1,16 @@
+# Simulación y aprendizaje por refuerzo
+gymnasium
+# Opcional: instalar después si se requiere RL con PyTorch
+# stable-baselines3
+
+# Datos, visualización y experimentación
+numpy
+pandas
+matplotlib
+# Opcional: requiere SDL y compilador nativo en Linux
+# pygame
+jupyterlab
+
+# Calidad del proyecto
+pytest
+ruff
