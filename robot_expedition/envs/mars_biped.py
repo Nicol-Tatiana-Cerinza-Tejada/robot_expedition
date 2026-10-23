@@ -63,6 +63,15 @@ MODEL_XML = r"""
 </mujoco>
 """
 
+# Ranuras fisicas que se parametrizan en cada reset. El tipo se decide en Python:
+# roca, hoyo/grieta, pendiente, arena o suelo irregular.
+FEATURE_GEOMS = "".join(
+    f'<geom name="terrain_feature_{i}" type="box" pos="{3 + i * .7} 0 -.2" '
+    'size=".3 .3 .2" material="joint" contype="1" conaffinity="1"/>'
+    for i in range(20)
+)
+MODEL_XML = MODEL_XML.replace("</worldbody>", FEATURE_GEOMS + "</worldbody>")
+
 
 class RobotExpeditionEnv(gym.Env):
     """Aprender a caminar hacia el objetivo sin caer ni agotar la bateria."""
@@ -82,13 +91,41 @@ class RobotExpeditionEnv(gym.Env):
         self._renderer = None
         self._last_x = 0.0
         self._torso_id = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, "robot")
+        self._feature_ids = [
+            mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_GEOM, f"terrain_feature_{i}")
+            for i in range(20)
+        ]
+        self.features = []
 
     def _lidar(self):
         x, y = self.data.qpos[:2]
-        obstacles = np.array([[4, 0], [8, .7], [12, -.6]], dtype=np.float32)
-        d = np.linalg.norm(obstacles - np.array([x, y]), axis=1)
-        nearest = np.sort(d)[:3]
-        return np.pad(nearest, (0, 5), constant_values=self.mission_distance).astype(np.float32)
+        if not self.features:
+            return np.full(8, self.mission_distance, dtype=np.float32)
+        d = np.linalg.norm(np.array([[f[0], f[1]] for f in self.features]) - [x, y], axis=1)
+        return np.pad(np.sort(d)[:8], (0, max(0, 8 - len(d))), constant_values=self.mission_distance).astype(np.float32)
+
+    def _randomize_terrain(self):
+        """Distribuye obstaculos y superficies; conserva un corredor inicial transitable."""
+        kinds = ["small_rock", "large_rock", "hole", "crack", "uphill", "downhill", "sand", "rough"]
+        self.features = []
+        for i, geom_id in enumerate(self._feature_ids):
+            kind = kinds[int(self.np_random.integers(len(kinds)))]
+            x = float(self.np_random.uniform(3.0, self.mission_distance - .5))
+            y = float(self.np_random.uniform(-1.8, 1.8))
+            if kind == "small_rock": size = [float(self.np_random.uniform(.18, .35)), .25, float(self.np_random.uniform(.12, .25))]
+            elif kind == "large_rock": size = [float(self.np_random.uniform(.4, .8)), float(self.np_random.uniform(.4, .9)), float(self.np_random.uniform(.35, .8))]
+            elif kind in ("hole", "crack"): size = [float(self.np_random.uniform(.35, .9)), float(self.np_random.uniform(.15, .35)), .08]
+            else: size = [float(self.np_random.uniform(.5, 1.1)), float(self.np_random.uniform(.4, .9)), float(self.np_random.uniform(.08, .3))]
+            z = size[2] if kind in ("small_rock", "large_rock") else (-.10 if kind in ("hole", "crack") else size[2])
+            self.model.geom_pos[geom_id] = [x, y, z]
+            self.model.geom_size[geom_id] = size
+            if kind == "uphill": self.model.geom_quat[geom_id] = [np.cos(.25), 0, np.sin(.25), 0]
+            elif kind == "downhill": self.model.geom_quat[geom_id] = [np.cos(-.25), 0, np.sin(-.25), 0]
+            else: self.model.geom_quat[geom_id] = [1, 0, 0, 0]
+            # Arena suelta tiene poca friccion; terreno irregular varia la friccion.
+            friction = .25 if kind == "sand" else (float(self.np_random.uniform(.35, .9)) if kind == "rough" else .8)
+            self.model.geom_friction[geom_id] = [friction, .01, .01]
+            self.features.append((x, y, kind, size[0], size[1]))
 
     def _observation(self):
         qpos = self.data.qpos.copy(); qpos[0:3] -= np.array([0, 0, 2.25])
@@ -104,6 +141,7 @@ class RobotExpeditionEnv(gym.Env):
         self.data.qpos[:3] = [0, 0, 2.25]
         self.data.qpos[3:7] = [1, 0, 0, 0]
         self.data.qpos[7:] = self.np_random.normal(0, .02, self.model.nq - 7)
+        self._randomize_terrain()
         self.battery, self.step_count, self._last_x = self.battery_capacity, 0, 0.0
         mujoco.mj_forward(self.model, self.data)
         return self._observation(), {"battery": self.battery, "mission_progress": 0.0}
@@ -120,11 +158,14 @@ class RobotExpeditionEnv(gym.Env):
         energy = float(np.mean(np.square(action)))
         self.battery = max(0.0, self.battery - (0.015 + 0.035 * energy))
         reward = 2.0 * progress + 0.02 * upright - 0.02 * energy - 0.3 * max(0, 0.5 - upright)
-        terminated = bool(self.data.qpos[2] < 0.85 or upright < 0.35 or self.battery <= 0)
+        x, y = self.data.qpos[:2]
+        in_hole = any(kind in ("hole", "crack") and abs(x - fx) < sx and abs(y - fy) < sy
+                      for fx, fy, kind, sx, sy in self.features)
+        terminated = bool(self.data.qpos[2] < 0.85 or upright < 0.35 or self.battery <= 0 or in_hole)
         success = bool(self.data.qpos[0] >= self.mission_distance)
         if success: reward += 100.0
         truncated = self.step_count >= self.max_steps
-        info = {"battery": self.battery, "mission_progress": float(self.data.qpos[0] / self.mission_distance), "success": success, "upright": upright}
+        info = {"battery": self.battery, "mission_progress": float(self.data.qpos[0] / self.mission_distance), "success": success, "upright": upright, "in_hole": in_hole, "terrain_features": len(self.features)}
         if self.render_mode: self.render()
         return self._observation(), float(reward), terminated or success, truncated, info
 
