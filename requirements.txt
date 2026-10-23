@@ -1,5 +1,7 @@
 # Simulación y aprendizaje por refuerzo
 gymnasium
+# Simulacion fisica 3D (MuJoCo incluye su binario multiplataforma)
+mujoco
 # Opcional: instalar después si se requiere RL con PyTorch
 # stable-baselines3
 
