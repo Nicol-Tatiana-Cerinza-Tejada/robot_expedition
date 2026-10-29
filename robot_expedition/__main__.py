@@ -9,7 +9,6 @@ import argparse
 import csv
 import json
 import math
-import sys
 import time
 from collections import Counter
 from pathlib import Path
@@ -31,8 +30,9 @@ def make_env(args, perturbation=False):
 
 
 def frame(env, action, reward, collision):
-    return [round(env.x, 3), round(env.y, 3), round(env.theta, 3), env.stage,
-            round(env.battery, 2), action, round(reward, 3), int(collision),
+    """Pose 3D completa: posicion (x, y, z) y orientacion (cuaternion w, x, y, z)."""
+    return [round(env.x, 3), round(env.y, 3), round(env.z, 3), *np.round(env.quat, 4).tolist(),
+            env.stage, round(env.battery, 2), action, round(reward, 3), int(collision),
             [round(float(r), 2) for r in env.last_rays]]
 
 
@@ -156,30 +156,45 @@ def evaluate(args):
 
 
 def demo(args):
+    """Un episodio del agente entrenado en el visor 3D de MuJoCo (o en la pagina 3D)."""
     env = make_env(args, perturbation=args.perturbation)
     agent = QLearningAgent(env.action_space.n)
-    if Path(args.model).exists():
+    trained = Path(args.model).exists()
+    if trained:
         agent.load(args.model)
     else:
         print(f"No existe {args.model}; el robot actuara al azar. Ejecuta primero 'train'.")
         agent.epsilon = 1.0
+    viewer = None
+    if args.viewer:
+        import mujoco.viewer
+        viewer = mujoco.viewer.launch_passive(env.model, env.data)
     obs, info = env.reset(seed=args.seed)
     state, total = discretize(obs), 0.0
-    while True:
-        action = agent.choose(state, explore=not Path(args.model).exists())
+    frames = [frame(env, -1, 0.0, False)]
+    while viewer is None or viewer.is_running():
+        action = agent.choose(state, explore=not trained)
         obs, reward, terminated, truncated, info = env.step(action)
         state, total = discretize(obs), total + reward
-        sys.stdout.write("\033[H\033[J" if args.fps > 0 else "\n")
-        print(env.render())
-        print(f"paso {env.steps:3d} | accion {ACTIONS[action][0]:14s} | recompensa {reward:+7.2f} "
-              f"| total {total:7.1f}\netapa {('B1', 'B2', 'base')[env.stage - 1]:4s} | bateria "
-              f"{ascii_bar(info['battery'] / 100)} {info['battery']:5.1f}% | choques {info['collisions']}"
-              + (f" | {info['event']}" if info["event"] else ""))
+        frames.append(frame(env, action, reward, info["collision"]))
+        pitch, roll = obs[18], obs[19]
+        print(f"paso {env.steps:3d} | {ACTIONS[action][0]:14s} | recompensa {reward:+7.2f} | total {total:7.1f} "
+              f"| etapa {('B1', 'B2', 'base')[env.stage - 1]:4s} | z {env.z:+.2f} m | cabeceo {math.degrees(pitch):+4.0f}° "
+              f"| bateria {info['battery']:5.1f}%" + (f" | {info['event']}" if info["event"] else ""))
+        if viewer is not None:
+            viewer.sync(); time.sleep(env.metadata["render_fps"] ** -1 / args.speed)
         if terminated or truncated:
-            print(f"\nFin: {info['end']}  (exito: {info['success']})")
-            return
-        if args.fps > 0:
-            time.sleep(1 / args.fps)
+            break
+    print(f"\nFin: {info['end']}  (exito: {info['success']}, recompensa {total:.1f})")
+    if viewer is not None:
+        viewer.close()
+    entry = {"id": f"demo-{args.seed}-{time.time():.0f}", "mode": "demo", "episode": args.seed,
+             "epsilon": 0.0, "reward": round(total, 3), "steps": env.steps, "success": info["success"],
+             "visited": sum(info["visited"]), "end": info["end"], "battery": round(info["battery"], 2),
+             "collisions": info["collisions"], "path_length": round(info["path_length"], 2),
+             "frames": frames, "rocks": [list(r) for r in env.rocks], "block": env.perturbation}
+    save_json(Path(args.logs) / "expedition_live.json", {"total_episodes": 1, "history_tail": [], **entry})
+    print("Episodio guardado en logs/expedition_live.json: en la vista 3D activa «En vivo» para verlo.")
 
 
 def transitions(args):
@@ -193,7 +208,7 @@ def transitions(args):
         action = agent.choose(state, explore=False)
         before = (env.steps, env.x, env.y, env.stage, env.battery, prev)
         obs, reward, terminated, truncated, info = env.step(action)
-        rows.append((before, action, info, reward, terminated, truncated))
+        rows.append((before, action, info, reward, terminated, truncated, obs))
         prev = obs
         if terminated or truncated:
             break
@@ -202,15 +217,16 @@ def transitions(args):
     first_hit = next((i for i, r in enumerate(rows) if r[2]["collision"]), None)
     if first_hit is not None:
         picks.add(first_hit)  # solo el primer choque, para no llenar la tabla
+    picks.add(max(range(len(rows)), key=lambda i: abs(rows[i][6][18])))  # mas inclinado (dunas)
     picks.add(len(rows) - 1)
     print("| t | Observación (resumen) | Acción | Nuevo estado | Recompensa | ¿Fin? |")
     print("|---|---|---|---|---|---|")
     for i in sorted(picks):
-        (t, x, y, stage, battery, o), action, info, reward, term, trunc = rows[i]
+        (t, x, y, stage, battery, o), action, info, reward, term, trunc, new = rows[i]
         rel = math.degrees(math.atan2(o[10], o[11]))
         obs_txt = (f"etapa {('B1', 'B2', 'base')[stage - 1]}; objetivo a {o[9]:.2f} m y {rel:+.0f}°; "
                    f"rayo frontal {o[4]:.2f} m; batería {battery:.1f} %")
-        new_txt = (f"({info['x']:.2f}, {info['y']:.2f}); etapa {('B1', 'B2', 'base')[info['stage'] - 1]}; "
+        new_txt = (f"({info['x']:.2f}, {info['y']:.2f}, z {info['z']:+.2f}); cabeceo {math.degrees(new[18]):+.0f}°; etapa {('B1', 'B2', 'base')[info['stage'] - 1]}; "
                    f"batería {info['battery']:.1f} %" + (f"; **{info['event']}**" if info["event"] else "")
                    + ("; choque" if info["collision"] else ""))
         end = f"Sí ({info['end']})" if term or trunc else "No"
@@ -251,7 +267,7 @@ def serve(args):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(prog="python -m robot_expedition",
-                                     description="Robot Expedition: Q-learning visible en terminal y en 3D")
+                                     description="Robot Expedition 3D (MuJoCo): Q-learning visible en terminal y en 3D")
     sub = parser.add_subparsers(dest="command", required=True)
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument("--seed", type=int, default=7)
@@ -278,8 +294,9 @@ def main(argv=None):
     p.add_argument("--record", type=int, default=5, help="episodios a guardar para la vista 3D")
     p.set_defaults(func=evaluate)
 
-    p = sub.add_parser("demo", parents=[common], help="un episodio animado en la terminal")
-    p.add_argument("--fps", type=float, default=8)
+    p = sub.add_parser("demo", parents=[common], help="un episodio del agente en 3D")
+    p.add_argument("--viewer", action="store_true", help="abre el visor 3D nativo de MuJoCo")
+    p.add_argument("--speed", type=float, default=1.0, help="velocidad en el visor (1 = tiempo real)")
     p.add_argument("--perturbation", action="store_true")
     p.set_defaults(func=demo)
 

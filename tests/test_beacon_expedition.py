@@ -1,4 +1,4 @@
-"""Pruebas de las reglas de la ficha docs/ambiente-v0.1.md."""
+"""Pruebas de las reglas de la ficha docs/ambiente-v0.1.md (fisica 3D en MuJoCo)."""
 
 import json
 import math
@@ -15,8 +15,7 @@ FORWARD, TURN_LEFT = 0, 3
 
 
 def place(env, x, y, theta=0.0):
-    env.x, env.y, env.theta = x, y, theta
-    env.v = 0.6
+    env.set_pose(x, y, theta, speed=0.6)
 
 
 @pytest.fixture
@@ -28,7 +27,7 @@ def env():
 
 def test_reset_observation(env):
     obs, info = env.reset(seed=3)
-    assert obs.shape == (18,) and env.observation_space.contains(obs)
+    assert obs.shape == (20,) and env.observation_space.contains(obs)
     assert info["stage"] == 1 and info["battery"] == 100.0
     assert all(0 <= s < n for s, n in zip(discretize(obs), STATE_SHAPE))
 
@@ -71,7 +70,7 @@ def test_collision_is_penalized(env):
     place(env, 4.2, 1.5)                               # R1 empieza en x = 4.5
     _, reward, terminated, _, info = env.step(FORWARD)
     assert info["collision"] and reward < -0.4 and not terminated
-    assert env.x < 4.5 - 0.25 + 1e-6                  # no atraviesa la roca
+    assert env.x < 4.5 - 0.2                           # no atraviesa la roca
 
 
 def test_crack_ends_episode(env):
@@ -104,6 +103,22 @@ def test_perturbation_blocks_after_b1():
     place(e, BEACONS[0][0] - 0.7, BEACONS[0][1])
     e.step(FORWARD)
     assert BLOCK[1:] in e.obstacles() and e._route_exists()
+    assert e.model.geom_pos[e._block_id][2] > 0         # la roca fisica aparece en MuJoCo
+
+
+def test_dune_lifts_and_tilts_rover(env):
+    env.set_pose(5.9, -2.2, 0.0)                       # al pie de la duna sur
+    pitches = []
+    for _ in range(3):
+        obs, *_ = env.step(FORWARD)
+        pitches.append(abs(obs[18]))
+    assert env.z > 0.05 and max(pitches) > 0.1
+
+
+def test_rays_see_rock_in_3d(env):
+    env.set_pose(3.5, 1.5, 0.0)                        # R1 empieza 1 m adelante
+    rays = env.rays()
+    assert 0.6 < rays[4] < 1.0 and rays[0] > 1.0
 
 
 def test_rock_jitter_keeps_route():

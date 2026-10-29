@@ -1,16 +1,18 @@
 # Robot Expedition
 
-Un robot explorador en Marte debe **visitar la baliza 1, luego la baliza 2 y
-volver a la base antes de agotar la batería**. La ficha de diseño está en
+Un rover en Marte debe **visitar la baliza 1, luego la baliza 2 y volver a la
+base antes de agotar la batería**. Todo es 3D: la física la calcula MuJoCo
+(gravedad de Marte, dunas, una grieta en la que se puede caer, rocas y ruedas
+con motor) y la vista es Three.js. La ficha de diseño está en
 [`docs/ambiente-v0.1.md`](docs/ambiente-v0.1.md) y el mapa en
 [`docs/mapa-ambiente-v0.1.svg`](docs/mapa-ambiente-v0.1.svg).
 
-El repositorio tiene dos ambientes Gymnasium:
+El repositorio tiene dos ambientes Gymnasium, los dos en MuJoCo 3D:
 
 | Ambiente | Clase | Agente |
 |---|---|---|
-| Navegación con la misión completa (avance y giro) | `BeaconExpeditionEnv` | Q-learning tabular (`python -m robot_expedition`) |
-| Bípedo físico en MuJoCo (10 motores) | `RobotExpeditionEnv` | `qlearning_agent.py` (no logra caminar) o PPO (`train.py`) |
+| Expedición con rover: misión completa en terreno 3D | `BeaconExpeditionEnv` | Q-learning tabular (`python -m robot_expedition`) |
+| Bípedo (10 motores) | `RobotExpeditionEnv` | `qlearning_agent.py` (no logra caminar) o PPO (`train.py`) |
 
 ## Instalación
 
@@ -25,10 +27,10 @@ pip install gymnasium mujoco numpy matplotlib pytest
 Todos los comandos se ejecutan desde la raíz del repositorio:
 
 ```bash
-python -m robot_expedition train          # 2000 episodios, ~40 s; muestra el avance en la terminal
+python -m robot_expedition train          # 2000 episodios, ~4 min; muestra el avance en la terminal
 python -m robot_expedition evaluate       # las 3 métricas de la ficha en 50 episodios nuevos
 python -m robot_expedition evaluate --perturbation   # con el corredor bloqueado
-python -m robot_expedition demo           # un episodio animado en la terminal (mapa ASCII)
+python -m robot_expedition demo --viewer  # un episodio en el visor 3D nativo de MuJoCo
 python -m robot_expedition transitions    # transiciones reales en tabla Markdown
 python -m robot_expedition plot           # logs/expedition_learning.png
 python -m robot_expedition serve          # vista 3D en http://localhost:8000/expedicion_3d.html
@@ -46,9 +48,11 @@ Lo que genera cada comando:
 ### Vista 3D (Three.js)
 
 `expedicion_3d.html` reproduce las **trayectorias reales** que graba el CLI.
-Muestra el mapa de la ficha, el robot, los 9 rayos, el rastro coloreado por
-etapa, las balizas que se ponen verdes al visitarlas, los choques, el bloqueo
-y la curva de aprendizaje. El botón «Recorrer todo el aprendizaje» pasa por
+Cada cuadro guarda la pose 3D completa de MuJoCo: posición x, y, z y
+orientación como cuaternión. Así se ve al rover subir, inclinarse en las dunas
+o caer en la grieta. La página muestra también el mismo terreno (heightfield),
+los 9 rayos, el rastro coloreado por etapa, las balizas que se ponen verdes al
+visitarlas, los choques, el bloqueo y la curva de aprendizaje. El botón «Recorrer todo el aprendizaje» pasa por
 los episodios grabados, desde el robot que explora al azar hasta el que
 cumple la misión.
 
@@ -76,7 +80,7 @@ Las pruebas verifican las reglas de la ficha: el orden de las balizas, que
 cada bono se dé una sola vez, los choques, la grieta, la batería, el límite de
 tiempo, la perturbación y que no se gane girando en el sitio.
 
-## Bípedo físico (MuJoCo)
+## Bípedo (MuJoCo)
 
 ### Ejecutar una prueba
 
@@ -142,4 +146,4 @@ La interfaz lee `logs/qlearning_live.json` después de cada época.
 
 Nota (28 oct): con 300 episodios este agente no logra que el bípedo camine (0
 éxitos, cae antes de 80 pasos). Por eso la misión completa se entrena en el
-ambiente de navegación de arriba.
+ambiente del rover de arriba.
