@@ -23,7 +23,7 @@
 
   <!-- Arena suelta (baja fricción) -->
   <rect x="380" y="550" width="100" height="70" fill="url(#sand)" stroke="#a8743a" stroke-dasharray="4 3"/>
-  <text x="430" y="640" font-size="11" text-anchor="middle" fill="#6b4520">arena μ=0.25</text>
+  <text x="430" y="640" font-size="11" text-anchor="middle" fill="#6b4520">arena: v ×0.5</text>
 
   <!-- Grieta / hoyo (falla) -->
   <ellipse cx="255" cy="185" rx="25" ry="10" fill="#2a1a10"/>
@@ -133,7 +133,7 @@
     <ellipse cx="726" cy="256" rx="11" ry="5" fill="#2a1a10"/>
     <text x="747" y="261">Grieta: caer = falla</text>
     <rect x="715" y="280" width="22" height="16" fill="url(#sand)" stroke="#a8743a" stroke-dasharray="3 2"/>
-    <text x="747" y="293">Arena (baja fricción)</text>
+    <text x="747" y="293">Arena (velocidad ×0.5)</text>
     <rect x="715" y="312" width="22" height="14" fill="#d9462f" fill-opacity="0.35" stroke="#d9462f" stroke-dasharray="4 3"/>
     <text x="747" y="324">Perturbación: bloqueo</text>
     <line x1="715" y1="348" x2="737" y2="348" stroke="#555" stroke-width="2.5" stroke-dasharray="6 4"/>
@@ -152,9 +152,9 @@
 
     <text x="715" y="550" font-weight="bold">Notas</text>
     <text x="715" y="570" font-size="11">Rocas R1–R5: diseño de referencia.</text>
-    <text x="715" y="586" font-size="11">En reset() se pueden mover hasta</text>
-    <text x="715" y="602" font-size="11">±0.5 m manteniendo pasillos ≥ 1.2 m.</text>
+    <text x="715" y="586" font-size="11">Con --jitter se mueven hasta</text>
+    <text x="715" y="602" font-size="11">±0.5 m; un BFS asegura la ruta.</text>
     <text x="715" y="622" font-size="11">El bloqueo aparece al visitar B1</text>
-    <text x="715" y="638" font-size="11">solo en episodios de prueba.</text>
+    <text x="715" y="638" font-size="11">solo en evaluación (--perturbation).</text>
   </g>
 </svg>
