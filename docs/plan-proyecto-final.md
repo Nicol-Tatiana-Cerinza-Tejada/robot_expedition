@@ -174,8 +174,8 @@ cada una ya conoce del proyecto.
 
 | Rama | Persona | Pasos | Tema |
 |---|---|---|---|
-| `suleily` | Suleily | **0**, 2, 8, 11 | Administra el repo, evaluación, pipeline, rollback y release |
-| `nicol` | Nicol | **1**, 4, 7, 10 | Ambiente y niveles (lo construyó), API, ficha e incidente |
+| `suleily` | Suleily | **0**, **1**, 8, 11 | Administra el repo, base y niveles, pipeline, rollback y release |
+| `nicol` | Nicol | 2, 4, 7, 10 | Evaluación y baselines, API, ficha e incidente |
 | `tomas` | Tomás | 3, 6 | Entrenamiento PPO, MLflow y experimentos |
 | `natalia` | Natalia | 5, 9 | Web Vite + Three.js, Vercel y vista del docente |
 | todas las ramas | Todos | 12 | Informe y defensa |
@@ -186,8 +186,8 @@ cada una ya conoce del proyecto.
 | Ola | Suleily | Nicol | Tomás | Natalia |
 |---|---|---|---|---|
 | 1 | **Paso 0** (crear `main`) | — | — | — |
-| 2 | Revisa el PR de Nicol | **Paso 1** (base y niveles; bloquea a los demás) | Instala el entorno y lee el plan y la ficha | **Paso 5** (web Vite; solo usa los contratos de la sección 3) |
-| 3 | Paso 2 (evaluación) | Paso 4 (API) | Paso 3 (PPO + MLflow) | sigue con el paso 5 |
+| 2 | **Paso 1** (base y niveles; bloquea a los demás) | Revisa el PR de Suleily | Instala el entorno y lee el plan y la ficha | **Paso 5** (web Vite; solo usa los contratos de la sección 3) |
+| 3 | Revisa PRs | Paso 2 (evaluación), luego paso 4 (API) | Paso 3 (PPO + MLflow) | sigue con el paso 5 |
 | 4 | Paso 8 (pipeline) | Paso 7 (ficha v1) | Paso 6 (experimentos) | Paso 9 (vista del docente) |
 | 5 | Paso 11 (rollback y release) | Paso 10 (incidente) | apoya el paso 10 con entrenamientos | pruebas desde la URL de Vercel |
 | 6 | Paso 12 | Paso 12 | Paso 12 | Paso 12 |
@@ -195,7 +195,7 @@ cada una ya conoce del proyecto.
 ---
 
 ### Paso 0 · Integrar lo que hay y crear `main`
-**Hito 1 · Lo hace quien administre el repositorio (Suleily) · 15 min**
+**Hito 1 · Suleily · 15 min**
 
 ```text
 Estoy en el repositorio robot_expedition (proyecto Robot Expedition del curso de MLOps). La rama por defecto es 1experiment y la rama nicol tiene el trabajo más reciente (ambiente 3D en MuJoCo, Q-learning, CLI, vista 3D y ficha). Ayúdame a:
@@ -208,10 +208,10 @@ No borres ramas ni reescribas historia. Explícame cada comando antes de ejecuta
 ```
 
 ### Paso 1 · Base reproducible, niveles y contratos
-**Hito 1 · Bloquea a los demás · 1 persona**
+**Hito 1 · Suleily, justo después del paso 0 · Bloquea a los demás**
 
 ```text
-Proyecto Robot Expedition (MLOps). Lee README.md, docs/ambiente-v0.1.md y docs/plan-proyecto-final.md (sobre todo la sección 3, Contratos). Trabaja en la rama nicol. Antes de empezar: git fetch origin, git switch nicol y git merge origin/main (si hay conflictos, explícamelos antes de resolverlos). Al terminar: python -m pytest -q, commit, git push origin nicol y abre un PR de nicol hacia main con gh pr create pidiendo revisión a otro integrante.
+Proyecto Robot Expedition (MLOps). Lee README.md, docs/ambiente-v0.1.md y docs/plan-proyecto-final.md (sobre todo la sección 3, Contratos). Trabaja en la rama suleily. Antes de empezar: git fetch origin, git switch suleily y git merge origin/main (si hay conflictos, explícamelos antes de resolverlos). Al terminar: python -m pytest -q, commit, git push origin suleily y abre un PR de suleily hacia main con gh pr create pidiendo revisión a otro integrante.
 Objetivo: dejar la base reproducible sobre la que trabaja todo el equipo.
 1) Entorno: Python 3.12 (el enunciado lo recomienda; comprueba que torch y stable-baselines3 instalan). Instala torch CPU (--index-url https://download.pytorch.org/whl/cpu), gymnasium, mujoco, stable-baselines3, mlflow, fastapi, uvicorn, numpy, pyyaml, prefect, pytest. Genera requirements.txt con versiones fijadas y documenta en el README los comandos exactos de instalación para Windows y Linux.
 2) Estructura del enunciado sin romper imports: configs/levels, configs/experiments, pipelines/, manifests/, catalog/, web/ (vacía por ahora), docs/. El ambiente puede quedarse en robot_expedition/envs.
@@ -226,7 +226,7 @@ Al final: python -m pytest -q, commit con mensaje claro, push y PR hacia main co
 **Hito 1 · En paralelo, después del paso 1**
 
 ```text
-Proyecto Robot Expedition (MLOps). Lee docs/plan-proyecto-final.md (sección 3), docs/contratos.md y robot_expedition/envs/beacon_expedition.py. Trabaja en la rama suleily. Antes de empezar: git fetch origin, git switch suleily y git merge origin/main (si hay conflictos, explícamelos antes de resolverlos). Al terminar: python -m pytest -q, commit, git push origin suleily y abre un PR de suleily hacia main con gh pr create pidiendo revisión a otro integrante.
+Proyecto Robot Expedition (MLOps). Lee docs/plan-proyecto-final.md (sección 3), docs/contratos.md y robot_expedition/envs/beacon_expedition.py. Trabaja en la rama nicol. Antes de empezar: git fetch origin, git switch nicol y git merge origin/main (si hay conflictos, explícamelos antes de resolverlos). Al terminar: python -m pytest -q, commit, git push origin nicol y abre un PR de nicol hacia main con gh pr create pidiendo revisión a otro integrante.
 Objetivo: una evaluación fija y comparable para cualquier modelo.
 1) pipelines/evaluate.py con evaluate(policy, level_id, suite_id) -> dict. Una suite (configs/suites/suite-n1-v1.yaml, suite-n2-v1.yaml, suite-n3-v1.yaml) fija las semillas y el número de episodios (50). Crea también una suite de test reservado (test-final) cuyas semillas NO se suban al repo público: léelas desde una variable de entorno o un archivo ignorado, y documéntalo.
 2) Resultados por caso (semilla, éxito, causa de fin, pasos, batería, choques, recorrido, retorno, latencia media de inferencia) guardados en JSON. Métricas agregadas: tasa de éxito, fallos por causa, eficiencia de ruta, choques por episodio, batería final y latencia.
