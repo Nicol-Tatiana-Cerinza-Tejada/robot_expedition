@@ -27,6 +27,6 @@ def run(episodes=10000, seed=7):
         row = {"episode": ep, "total_episodes": episodes, "reward": total, "steps": step + 1, "success": success, "progress": 1.0 if success else 1 - (abs(pos[0]-GOAL[0])+abs(pos[1]-GOAL[1])) / 18, "epsilon": epsilon, "states": int(np.count_nonzero(np.any(q, axis=2))), "status": "META" if success else "buscando ruta", "x": pos[0], "y": pos[1], "goal_x": GOAL[0], "goal_y": GOAL[1], "path": path}
         live.write_text(json.dumps(row), encoding="utf-8"); history.append(row)
         if ep == 1 or ep % 1000 == 0: print(f"epoca {ep:5d}/{episodes} | premio {total:7.2f} | pasos {step+1:3d} | meta {success} | epsilon {epsilon:.3f}")
-    Path("logs/grid_qlearning_history.json").write_text(json.dumps(history), encoding="utf-8"); np.savez_compressed("models/grid_qlearning.npz", q=q); print("modelo guardado en models/grid_qlearning.npz")
+    Path("logs/grid_qlearning_history.json").write_text(json.dumps(history), encoding="utf-8"); Path("models").mkdir(exist_ok=True); np.savez_compressed("models/grid_qlearning.npz", q=q); print("modelo guardado en models/grid_qlearning.npz")
 
 if __name__ == "__main__": run()

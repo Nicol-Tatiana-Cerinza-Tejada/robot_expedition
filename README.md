@@ -1,8 +1,88 @@
 # Robot Expedition
 
-Prototipo de un robot bípedo que explora Marte en 3D con MuJoCo y Gymnasium.
+Un rover en Marte debe **visitar la baliza 1, luego la baliza 2 y volver a la
+base antes de agotar la batería**. Todo es 3D: la física la calcula MuJoCo
+(gravedad de Marte, dunas, una grieta en la que se puede caer, rocas y ruedas
+con motor) y la vista es Three.js. La ficha de diseño está en
+[`docs/ambiente-v0.1.md`](docs/ambiente-v0.1.md) y el mapa en
+[`docs/mapa-ambiente-v0.1.svg`](docs/mapa-ambiente-v0.1.svg).
 
-## Ejecutar una prueba
+El repositorio tiene dos ambientes Gymnasium, los dos en MuJoCo 3D:
+
+| Ambiente | Clase | Agente |
+|---|---|---|
+| Expedición con rover: misión completa en terreno 3D | `BeaconExpeditionEnv` | Q-learning tabular (`python -m robot_expedition`) |
+| Bípedo (10 motores) | `RobotExpeditionEnv` | `qlearning_agent.py` (no logra caminar) o PPO (`train.py`) |
+
+## Instalación
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install gymnasium mujoco numpy matplotlib pytest
+```
+
+## CLI: entrenar, evaluar y ver el proceso
+
+Todos los comandos se ejecutan desde la raíz del repositorio:
+
+```bash
+python -m robot_expedition train          # 2000 episodios, ~4 min; muestra el avance en la terminal
+python -m robot_expedition evaluate       # las 3 métricas de la ficha en 50 episodios nuevos
+python -m robot_expedition evaluate --perturbation   # con el corredor bloqueado
+python -m robot_expedition demo --viewer  # un episodio en el visor 3D nativo de MuJoCo
+python -m robot_expedition transitions    # transiciones reales en tabla Markdown
+python -m robot_expedition plot           # logs/expedition_learning.png
+python -m robot_expedition serve          # vista 3D en http://localhost:8000/expedicion_3d.html
+```
+
+Use `python -m robot_expedition <comando> --help` para ver las opciones
+(`--episodes`, `--seed`, `--ray-noise`, `--jitter`, `--max-steps`, ...).
+
+Lo que genera cada comando:
+- `models/qlearning_balizas.npz`: la tabla Q.
+- `logs/expedition_history.csv`: una fila por episodio.
+- `logs/expedition_replays.json`: trayectorias grabadas para la vista 3D.
+- `logs/expedition_live.json`: el último episodio, para el modo en vivo.
+
+### Vista 3D (Three.js)
+
+`expedicion_3d.html` reproduce las **trayectorias reales** que graba el CLI.
+Cada cuadro guarda la pose 3D completa de MuJoCo: posición x, y, z y
+orientación como cuaternión. Así se ve al rover subir, inclinarse en las dunas
+o caer en la grieta. La página muestra también el mismo terreno (heightfield),
+los 9 rayos, el rastro coloreado por etapa, las balizas que se ponen verdes al
+visitarlas, los choques, el bloqueo y la curva de aprendizaje. El botón «Recorrer todo el aprendizaje» pasa por
+los episodios grabados, desde el robot que explora al azar hasta el que
+cumple la misión.
+
+```bash
+python -m robot_expedition serve      # terminal 1
+# abrir http://localhost:8000/expedicion_3d.html
+```
+
+Para verlo **en vivo** mientras entrena, active «En vivo» en la página y en
+otra terminal ejecute:
+
+```bash
+python -m robot_expedition train --live-delay 0.5
+```
+
+Si todavía no hay `logs/`, la página usa los datos de ejemplo de `docs/demo/`.
+
+### Pruebas
+
+```bash
+python -m pytest -q
+```
+
+Las pruebas verifican las reglas de la ficha: el orden de las balizas, que
+cada bono se dé una sola vez, los choques, la grieta, la batería, el límite de
+tiempo, la perturbación y que no se gane girando en el sitio.
+
+## Bípedo (MuJoCo)
+
+### Ejecutar una prueba
 
 ```bash
 source .venv/bin/activate
@@ -19,7 +99,7 @@ vertical y eficiencia energetica, penalizando inclinacion y control excesivo.
 
 Para PPO se requieren dependencias adicionales de PyTorch y Stable-Baselines3.
 
-## Agente Q-learning y CLI
+### Agente Q-learning del bípedo
 
 `qlearning_agent.py` discretiza variables físicas relevantes (posición, altura,
 velocidad, postura, obstáculo cercano, batería y progreso) y aprende sobre ocho
@@ -38,7 +118,7 @@ Los artefactos quedan en `models/qlearning_robot.npz`,
 `logs/qlearning_history.csv` y `logs/qlearning_learning.png`. Para ver el robot
 durante la evaluación usa `--render`.
 
-## Simulación 3D con Three.js
+### Páginas del bípedo (Three.js y paneles)
 
 La página `visualize_3d.html` muestra el bípedo, Marte, obstáculos, meta y las
 métricas del entrenamiento real. Genera el historial y sirve el repositorio:
@@ -63,3 +143,7 @@ python qlearning_agent.py train --episodes 100 --report-every 1
 ```
 
 La interfaz lee `logs/qlearning_live.json` después de cada época.
+
+Nota (28 oct): con 300 episodios este agente no logra que el bípedo camine (0
+éxitos, cae antes de 80 pasos). Por eso la misión completa se entrena en el
+ambiente del rover de arriba.

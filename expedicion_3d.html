@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Robot Expedition 3D</title>
+<style>
+  :root{--bg:#0b0d13;--panel:#151923;--card:#1d2230;--line:#ffffff1a;--text:#e9edf3;--muted:#9aa5b5;
+        --mars:#e8793b;--cyan:#3fd0e6;--green:#5fd38a;--red:#ef5b4c;--gold:#f2c14e}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+  #app{display:grid;grid-template-columns:minmax(0,1fr) 380px;height:100vh}
+  #scene{position:relative;overflow:hidden;min-height:320px}
+  #scene canvas{display:block}
+  #hud{position:absolute;left:14px;top:14px;background:#0b0d13d9;border:1px solid var(--line);border-radius:10px;
+       padding:10px 14px;min-width:250px;font-variant-numeric:tabular-nums;pointer-events:none}
+  #hud .row{display:flex;justify-content:space-between;gap:16px}
+  #hud .k{color:var(--muted)} #hud b{color:#fff;font-weight:600}
+  #hud .mode{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mars);font-weight:700;margin-bottom:4px}
+  .battery{height:8px;background:#ffffff14;border-radius:4px;overflow:hidden;margin:6px 0 2px}
+  .battery i{display:block;height:100%;background:var(--green);width:100%;transition:width .15s}
+  #banner{position:absolute;left:50%;top:18px;transform:translateX(-50%);padding:8px 18px;border-radius:999px;
+          font-weight:700;font-size:16px;opacity:0;transition:opacity .35s;pointer-events:none;white-space:nowrap}
+  #msg{position:absolute;inset:auto 14px 14px 14px;background:#2a1715;border:1px solid #ef5b4c66;color:#ffd5cf;
+       border-radius:10px;padding:12px 14px}
+  #msg code{background:#0006;padding:1px 5px;border-radius:4px}
+  #side{background:var(--panel);border-left:1px solid var(--line);overflow:auto;padding:18px 18px 28px}
+  h1{font-size:20px;margin:0}
+  .sub{color:var(--muted);margin:2px 0 12px}
+  h2{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--cyan);margin:20px 0 8px}
+  .badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;background:#ffffff12;color:var(--muted)}
+  .badge.live{background:#ef5b4c33;color:#ffb3aa}
+  .controls{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  button,select{font:inherit;color:var(--text);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer}
+  button:hover,select:hover{border-color:#ffffff40}
+  button.primary{background:var(--mars);border-color:var(--mars);color:#1b0f08;font-weight:700}
+  button.on{background:#3fd0e633;border-color:var(--cyan);color:#d8f8ff}
+  select{max-width:100%}
+  input[type=range]{width:100%;accent-color:var(--mars)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .stat{background:var(--card);border-radius:8px;padding:8px 10px}
+  .stat span{display:block;color:var(--muted);font-size:12px}
+  .stat b{font-size:17px;font-variant-numeric:tabular-nums}
+  #curve{width:100%;height:190px;background:var(--card);border-radius:8px;display:block}
+  .legend{display:flex;flex-wrap:wrap;gap:4px 14px;color:var(--muted);font-size:12px;margin-top:6px}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+  .help{color:var(--muted);font-size:13px}
+  .help code{background:#0006;padding:1px 5px;border-radius:4px;color:#ffd9bf}
+  @media (max-width:900px){#app{display:block;height:auto}#scene{height:60vh}#side{border-left:0;border-top:1px solid var(--line)}}
+</style>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
+            "three/addons/":"https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/"}}
+</script>
+</head>
+<body>
+<main id="app">
+  <section id="scene">
+    <div id="hud">
+      <div class="mode" id="hMode">cargando…</div>
+      <div class="row"><span class="k">Episodio</span><b id="hEp">—</b></div>
+      <div class="row"><span class="k">Exploración ε</span><b id="hEps">—</b></div>
+      <div class="row"><span class="k">Paso</span><b id="hStep">—</b></div>
+      <div class="row"><span class="k">Objetivo</span><b id="hStage">—</b></div>
+      <div class="row"><span class="k">Acción</span><b id="hAct">—</b></div>
+      <div class="row"><span class="k">Recompensa acumulada</span><b id="hRew">—</b></div>
+      <div class="row"><span class="k">Choques</span><b id="hCol">—</b></div>
+      <div class="row"><span class="k">Altura · cabeceo</span><b id="hAlt">—</b></div>
+      <div class="row"><span class="k">Batería</span><b id="hBat">—</b></div>
+      <div class="battery"><i id="hBatBar"></i></div>
+    </div>
+    <div id="banner"></div>
+    <div id="msg" hidden></div>
+  </section>
+
+  <aside id="side">
+    <h1>Robot Expedition</h1>
+    <p class="sub">Rover en física 3D (MuJoCo, gravedad de Marte) aprendiendo con Q-learning: base → B1 → B2 → base</p>
+    <span class="badge" id="source">sin datos</span>
+
+    <h2>Reproducción</h2>
+    <div class="controls">
+      <button class="primary" id="bPlay">Pausar</button>
+      <button id="bPrev" title="Episodio anterior">◀ Ep</button>
+      <button id="bNext" title="Episodio siguiente">Ep ▶</button>
+      <select id="speed" title="Velocidad">
+        <option value="1">1×</option><option value="2">2×</option><option value="4">4×</option>
+        <option value="8" selected>8×</option><option value="16">16×</option>
+      </select>
+    </div>
+    <p style="margin:10px 0 4px"><input id="timeline" type="range" min="0" max="0" value="0"></p>
+    <select id="episodeSel" style="width:100%"></select>
+    <div class="controls" style="margin-top:8px">
+      <button id="bAll" class="on" title="Pasa solo de un episodio al siguiente">Recorrer todo el aprendizaje</button>
+      <button id="bFollow" title="La cámara sigue al robot">Seguir robot</button>
+      <button id="bLive" title="Muestra el último episodio mientras entrena">En vivo</button>
+    </div>
+
+    <h2>Resultado del episodio</h2>
+    <div class="grid">
+      <div class="stat"><span>Fin</span><b id="sEnd">—</b></div>
+      <div class="stat"><span>Recompensa total</span><b id="sRew">—</b></div>
+      <div class="stat"><span>Pasos (0.5 s c/u)</span><b id="sSteps">—</b></div>
+      <div class="stat"><span>Balizas visitadas</span><b id="sVis">—</b></div>
+      <div class="stat"><span>Recorrido</span><b id="sPath">—</b></div>
+      <div class="stat"><span>Batería final</span><b id="sBat">—</b></div>
+    </div>
+
+    <h2>Curva de aprendizaje</h2>
+    <canvas id="curve"></canvas>
+    <div class="legend">
+      <span><i style="background:var(--mars)"></i>recompensa (media móvil)</span>
+      <span><i style="background:var(--green)"></i>tasa de éxito</span>
+      <span><i style="background:var(--muted)"></i>ε</span>
+      <span><i style="background:#fff"></i>episodio actual</span>
+    </div>
+
+    <h2>Mapa</h2>
+    <div class="legend" style="font-size:13px">
+      <span><i style="background:#2e9a49"></i>base</span>
+      <span><i style="background:var(--cyan)"></i>baliza (radio 0.6 m)</span>
+      <span><i style="background:#8d8d93"></i>roca</span>
+      <span><i style="background:#1a0f0a;border:1px solid #555"></i>grieta: hueco de 0.5 m</span>
+      <span><i style="background:#e8c08a"></i>arena (frena)</span>
+      <span><i style="background:#d9a06c"></i>dunas (relieve)</span>
+      <span><i style="background:var(--red)"></i>bloqueo (perturbación)</span>
+      <span><i style="background:var(--cyan);height:2px;vertical-align:3px"></i>9 rayos</span>
+    </div>
+
+    <h2>Cómo generar datos</h2>
+    <p class="help">Desde la raíz del repositorio:<br>
+      <code>python -m robot_expedition train</code><br>
+      <code>python -m robot_expedition evaluate</code><br>
+      <code>python -m robot_expedition serve</code><br>
+      <code>python -m robot_expedition demo --viewer</code> abre el visor nativo de MuJoCo.<br>
+      Para verlo en vivo, deja <code>serve</code> en una terminal, activa «En vivo» y en otra ejecuta
+      <code>python -m robot_expedition train --live-delay 0.5</code>.</p>
+  </aside>
+</main>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const $ = s => document.querySelector(s);
+const SOURCES = ['logs/', 'docs/demo/'];
+const STAGES = ['B1', 'B2', 'base'];
+const END_TXT = { exito: 'Éxito', grieta: 'Cayó en la grieta', volco: 'Volcó', bateria: 'Sin batería', tiempo: 'Tiempo agotado' };
+
+let MAP = null, episodes = [], history = [], base = '';
+let ep = null, cum = [], fT = 0, lastK = -1, playing = true, speed = 8;
+let follow = false, live = false, autoAll = true, lastLiveId = null, holdUntil = 0, pendingLive = null;
+
+// ---------------------------------------------------------------- escena
+const el = $('#scene');
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+el.prepend(renderer.domElement);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1a1016);
+scene.fog = new THREE.Fog(0x1a1016, 26, 60);
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 200);
+camera.position.set(-3, 9, 11);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.maxPolarAngle = Math.PI * 0.48;
+scene.add(new THREE.HemisphereLight(0xffe2c4, 0x2a1820, 0.9));
+// Sol bajo y de lado: resalta el relieve de las dunas.
+const sun = new THREE.DirectionalLight(0xffc89a, 3.0);
+sun.position.set(-12, 6, 5);
+sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -11, right: 11, top: 11, bottom: -11, near: 1, far: 40 });
+scene.add(sun);
+
+let W = 12, H = 12;
+// Mundo (x, y) en metros -> Three.js (x, altura, z).
+const P = (x, y, h = 0) => new THREE.Vector3(x - W / 2, h, -y);
+const mat = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.9, ...extra });
+
+function label(text, color = '#ffffff', size = 0.6) {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 128;
+  const g = c.getContext('2d');
+  g.font = 'bold 64px system-ui'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.lineWidth = 10; g.strokeStyle = '#000a'; g.strokeText(text, 128, 64);
+  g.fillStyle = color; g.fillText(text, 128, 64);
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthWrite: false }));
+  s.scale.set(size * 2, size, 1);
+  return s;
+}
+
+function groundTexture() {
+  const c = document.createElement('canvas'); c.width = c.height = 1024;
+  const g = c.getContext('2d');
+  g.fillStyle = '#c98a55'; g.fillRect(0, 0, 1024, 1024);
+  for (let i = 0; i < 2500; i++) {          // granulado marciano
+    g.fillStyle = `rgba(${90 + Math.random() * 60},${40 + Math.random() * 30},20,${Math.random() * 0.18})`;
+    g.fillRect(Math.random() * 1024, Math.random() * 1024, 2 + Math.random() * 6, 2 + Math.random() * 6);
+  }
+  g.strokeStyle = '#00000026'; g.lineWidth = 2;   // rejilla de 1 m
+  for (let i = 0; i <= 12; i++) {
+    const p = i * 1024 / 12;
+    g.beginPath(); g.moveTo(p, 0); g.lineTo(p, 1024); g.moveTo(0, p); g.lineTo(1024, p); g.stroke();
+  }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  return t;
+}
+
+const world = new THREE.Group(); scene.add(world);
+const rockGroup = new THREE.Group(); scene.add(rockGroup);
+let beaconMeshes = [], blockMesh = null;
+
+function box(w, h, d, material) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material);
+  m.castShadow = m.receiveShadow = true;
+  return m;
+}
+
+function buildWorld() {
+  world.clear();
+  [W, H] = MAP.size;
+  const outside = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), mat(0x6b3a26));
+  outside.rotation.x = -Math.PI / 2; outside.position.y = -0.02; outside.receiveShadow = true;
+  world.add(outside);
+  world.add(buildTerrain());
+
+  const wallMat = mat(0x7a7b82), t = 0.15, wh = 0.6;      // de z = -0.1 a 0.5, como en MuJoCo
+  for (const [x, y, w, d] of [[W / 2, H / 2 + t / 2, W + 2 * t, t], [W / 2, -H / 2 - t / 2, W + 2 * t, t],
+                              [-t / 2, 0, t, H], [W + t / 2, 0, t, H]]) {
+    const m = box(w, wh, d, wallMat); m.position.copy(P(x, y, 0.2)); world.add(m);
+  }
+  const [bx, by, bhx, bhy] = MAP.base;
+  const pad = box(bhx * 2, 0.04, bhy * 2, mat(0x2e9a49, { emissive: 0x0b3014 }));
+  pad.position.copy(P(bx, by, 0.02)); world.add(pad);
+  const baseLbl = label('BASE', '#c9ffd8', 0.5); baseLbl.position.copy(P(bx, by - bhy - 0.35, 0.3)); world.add(baseLbl);
+
+  beaconMeshes = MAP.beacons.map(([x, y], i) => {
+    const g = new THREE.Group(); g.position.copy(P(x, y));
+    const post = box(0.12, 0.9, 0.12, mat(0x24323d)); post.position.y = 0.45; g.add(post);
+    const head = box(0.36, 0.36, 0.36, mat(0x3fd0e6, { emissive: 0x0d4a55 })); head.position.y = 1.05; g.add(head);
+    const ring = new THREE.Mesh(new THREE.RingGeometry(MAP.visit_radius - 0.05, MAP.visit_radius, 48),
+      new THREE.MeshBasicMaterial({ color: 0x3fd0e6, transparent: true, opacity: 0.6, side: THREE.DoubleSide }));
+    ring.rotation.x = -Math.PI / 2; ring.position.y = 0.015; g.add(ring);
+    const l = label(String(i + 1), '#ffffff', 0.55); l.position.y = 1.55; g.add(l);
+    world.add(g);
+    return { head, ring };
+  });
+
+  const [, kx, ky, khx, khy, kh] = MAP.block;
+  blockMesh = box(khx * 2, kh, khy * 2, mat(0xef5b4c, { transparent: true, opacity: 0.85 }));
+  blockMesh.position.copy(P(kx, ky, kh / 2)); blockMesh.visible = false; world.add(blockMesh);
+  controls.target.copy(P(W / 2, 0, 0));
+}
+
+// Terreno 3D: el mismo heightfield que usa MuJoCo (dunas y grieta).
+function buildTerrain() {
+  const { n, heights } = MAP.terrain;
+  const geo = new THREE.PlaneGeometry(W, H, n - 1, n - 1);
+  const pos = geo.attributes.position, colors = new Float32Array(pos.count * 3);
+  const [sx, sy, shx, shy] = MAP.sand;
+  for (let i = 0; i < n; i++) {                 // fila i de la geometria = y de +H/2 a -H/2
+    for (let j = 0; j < n; j++) {
+      const v = i * n + j, h = heights[(n - 1 - i) * n + j];
+      pos.setZ(v, h);
+      const x = j / (n - 1) * W, y = H / 2 - i / (n - 1) * H;
+      let c = [1, 1, 1];
+      if (h < -0.05) c = [0.25, 0.16, 0.12];                            // fondo de la grieta
+      else if (Math.abs(x - sx) <= shx && Math.abs(y - sy) <= shy) c = [1.15, 1.05, 0.8];  // arena
+      else c = c.map(k => k * (0.88 + Math.min(h, 0.3) * 1.1));        // las dunas se aclaran
+      colors.set(c, v * 3);
+    }
+  }
+  geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  geo.computeVertexNormals();
+  const m = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map: groundTexture(), vertexColors: true, roughness: 1 }));
+  m.rotation.x = -Math.PI / 2; m.position.x = 0; m.receiveShadow = m.castShadow = true;
+  return m;
+}
+
+function buildRocks(rects) {
+  rockGroup.clear();
+  const rockMat = mat(0x8d8d93);
+  for (const [x, y, hx, hy, h] of rects) {
+    const m = box(hx * 2, h + 0.1, hy * 2, rockMat); m.position.copy(P(x, y, h / 2 - 0.05)); rockGroup.add(m);
+  }
+}
+
+// ---------------------------------------------------------------- robot
+// Rover con las medidas del modelo MuJoCo. Ejes locales: +x adelante, +y arriba, -z izquierda.
+const robot = new THREE.Group(); scene.add(robot);
+const bodyMat = mat(0xe9e3d6, { roughness: 0.5 }), darkMat = mat(0x24323d, { roughness: 0.6 }), goldMat = mat(0xd49b35, { roughness: 0.4, metalness: 0.3 });
+const chassis = box(0.5, 0.1, 0.32, bodyMat); chassis.position.y = 0.11; robot.add(chassis);
+const panel = box(0.42, 0.02, 0.5, mat(0x1d3b5a, { roughness: 0.3, metalness: 0.5 })); panel.position.y = 0.175; robot.add(panel);
+const mast = box(0.04, 0.2, 0.04, darkMat); mast.position.set(0.14, 0.26, 0); robot.add(mast);
+const headM = box(0.1, 0.07, 0.14, goldMat); headM.position.set(0.16, 0.3, 0); robot.add(headM);
+const visor = box(0.02, 0.04, 0.1, new THREE.MeshStandardMaterial({ color: 0x3fd0e6, emissive: 0x3fd0e6, emissiveIntensity: 0.9 }));
+visor.position.set(0.21, 0.3, 0); robot.add(visor);
+const wheels = [-1, 1].map(side => {
+  const w = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.07, 24), mat(0x15171c));
+  w.rotation.x = Math.PI / 2; w.position.set(0, 0.1, side * 0.21); w.castShadow = true;
+  const hub = box(0.12, 0.02, 0.075, goldMat); w.add(hub);                   // se ve girar
+  const holder = new THREE.Group(); holder.add(w); robot.add(holder); return w;
+});
+for (const x of [0.2, -0.2]) {
+  const c = new THREE.Mesh(new THREE.SphereGeometry(0.05, 12, 8), darkMat); c.position.set(x, 0.08, 0); robot.add(c);
+}
+// 9 rayos horizontales desde el sensor (como mj_ray): no se inclinan con el rover.
+const rays = new THREE.Group(); scene.add(rays);
+const rayLines = Array.from({ length: 9 }, () => {
+  const g = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3(1, 0, 0)]);
+  const l = new THREE.Line(g, new THREE.LineBasicMaterial({ color: 0x3fd0e6, transparent: true, opacity: 0.75 }));
+  rays.add(l); return l;
+});
+const hitFlash = new THREE.Mesh(new THREE.RingGeometry(0.3, 0.45, 32),
+  new THREE.MeshBasicMaterial({ color: 0xef5b4c, transparent: true, opacity: 0, side: THREE.DoubleSide }));
+hitFlash.rotation.x = -Math.PI / 2; hitFlash.position.y = 0.03; robot.add(hitFlash);
+// Indices de cada cuadro: x, y, z, qw, qx, qy, qz, etapa, bateria, accion, recompensa, choque, rayos.
+const F_STAGE = 7, F_BAT = 8, F_ACT = 9, F_REW = 10, F_COL = 11, F_RAYS = 12;
+// Cuaternion MuJoCo (z arriba) -> Three.js (y arriba): (x, y, z) -> (x, z, -y).
+const toQuat = f => new THREE.Quaternion(f[4], f[6], -f[5], f[3]);
+let wheelAngle = 0;
+
+const MAX_TRAIL = 1000;
+const trailGeom = new THREE.BufferGeometry();
+trailGeom.setAttribute('position', new THREE.BufferAttribute(new Float32Array(MAX_TRAIL * 3), 3));
+trailGeom.setAttribute('color', new THREE.BufferAttribute(new Float32Array(MAX_TRAIL * 3), 3));
+const trail = new THREE.Line(trailGeom, new THREE.LineBasicMaterial({ vertexColors: true }));
+scene.add(trail);
+const STAGE_COLORS = [new THREE.Color(0xffffff), new THREE.Color(0xf2c14e), new THREE.Color(0x5fd38a)];
+
+// ---------------------------------------------------------------- datos
+async function fetchOk(url) {
+  const r = await fetch(url + '?t=' + Date.now(), { cache: 'no-store' });
+  if (!r.ok) throw new Error(r.status + ' ' + url);
+  return r;
+}
+function parseCSV(text) {
+  const [head, ...lines] = text.trim().split('\n');
+  const keys = head.split(',');
+  return lines.map(l => Object.fromEntries(l.split(',').map((v, i) => [keys[i], v])))
+    .map(r => ({ episode: +r.episode, reward: +r.reward, success: r.success === 'True' ? 1 : 0, epsilon: +r.epsilon }));
+}
+
+async function loadData() {
+  for (const s of SOURCES) {
+    try {
+      const rep = await (await fetchOk(s + 'expedition_replays.json')).json();
+      MAP = rep.map; episodes = rep.episodes; base = s; break;
+    } catch (e) { /* probar la siguiente fuente */ }
+  }
+  if (!MAP) {
+    showMsg(location.protocol === 'file:'
+      ? 'Abre la página con un servidor: <code>python -m robot_expedition serve</code> y entra a <code>http://localhost:8000/expedicion_3d.html</code>.'
+      : 'No hay datos todavía. Ejecuta <code>python -m robot_expedition train</code> y recarga.');
+    return false;
+  }
+  try { history = parseCSV(await (await fetchOk(base + 'expedition_history.csv')).text()); } catch (e) { history = []; }
+  $('#source').textContent = base === 'logs/' ? `datos: logs/ · ${episodes.length} episodios grabados` : 'datos de ejemplo (docs/demo)';
+  fillSelect();
+  buildWorld();
+  return true;
+}
+
+function showMsg(html) { const m = $('#msg'); m.innerHTML = html; m.hidden = !html; }
+
+function fillSelect() {
+  const sel = $('#episodeSel'); sel.innerHTML = '';
+  const groups = {};
+  episodes.forEach((e, i) => {
+    if (!groups[e.mode]) { groups[e.mode] = document.createElement('optgroup'); groups[e.mode].label = e.mode; sel.append(groups[e.mode]); }
+    const o = document.createElement('option'); o.value = i;
+    o.textContent = `${e.mode === 'entrenamiento' ? 'Ep ' + e.episode : '#' + e.episode} · ${END_TXT[e.end] || e.end} · ${(+e.reward).toFixed(1)}`;
+    groups[e.mode].append(o);
+  });
+}
+
+function setEpisode(e) {
+  ep = e; fT = 0; lastK = -1; holdUntil = 0;
+  cum = []; let s = 0; for (const f of ep.frames) { s += f[F_REW]; cum.push(s); }
+  buildRocks(ep.rocks || MAP.rocks.map(r => r.slice(1)));
+  $('#timeline').max = ep.frames.length - 1;
+  $('#sEnd').textContent = END_TXT[ep.end] || ep.end;
+  $('#sEnd').style.color = ep.success ? 'var(--green)' : 'var(--red)';
+  $('#sRew').textContent = (+ep.reward).toFixed(1);
+  $('#sSteps').textContent = ep.steps;
+  $('#sVis').textContent = ep.visited + ' / 2';
+  $('#sPath').textContent = ep.path_length != null ? (+ep.path_length).toFixed(1) + ' m' : '—';
+  $('#sBat').textContent = (+ep.battery).toFixed(1) + ' %';
+  $('#hMode').textContent = live ? 'en vivo · ' + ep.mode : ep.mode;
+  $('#hEp').textContent = ep.mode === 'entrenamiento' ? `${ep.episode}` : `#${ep.episode}`;
+  $('#hEps').textContent = (+ep.epsilon).toFixed(3);
+  drawCurve();
+}
+
+function selectIndex(i) {
+  if (!episodes.length) return;
+  i = (i + episodes.length) % episodes.length;
+  $('#episodeSel').value = i;
+  setEpisode(episodes[i]);
+}
+const currentIndex = () => episodes.indexOf(ep);
+
+// ---------------------------------------------------------------- curva
+function drawCurve() {
+  const c = $('#curve'), dpr = devicePixelRatio || 1;
+  const w = c.clientWidth, h = c.clientHeight;
+  c.width = w * dpr; c.height = h * dpr;
+  const g = c.getContext('2d'); g.scale(dpr, dpr); g.clearRect(0, 0, w, h);
+  if (!history.length) { g.fillStyle = '#9aa5b5'; g.font = '13px system-ui'; g.fillText('Sin historial de entrenamiento', 12, 24); return; }
+  const pad = { l: 34, r: 30, t: 10, b: 20 }, iw = w - pad.l - pad.r, ih = h - pad.t - pad.b;
+  const n = history.length, maxEp = history[n - 1].episode, win = Math.max(1, Math.min(50, Math.floor(n / 20)));
+  const roll = key => history.map((_, i) => { const a = history.slice(Math.max(0, i - win + 1), i + 1); return a.reduce((s, r) => s + r[key], 0) / a.length; });
+  const rew = roll('reward'), suc = roll('success');
+  const rMin = Math.min(...rew, 0), rMax = Math.max(...rew, 1);
+  const X = e => pad.l + (e - 1) / Math.max(1, maxEp - 1) * iw;
+  const Yr = v => pad.t + (1 - (v - rMin) / (rMax - rMin)) * ih;
+  const Y1 = v => pad.t + (1 - v) * ih;
+  g.strokeStyle = '#ffffff14'; g.lineWidth = 1;
+  for (let k = 0; k <= 4; k++) { const y = pad.t + k * ih / 4; g.beginPath(); g.moveTo(pad.l, y); g.lineTo(w - pad.r, y); g.stroke(); }
+  if (rMin < 0) { g.strokeStyle = '#ffffff33'; g.beginPath(); g.moveTo(pad.l, Yr(0)); g.lineTo(w - pad.r, Yr(0)); g.stroke(); }
+  const line = (vals, Y, color, width = 2) => {
+    g.strokeStyle = color; g.lineWidth = width; g.beginPath();
+    history.forEach((r, i) => { const x = X(r.episode), y = Y(vals[i]); i ? g.lineTo(x, y) : g.moveTo(x, y); });
+    g.stroke();
+  };
+  line(history.map(r => r.epsilon), Y1, '#9aa5b580', 1.5);
+  line(rew, Yr, '#e8793b');
+  line(suc, Y1, '#5fd38a');
+  g.fillStyle = '#9aa5b5'; g.font = '11px system-ui';
+  g.textAlign = 'right'; g.fillText(rMax.toFixed(0), pad.l - 4, pad.t + 8); g.fillText(rMin.toFixed(0), pad.l - 4, pad.t + ih);
+  g.textAlign = 'left'; g.fillText('100%', w - pad.r + 3, pad.t + 8); g.fillText('0%', w - pad.r + 3, pad.t + ih);
+  g.textAlign = 'center'; g.fillText('episodio', pad.l + iw / 2, h - 4);
+  g.textAlign = 'left'; g.fillText('1', pad.l, h - 4); g.textAlign = 'right'; g.fillText(String(maxEp), w - pad.r, h - 4);
+  if (ep && ep.mode === 'entrenamiento') {
+    g.strokeStyle = '#ffffff'; g.lineWidth = 1.5; g.setLineDash([4, 3]);
+    g.beginPath(); g.moveTo(X(ep.episode), pad.t); g.lineTo(X(ep.episode), pad.t + ih); g.stroke(); g.setLineDash([]);
+  }
+}
+
+// ---------------------------------------------------------------- reproduccion
+function banner(text, color) {
+  const b = $('#banner'); b.textContent = text; b.style.background = color; b.style.color = '#0b0d13';
+  b.style.opacity = 1; clearTimeout(banner.t); banner.t = setTimeout(() => b.style.opacity = 0, 1400);
+}
+
+const pitchOf = q => Math.asin(Math.max(-1, Math.min(1, 2 * (q[3] * q[5] - q[6] * q[4]))));
+
+function applyFrame() {
+  const F = ep.frames, last = F.length - 1;
+  const k = Math.min(last, Math.floor(fT)), t = Math.min(1, fT - k), a = F[k], b = F[Math.min(last, k + 1)];
+  const x = a[0] + (b[0] - a[0]) * t, y = a[1] + (b[1] - a[1]) * t, z = a[2] + (b[2] - a[2]) * t;
+  // Pose 3D completa de MuJoCo: posicion y orientacion (incluye cabeceo y alabeo en las dunas).
+  const prev = robot.position.clone();
+  robot.position.copy(P(x, y, z));
+  robot.quaternion.copy(toQuat(a)).slerp(toQuat(b), t);
+  const forward = new THREE.Vector3(1, 0, 0).applyQuaternion(robot.quaternion);
+  wheelAngle -= robot.position.clone().sub(prev).dot(forward) / 0.1;
+  wheels.forEach(w => w.rotation.y = wheelAngle);
+
+  const rayData = b[F_RAYS] || a[F_RAYS];
+  rays.position.copy(robot.localToWorld(new THREE.Vector3(0.16, MAP.sensor_height, 0)));
+  rays.rotation.set(0, Math.atan2(-forward.z, forward.x), 0);
+  MAP.ray_angles.forEach((ang, i) => {
+    const len = rayData[i], p = rayLines[i].geometry.attributes.position;
+    p.setXYZ(1, Math.cos(ang) * len, 0, -Math.sin(ang) * len); p.needsUpdate = true;
+    rayLines[i].material.color.set(len < 0.6 ? 0xef5b4c : 0x3fd0e6);
+  });
+
+  // Rastro 3D hasta el cuadro actual.
+  const pos = trailGeom.attributes.position, col = trailGeom.attributes.color;
+  const n = Math.min(MAX_TRAIL, k + 2);
+  for (let i = 0; i < n; i++) {
+    const f = i <= k ? F[i] : [x, y, z, 0, 0, 0, 0, a[F_STAGE]], v = P(f[0], f[1], f[2] + 0.04), c = STAGE_COLORS[f[F_STAGE] - 1];
+    pos.setXYZ(i, v.x, v.y, v.z); col.setXYZ(i, c.r, c.g, c.b);
+  }
+  pos.needsUpdate = col.needsUpdate = true; trailGeom.setDrawRange(0, n);
+
+  const stage = a[F_STAGE];
+  beaconMeshes.forEach((m, i) => {
+    const done = stage > i + 1, target = stage === i + 1;
+    m.head.material.color.set(done ? 0x5fd38a : 0x3fd0e6);
+    m.head.material.emissive.set(done ? 0x1b5a30 : target ? 0x1a8fa3 : 0x0d4a55);
+    m.ring.material.color.set(done ? 0x5fd38a : 0x3fd0e6);
+  });
+  blockMesh.visible = !!ep.block && stage >= 2;
+
+  if (k !== lastK) {
+    for (let j = lastK + 1; j <= k && lastK >= 0; j++) {     // eventos de los cuadros recorridos
+      if (F[j][F_STAGE] > F[j - 1][F_STAGE]) banner(`¡${STAGES[F[j - 1][F_STAGE] - 1]} visitada! (+10)`, '#3fd0e6');
+      if (F[j][F_COL]) hitFlash.material.opacity = 1;
+    }
+    if (k === last) banner(END_TXT[ep.end] || ep.end, ep.success ? '#5fd38a' : '#ef5b4c');
+    lastK = k;
+    const colls = F.slice(0, k + 1).reduce((s, f) => s + f[F_COL], 0);
+    const bat = a[F_BAT], act = a[F_ACT] >= 0 ? a[F_ACT] : b[F_ACT];
+    $('#hStep').textContent = `${k} / ${last}`;
+    $('#hStage').textContent = STAGES[stage - 1];
+    $('#hAct').textContent = act >= 0 ? MAP.actions[act] : '—';
+    $('#hRew').textContent = cum[k].toFixed(2);
+    $('#hCol').textContent = colls;
+    $('#hAlt').textContent = `${a[2] >= 0 ? '+' : ''}${a[2].toFixed(2)} m · ${Math.round(pitchOf(a) * 180 / Math.PI)}°`;
+    $('#hBat').textContent = bat.toFixed(1) + ' %';
+    const bar = $('#hBatBar'); bar.style.width = bat + '%';
+    bar.style.background = bat > 40 ? 'var(--green)' : bat > 15 ? 'var(--gold)' : 'var(--red)';
+    $('#timeline').value = k;
+  }
+  hitFlash.material.opacity *= 0.9;
+}
+
+function advance(dt) {
+  if (!ep || !playing) return;
+  const last = ep.frames.length - 1;
+  if (fT < last) { fT = Math.min(last, fT + dt * speed / MAP.dt); return; }
+  if (live) {                                      // al terminar, salta al episodio en vivo mas reciente
+    if (pendingLive) { setEpisode(pendingLive); pendingLive = null; }
+    return;
+  }
+  if (!autoAll) { playing = false; $('#bPlay').textContent = 'Reproducir'; return; }
+  if (!holdUntil) holdUntil = performance.now() + 1200;
+  if (performance.now() > holdUntil) selectIndex(currentIndex() + 1);
+}
+
+async function pollLive() {
+  if (!live) return;
+  try {
+    const d = await (await fetchOk('logs/expedition_live.json')).json();
+    if (d.id === lastLiveId) return;
+    lastLiveId = d.id;
+    if (!MAP) await loadData();
+    const known = new Set(history.map(r => r.episode));
+    for (const r of d.history_tail || []) if (!known.has(r.episode))
+      history.push({ episode: r.episode, reward: r.reward, success: r.success ? 1 : 0, epsilon: r.epsilon });
+    history.sort((a, b) => a.episode - b.episode);
+    $('#source').textContent = `EN VIVO · episodio ${d.episode} de ${d.total_episodes}`;
+    drawCurve();
+    // No interrumpe el episodio en curso: el mas reciente espera a que termine.
+    d.live = true;
+    if (!ep || !ep.live || !playing || fT >= ep.frames.length - 1) { setEpisode(d); pendingLive = null; }
+    else pendingLive = d;
+    playing = true; $('#bPlay').textContent = 'Pausar';
+  } catch (e) { $('#source').textContent = 'EN VIVO · esperando logs/expedition_live.json…'; }
+}
+
+// ---------------------------------------------------------------- UI
+$('#bPlay').onclick = () => {
+  if (ep && fT >= ep.frames.length - 1 && !playing) { fT = 0; lastK = -1; }
+  playing = !playing; $('#bPlay').textContent = playing ? 'Pausar' : 'Reproducir';
+};
+$('#bPrev').onclick = () => { live && $('#bLive').click(); selectIndex(currentIndex() - 1); };
+$('#bNext').onclick = () => { live && $('#bLive').click(); selectIndex(currentIndex() + 1); };
+$('#speed').onchange = e => speed = +e.target.value;
+$('#episodeSel').onchange = e => { live && $('#bLive').click(); selectIndex(+e.target.value); playing = true; $('#bPlay').textContent = 'Pausar'; };
+$('#timeline').oninput = e => { fT = +e.target.value; lastK = fT - 1; playing = false; $('#bPlay').textContent = 'Reproducir'; };
+$('#bAll').onclick = e => { autoAll = !autoAll; e.target.classList.toggle('on', autoAll); };
+$('#bFollow').onclick = e => { follow = !follow; e.target.classList.toggle('on', follow); };
+$('#bLive').onclick = e => {
+  live = !live; e.target.classList.toggle('on', live);
+  $('#source').classList.toggle('live', live);
+  pendingLive = null;
+  if (live) { lastLiveId = null; ep = null; history = []; $('#speed').value = speed = 16; pollLive(); }
+  else loadData().then(ok => ok && selectIndex(0));     // vuelve a los datos guardados
+};
+setInterval(pollLive, 1000);
+
+new ResizeObserver(() => {
+  const w = el.clientWidth, h = el.clientHeight;
+  renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); drawCurve();
+}).observe(el);
+
+const clock = new THREE.Clock();
+renderer.setAnimationLoop(() => {
+  const dt = Math.min(clock.getDelta(), 0.1);
+  if (ep) {
+    advance(dt);
+    applyFrame();
+    if (follow) {
+      const target = robot.position.clone();
+      camera.position.add(target.clone().sub(controls.target).multiplyScalar(0.08));
+      controls.target.lerp(target, 0.08);
+    }
+  }
+  controls.update();
+  renderer.render(scene, camera);
+});
+
+if (await loadData()) selectIndex(0);
+</script>
+</body>
+</html>
