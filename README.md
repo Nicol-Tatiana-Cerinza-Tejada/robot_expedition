@@ -16,11 +16,39 @@ El repositorio tiene dos ambientes Gymnasium, los dos en MuJoCo 3D:
 
 ## Instalación
 
+El entorno reproducible usa Python **3.12**. Se recomienda crear un entorno
+virtual nuevo; no se deben subir `.venv`, secretos ni artefactos de MLflow.
+
+### Linux/macOS
+
 ```bash
-python3 -m venv .venv
+python3.12 -m venv .venv
 source .venv/bin/activate
-pip install gymnasium mujoco numpy matplotlib pytest
+python -m pip install --upgrade pip
+python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+python -m pip install -r requirements.txt
 ```
+
+### Windows PowerShell
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+python -m pip install -r requirements.txt
+```
+
+Comprobar las piezas críticas:
+
+```bash
+python -c "import torch, stable_baselines3; print(torch.__version__, stable_baselines3.__version__)"
+python -m pytest -q
+```
+
+Los YAML reproducibles de N1, N2 y N3 están en `configs/levels/`. La interfaz
+común es observación de 20 valores y `Discrete(5)`; los contratos completos
+están en [`docs/contratos.md`](docs/contratos.md).
 
 ## CLI: entrenar, evaluar y ver el proceso
 

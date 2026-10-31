@@ -1,0 +1,8 @@
+level_id: n1
+description: "Mision base: una baliza y regreso a la base"
+beacons: 1
+active_rocks: 2
+dunes: false
+blocking: false
+ray_noise: 0.02
+dead_ray: null

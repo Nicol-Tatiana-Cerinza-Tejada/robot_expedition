@@ -1,4 +1,7 @@
 .venv/
+node_modules/
+.env
+mlruns/
 __pycache__/
 *.py[cod]
 .pytest_cache/

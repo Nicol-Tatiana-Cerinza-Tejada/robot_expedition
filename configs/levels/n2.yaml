@@ -1,0 +1,8 @@
+level_id: n2
+description: "Mision completa con dos balizas y terreno 3D"
+beacons: 2
+active_rocks: 5
+dunes: true
+blocking: false
+ray_noise: 0.02
+dead_ray: null
