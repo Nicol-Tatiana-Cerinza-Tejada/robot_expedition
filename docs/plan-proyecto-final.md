@@ -146,9 +146,12 @@ Hay que confirmarlos con el docente:
 ### 3.8 Git
 
 - `main` es la rama de entrega.
-- Cada paso se hace en una rama `feature/<paso>` creada desde `main`
-  actualizado.
-- Se integra con un **Pull Request revisado por otra persona**.
+- Cada integrante trabaja en **su rama** (`suleily`, `tomas`, `natalia`,
+  `nicol`).
+- Antes de cada paso: `git fetch origin && git switch <rama> && git merge origin/main`.
+- Al terminar el paso: un **Pull Request de `<rama>` hacia `main`, revisado
+  por otra persona**.
+- Después del merge, el siguiente paso vuelve a empezar trayendo `main`.
 - Al final se marca la release con `git tag v1.0`.
 
 ## 4. Orden de trabajo
@@ -164,17 +167,30 @@ Paso 0 ─ Paso 1 ─┬─ Paso 2 (evaluación) ─┬─ Paso 6 (experimentos)
 - Los **pasos 0 y 1 van primero**: son cortos y desbloquean todo lo demás.
 - Los **pasos 2, 3, 4, 5 y 7 se pueden hacer al mismo tiempo**.
 
-### Paquetes sugeridos (uno por persona)
+### Quién hace qué y en qué orden
 
-Son una sugerencia; el equipo los reparte como quiera.
+Cada persona tiene un paquete. Se puede cambiar, pero conviene así por lo que
+cada una ya conoce del proyecto.
 
-| Paquete | Pasos | Tema |
-|---|---|---|
-| A | 1, 4, 7, 10 | Ambiente, niveles, API e incidente |
-| B | 3, 6 | Entrenamiento PPO, MLflow y experimentos |
-| C | 2, 8, 11 | Evaluación, pipeline, rollback y release |
-| D | 5, 9 | Web Vite + Three.js, Vercel y monitoreo |
-| Todos | 0, 12 | Integración, informe y defensa |
+| Rama | Persona | Pasos | Tema |
+|---|---|---|---|
+| `suleily` | Suleily | **0**, 2, 8, 11 | Administra el repo, evaluación, pipeline, rollback y release |
+| `nicol` | Nicol | **1**, 4, 7, 10 | Ambiente y niveles (lo construyó), API, ficha e incidente |
+| `tomas` | Tomás | 3, 6 | Entrenamiento PPO, MLflow y experimentos |
+| `natalia` | Natalia | 5, 9 | Web Vite + Three.js, Vercel y vista del docente |
+| todas las ramas | Todos | 12 | Informe y defensa |
+
+**Orden por olas.** Cada ola empieza cuando la anterior está fusionada en
+`main`; los pasos de una misma ola van en paralelo.
+
+| Ola | Suleily | Nicol | Tomás | Natalia |
+|---|---|---|---|---|
+| 1 | **Paso 0** (crear `main`) | — | — | — |
+| 2 | Revisa el PR de Nicol | **Paso 1** (base y niveles; bloquea a los demás) | Instala el entorno y lee el plan y la ficha | **Paso 5** (web Vite; solo usa los contratos de la sección 3) |
+| 3 | Paso 2 (evaluación) | Paso 4 (API) | Paso 3 (PPO + MLflow) | sigue con el paso 5 |
+| 4 | Paso 8 (pipeline) | Paso 7 (ficha v1) | Paso 6 (experimentos) | Paso 9 (vista del docente) |
+| 5 | Paso 11 (rollback y release) | Paso 10 (incidente) | apoya el paso 10 con entrenamientos | pruebas desde la URL de Vercel |
+| 6 | Paso 12 | Paso 12 | Paso 12 | Paso 12 |
 
 ---
 
@@ -186,7 +202,8 @@ Estoy en el repositorio robot_expedition (proyecto Robot Expedition del curso de
 1) Revisar con git log/diff qué trae nicol frente a 1experiment y resumírmelo.
 2) Abrir con gh un Pull Request de nicol hacia 1experiment y fusionarlo si no hay conflictos.
 3) Crear la rama main desde 1experiment actualizado, subirla y dejarla como rama por defecto (gh repo edit --default-branch main).
-4) Instalar el entorno y comprobar que pasan las pruebas: python -m pytest -q.
+4) Actualizar las ramas personales suleily, tomas, natalia y nicol para que queden iguales a main (antes verifica con git log que no tienen commits propios que se perderían; si alguna los tiene, fusiónala en vez de moverla) y subirlas.
+5) Instalar el entorno y comprobar que pasan las pruebas: python -m pytest -q.
 No borres ramas ni reescribas historia. Explícame cada comando antes de ejecutarlo.
 ```
 
@@ -194,7 +211,7 @@ No borres ramas ni reescribas historia. Explícame cada comando antes de ejecuta
 **Hito 1 · Bloquea a los demás · 1 persona**
 
 ```text
-Proyecto Robot Expedition (MLOps). Lee README.md, docs/ambiente-v0.1.md y docs/plan-proyecto-final.md (sobre todo la sección 3, Contratos). Crea la rama feature/base-niveles desde main actualizado.
+Proyecto Robot Expedition (MLOps). Lee README.md, docs/ambiente-v0.1.md y docs/plan-proyecto-final.md (sobre todo la sección 3, Contratos). Trabaja en la rama nicol. Antes de empezar: git fetch origin, git switch nicol y git merge origin/main (si hay conflictos, explícamelos antes de resolverlos). Al terminar: python -m pytest -q, commit, git push origin nicol y abre un PR de nicol hacia main con gh pr create pidiendo revisión a otro integrante.
 Objetivo: dejar la base reproducible sobre la que trabaja todo el equipo.
 1) Entorno: Python 3.12 (el enunciado lo recomienda; comprueba que torch y stable-baselines3 instalan). Instala torch CPU (--index-url https://download.pytorch.org/whl/cpu), gymnasium, mujoco, stable-baselines3, mlflow, fastapi, uvicorn, numpy, pyyaml, prefect, pytest. Genera requirements.txt con versiones fijadas y documenta en el README los comandos exactos de instalación para Windows y Linux.
 2) Estructura del enunciado sin romper imports: configs/levels, configs/experiments, pipelines/, manifests/, catalog/, web/ (vacía por ahora), docs/. El ambiente puede quedarse en robot_expedition/envs.
@@ -209,7 +226,7 @@ Al final: python -m pytest -q, commit con mensaje claro, push y PR hacia main co
 **Hito 1 · En paralelo, después del paso 1**
 
 ```text
-Proyecto Robot Expedition (MLOps). Lee docs/plan-proyecto-final.md (sección 3), docs/contratos.md y robot_expedition/envs/beacon_expedition.py. Rama feature/evaluacion desde main.
+Proyecto Robot Expedition (MLOps). Lee docs/plan-proyecto-final.md (sección 3), docs/contratos.md y robot_expedition/envs/beacon_expedition.py. Trabaja en la rama suleily. Antes de empezar: git fetch origin, git switch suleily y git merge origin/main (si hay conflictos, explícamelos antes de resolverlos). Al terminar: python -m pytest -q, commit, git push origin suleily y abre un PR de suleily hacia main con gh pr create pidiendo revisión a otro integrante.
 Objetivo: una evaluación fija y comparable para cualquier modelo.
 1) pipelines/evaluate.py con evaluate(policy, level_id, suite_id) -> dict. Una suite (configs/suites/suite-n1-v1.yaml, suite-n2-v1.yaml, suite-n3-v1.yaml) fija las semillas y el número de episodios (50). Crea también una suite de test reservado (test-final) cuyas semillas NO se suban al repo público: léelas desde una variable de entorno o un archivo ignorado, y documéntalo.
 2) Resultados por caso (semilla, éxito, causa de fin, pasos, batería, choques, recorrido, retorno, latencia media de inferencia) guardados en JSON. Métricas agregadas: tasa de éxito, fallos por causa, eficiencia de ruta, choques por episodio, batería final y latencia.
@@ -224,7 +241,7 @@ Recuerda: la recompensa acumulada no es la tasa de éxito; repórtalas por separ
 **Hito 1 · En paralelo, después del paso 1**
 
 ```text
-Proyecto Robot Expedition (MLOps). Lee docs/plan-proyecto-final.md (secciones 3.2 y 3.3), docs/contratos.md, robot_expedition/qlearning.py y robot_expedition/__main__.py. Rama feature/entrenamiento desde main.
+Proyecto Robot Expedition (MLOps). Lee docs/plan-proyecto-final.md (secciones 3.2 y 3.3), docs/contratos.md, robot_expedition/qlearning.py y robot_expedition/__main__.py. Trabaja en la rama tomas. Antes de empezar: git fetch origin, git switch tomas y git merge origin/main (si hay conflictos, explícamelos antes de resolverlos). Al terminar: python -m pytest -q, commit, git push origin tomas y abre un PR de tomas hacia main con gh pr create pidiendo revisión a otro integrante.
 Objetivo: entrenar con trazabilidad completa.
 1) pipelines/train.py --config configs/experiments/exp-XXX.yaml. Algoritmos: ppo (Stable-Baselines3 con MlpPolicy, VecNormalize para las observaciones y un número fijo de envs) y qlearning (reusa el agente actual). Una ejecución por semilla.
 2) MLflow: experimento "robot-expedition". Registra parámetros resueltos y las tags git_commit, environment_version, level_id, experiment_id, hypothesis y seed. Durante el entrenamiento registra la recompensa y el éxito de entrenamiento (con exploración); al final, el éxito de evaluación determinista, como curvas SEPARADAS. Guarda como artefactos el modelo, vecnormalize.pkl, config.json y evaluacion.json. Registra el modelo en el Model Registry. Usa MLFLOW_TRACKING_URI desde .env (local mlruns/ por defecto; DagsHub para compartir).
@@ -239,7 +256,7 @@ Pruebas: un entrenamiento mínimo produce un manifiesto válido y un hash reprod
 **Hito 1 · En paralelo, después del paso 1**
 
 ```text
-Proyecto Robot Expedition (MLOps). Lee docs/plan-proyecto-final.md (secciones 3.4 a 3.6) y docs/contratos.md. Rama feature/api desde main.
+Proyecto Robot Expedition (MLOps). Lee docs/plan-proyecto-final.md (secciones 3.4 a 3.6) y docs/contratos.md. Trabaja en la rama nicol. Antes de empezar: git fetch origin, git switch nicol y git merge origin/main (si hay conflictos, explícamelos antes de resolverlos). Al terminar: python -m pytest -q, commit, git push origin nicol y abre un PR de nicol hacia main con gh pr create pidiendo revisión a otro integrante.
 Objetivo: una API que use el MISMO ambiente Python del entrenamiento para evaluar modelos desde la web.
 1) api/main.py con FastAPI y las rutas de la sección 3.5. /evaluate carga el modelo del run según su manifiesto (PPO con su VecNormalize, o Q-learning), verifica el SHA-256, corre el nivel pedido y devuelve métricas, resultados por caso y los cuadros de un episodio en el formato de la sección 3.6. /sim/reset y /sim/step permiten control manual y por regla.
 2) Errores claros (run inexistente, hash distinto, nivel incompatible) con códigos HTTP correctos. Mide y devuelve la latencia de inferencia.
@@ -254,7 +271,7 @@ Despliega y deja anotada en el README la URL HTTPS. Commit, push y PR hacia main
 **Hito 1 · En paralelo, después del paso 1**
 
 ```text
-Proyecto Robot Expedition (MLOps). Lee docs/plan-proyecto-final.md (secciones 3.4 a 3.6) y el archivo expedicion_3d.html, que ya tiene una vista 3D funcional con Three.js (terreno heightfield, rover, rayos, rastro y curva). Rama feature/web desde main.
+Proyecto Robot Expedition (MLOps). Lee docs/plan-proyecto-final.md (secciones 3.4 a 3.6) y el archivo expedicion_3d.html, que ya tiene una vista 3D funcional con Three.js (terreno heightfield, rover, rayos, rastro y curva). Trabaja en la rama natalia. Antes de empezar: git fetch origin, git switch natalia y git merge origin/main (si hay conflictos, explícamelos antes de resolverlos). Al terminar: python -m pytest -q, commit, git push origin natalia y abre un PR de natalia hacia main con gh pr create pidiendo revisión a otro integrante.
 Objetivo: convertirla en la app web del proyecto.
 1) Crea web/ con: npm create vite@latest web -- --template vanilla-ts, luego npm install three y npm install -D @types/three. Registra en el README las versiones de Node y Vite. Sube package-lock.json.
 2) Porta expedicion_3d.html a TypeScript en módulos (escena, terreno, rover, rayos, HUD, curva). Debe verse igual o mejor e incluir un "modo ligero" sin sombras.
@@ -269,7 +286,7 @@ Al final: npm ci && npm run build sin errores, la URL de Vercel en el README, co
 **Hito 2 · Necesita los pasos 2 y 3**
 
 ```text
-Proyecto Robot Expedition (MLOps). Lee docs/plan-proyecto-final.md, docs/contratos.md, pipelines/train.py y pipelines/evaluate.py. Rama feature/experimentos desde main.
+Proyecto Robot Expedition (MLOps). Lee docs/plan-proyecto-final.md, docs/contratos.md, pipelines/train.py y pipelines/evaluate.py. Trabaja en la rama tomas. Antes de empezar: git fetch origin, git switch tomas y git merge origin/main (si hay conflictos, explícamelos antes de resolverlos). Al terminar: python -m pytest -q, commit, git push origin tomas y abre un PR de tomas hacia main con gh pr create pidiendo revisión a otro integrante.
 Objetivo: el diseño experimental (25 % de la nota).
 1) Define al menos 4 configuraciones en configs/experiments/ con UNA hipótesis concreta cada una y un solo cambio frente a su referencia. Sugerencias:
    exp-001 Q-learning N2 (baseline aprendido); exp-002 PPO N2 (¿PPO supera a Q-learning?);
@@ -287,7 +304,7 @@ Commit de configs, manifiestos, .dvc y docs. Push y PR hacia main.
 **Hito 2 · En paralelo con el paso 6**
 
 ```text
-Proyecto Robot Expedition (MLOps). Lee docs/ambiente-v0.1.md, configs/levels/*.yaml y robot_expedition/envs/beacon_expedition.py. Rama feature/ficha-v1 desde main.
+Proyecto Robot Expedition (MLOps). Lee docs/ambiente-v0.1.md, configs/levels/*.yaml y robot_expedition/envs/beacon_expedition.py. Trabaja en la rama nicol. Antes de empezar: git fetch origin, git switch nicol y git merge origin/main (si hay conflictos, explícamelos antes de resolverlos). Al terminar: python -m pytest -q, commit, git push origin nicol y abre un PR de nicol hacia main con gh pr create pidiendo revisión a otro integrante.
 Objetivo: docs/ambiente-v1.md, que cumpla la sección 02 del enunciado. Debe definir:
 - unidades y rangos;
 - acciones válidas, el paso físico (dt de MuJoCo = 0.02 s) y la frecuencia de decisión (2 Hz);
@@ -302,7 +319,7 @@ Agrega una sección por nivel (N1, N2, N3) con la decisión nueva que toma el ag
 **Hito 3 · Necesita los pasos 2 y 3**
 
 ```text
-Proyecto Robot Expedition (MLOps). Lee la sección 14 del enunciado (resumida en docs/plan-proyecto-final.md), docs/contratos.md, pipelines/train.py y pipelines/evaluate.py. Rama feature/pipeline desde main.
+Proyecto Robot Expedition (MLOps). Lee la sección 14 del enunciado (resumida en docs/plan-proyecto-final.md), docs/contratos.md, pipelines/train.py y pipelines/evaluate.py. Trabaja en la rama suleily. Antes de empezar: git fetch origin, git switch suleily y git merge origin/main (si hay conflictos, explícamelos antes de resolverlos). Al terminar: python -m pytest -q, commit, git push origin suleily y abre un PR de suleily hacia main con gh pr create pidiendo revisión a otro integrante.
 Objetivo: pipelines/flow.py con Prefect. Cada etapa es una task que deja estado y evidencia:
 1) validar perfil, rutas, esquema y compatibilidad del ambiente;
 2) correr pytest;
@@ -320,7 +337,7 @@ Documenta en el README cómo arrancar Prefect (versión, comando, interfaz) y gu
 **Hito 2 y 3 · Necesita los pasos 4 y 5**
 
 ```text
-Proyecto Robot Expedition (MLOps). Lee docs/plan-proyecto-final.md, docs/contratos.md y web/. Rama feature/web-catalogo desde main.
+Proyecto Robot Expedition (MLOps). Lee docs/plan-proyecto-final.md, docs/contratos.md y web/. Trabaja en la rama natalia. Antes de empezar: git fetch origin, git switch natalia y git merge origin/main (si hay conflictos, explícamelos antes de resolverlos). Al terminar: python -m pytest -q, commit, git push origin natalia y abre un PR de natalia hacia main con gh pr create pidiendo revisión a otro integrante.
 Objetivo: la vista que usará el docente (sección 12 del enunciado, "Qué verá el docente en la web").
 1) Catálogo de runs filtrable por nivel, con estos datos por run: hipótesis, cambio frente al baseline, run_id, semilla, pasos y tiempo de entrenamiento, métricas, estado (incluidos failed, interrupted y rejected), versión del modelo, commit (enlace a GitHub) y enlace a MLflow.
 2) Botones "Cargar y evaluar", que llama a /evaluate y reproduce el episodio en 3D, y "Comparar", con dos o más runs compatibles lado a lado: éxito, fallos por causa, pasos, batería, latencia y curvas.
@@ -334,7 +351,7 @@ Prueba desde la URL publicada, en otra ventana o equipo. Commit, push y PR hacia
 **Hito 3 · Necesita los pasos 6 y 8**
 
 ```text
-Proyecto Robot Expedition (MLOps). Lee docs/experimentos.md, configs/levels/n3.yaml y pipelines/flow.py. Rama feature/incidente desde main.
+Proyecto Robot Expedition (MLOps). Lee docs/experimentos.md, configs/levels/n3.yaml y pipelines/flow.py. Trabaja en la rama nicol. Antes de empezar: git fetch origin, git switch nicol y git merge origin/main (si hay conflictos, explícamelos antes de resolverlos). Al terminar: python -m pytest -q, commit, git push origin nicol y abre un PR de nicol hacia main con gh pr create pidiendo revisión a otro integrante.
 Objetivo: la evidencia del incidente (secciones 14 y 17 del enunciado).
 1) Mide el modelo recomendado ANTES y DESPUÉS de la perturbación de N3 (bloqueo del corredor y sensor degradado) con la misma suite. En una versión anterior ya se vio que el éxito bajaba de 100 % a 34 % con el bloqueo.
 2) Registra la degradación en MLflow y en docs/incidente.md: éxito, causas de fallo, choques por episodio y ejemplos de episodios (run_id y semilla) para verlos en la web.
@@ -347,7 +364,7 @@ Commit, push y PR hacia main.
 **Hito 4 · Necesita los pasos 8 y 9**
 
 ```text
-Proyecto Robot Expedition (MLOps). Lee docs/plan-proyecto-final.md, pipelines/flow.py y catalog/catalog.json. Rama feature/rollback desde main.
+Proyecto Robot Expedition (MLOps). Lee docs/plan-proyecto-final.md, pipelines/flow.py y catalog/catalog.json. Trabaja en la rama suleily. Antes de empezar: git fetch origin, git switch suleily y git merge origin/main (si hay conflictos, explícamelos antes de resolverlos). Al terminar: python -m pytest -q, commit, git push origin suleily y abre un PR de suleily hacia main con gh pr create pidiendo revisión a otro integrante.
 Objetivo: demostrar recuperación y cerrar la entrega.
 1) Comando o flow de rollback: restaurar como servido un run_id anterior identificado, actualizar el catálogo y comprobar con /version y /evaluate que la API sirve ese modelo y que funciona. Deja registro de quién, cuándo, de qué versión a cuál y por qué.
 2) Haz una prueba real de rollback y guarda la evidencia (logs y capturas) en docs/evidencia/rollback.md.
@@ -360,7 +377,7 @@ Objetivo: demostrar recuperación y cerrar la entrega.
 **Hito 4 · Entre todos**
 
 ```text
-Proyecto Robot Expedition (MLOps). Lee todo docs/, README.md y la sección 17 y 18 del enunciado (resumida en docs/plan-proyecto-final.md). Rama feature/informe desde main.
+Proyecto Robot Expedition (MLOps). Lee todo docs/, README.md y la sección 17 y 18 del enunciado (resumida en docs/plan-proyecto-final.md). Trabaja en tu propia rama (suleily, tomas, natalia o nicol). Antes de empezar: git fetch origin, git switch <tu-rama> y git merge origin/main. Al terminar: commit, push y PR de tu rama hacia main.
 1) README final: instalación (Python 3.12, torch CPU, npm ci), ejecución, variables (.env.example), arquitectura (diagrama: web en Vercel → API HTTPS → ambiente MuJoCo + modelos; MLflow/DVC; Prefect), reproducción y rollback.
 2) docs/informe.md (breve): decisiones, resultados por nivel, finalistas con 3 semillas, incidente, límites, costo (tiempo de CPU), siguiente hipótesis razonable y contribuciones de cada integrante.
 3) docs/guion-defensa.md siguiendo el guion sugerido del enunciado: problema y misión; baseline y evolución de dificultad; hipótesis que mejoraron o empeoraron; demo de un modelo histórico y del recomendado desde Vercel; incidente y rollback; costo y límites. Agrega una lista de preguntas probables con su respuesta (contrato del ambiente, versionamiento, cómo desplegar y reproducir). TODOS deben poder explicarlas.
