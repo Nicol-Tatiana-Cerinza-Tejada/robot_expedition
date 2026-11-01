@@ -1,0 +1,33 @@
+{
+  "action_spec": "Discrete(5)",
+  "algorithm": "ppo",
+  "budget_timesteps": 8,
+  "checkpoint_uri": "runs:/3de4106117f04991a79fb25e8068a7f2/checkpoint",
+  "config_sha256": "77c801372aa469e8420e5eaa1f46dbf9989662bb328e86555dc1221beaf39271",
+  "diagnosis": null,
+  "effective_budget_timesteps": 8,
+  "environment_version": "robot-expedition-3d/1.0.0",
+  "evaluation_suite_id": "suite-n2-v1",
+  "experiment_id": "exp-002",
+  "git_commit": "132363b6af8a1ac616b49659551b0e7039351441",
+  "level_id": "n2",
+  "metrics": {
+    "evaluation_reward": 0.16058366931974888,
+    "success_rate": 0.0
+  },
+  "model_sha256": "b4227c224fc642f21e8af2e094e441067ab1d1a5214d06f8ffeb38f1bc7c96d7",
+  "model_uri": "dvc://dagshub/models/3de4106117f04991a79fb25e8068a7f2",
+  "normalization_uri": "runs:/3de4106117f04991a79fb25e8068a7f2/vecnormalize.pkl",
+  "obs_spec": "20 floats, ver docs/ambiente-v0.1.md",
+  "origin": {
+    "config_path": "configs/experiments/exp-002.yaml",
+    "repository": "https://github.com/SuleilyMoreno/robot_expedition.git",
+    "type": "experiment_config"
+  },
+  "parent_run_id": "40a72b2c2820403db6914791dc1cab43",
+  "run_id": "3de4106117f04991a79fb25e8068a7f2",
+  "runtime_ref": "requirements.txt + python 3.14.4",
+  "seed": 2,
+  "source_config_sha256": "f470f775cb764b795c6d0925228380123d9815d5c438bce192cf6787f0dc4d1f",
+  "status": "completed"
+}

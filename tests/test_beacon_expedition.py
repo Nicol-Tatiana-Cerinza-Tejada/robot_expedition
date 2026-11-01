@@ -9,7 +9,7 @@ import pytest
 from robot_expedition import BeaconExpeditionEnv
 from robot_expedition.__main__ import main
 from robot_expedition.envs.beacon_expedition import BEACONS, BLOCK, CRACK
-from robot_expedition.qlearning import STATE_SHAPE, discretize
+from robot_expedition.qlearning import STATE_SHAPE, QLearningAgent, discretize
 
 FORWARD, TURN_LEFT = 0, 3
 
@@ -30,6 +30,26 @@ def test_reset_observation(env):
     assert obs.shape == (20,) and env.observation_space.contains(obs)
     assert info["stage"] == 1 and info["battery"] == 100.0
     assert all(0 <= s < n for s, n in zip(discretize(obs), STATE_SHAPE))
+
+
+def test_qlearning_checkpoint_preserves_step_count_and_rng(tmp_path):
+    state = (0, 0, 0, 0, 0, 0)
+    agent = QLearningAgent(5, seed=13)
+    agent.update(state, 0, 1.0, state, False)
+    checkpoint = tmp_path / "checkpoint.npz"
+    agent.save(checkpoint)
+    expected_action = agent.choose(state, explore=True)
+
+    resumed = QLearningAgent(5, seed=99).load(checkpoint)
+    assert resumed.steps == 1
+    assert resumed.choose(state, explore=True) == expected_action
+
+
+def test_qlearning_deterministic_action_uses_first_tied_maximum():
+    agent = QLearningAgent(5, seed=13)
+    state = (0, 0, 0, 0, 0, 0)
+
+    assert agent.choose(state, explore=False, deterministic=True) == 0
 
 
 def test_same_seed_same_episode():

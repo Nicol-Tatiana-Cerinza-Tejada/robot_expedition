@@ -8,7 +8,11 @@ build/
 *.egg-info/
 
 # Artefactos generados por entrenamientos
-models/
+models/*
+!models/*.dvc
 logs/
 outputs/
-
+.env
+.dvc/tmp/
+mlruns/
+mlflow.db

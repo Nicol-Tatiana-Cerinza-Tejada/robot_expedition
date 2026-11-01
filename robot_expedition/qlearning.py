@@ -7,11 +7,11 @@ derecha, al frente y a la izquierda segun los 9 rayos.
 
 from __future__ import annotations
 
+import json
 import math
 from pathlib import Path
 
 import numpy as np
-
 
 DIST_BINS = [1.0, 2.5, 5.0]          # m
 ANGLE_SECTORS = 8                     # sectores de 45 grados
@@ -43,11 +43,14 @@ class QLearningAgent:
         self.rng = np.random.default_rng(seed)
         self.q = np.zeros((*STATE_SHAPE, n_actions), dtype=np.float32)
         self.visits = np.zeros(STATE_SHAPE, dtype=np.int32)
+        self.steps = 0
 
-    def choose(self, state, explore=True):
+    def choose(self, state, explore=True, deterministic=False):
         if explore and self.rng.random() < self.epsilon:
             return int(self.rng.integers(self.q.shape[-1]))
         values = self.q[state]
+        if deterministic:
+            return int(values.argmax())
         # Desempate al azar para no sesgar hacia la accion 0.
         return int(self.rng.choice(np.flatnonzero(values == values.max())))
 
@@ -55,6 +58,7 @@ class QLearningAgent:
         target = reward if terminated else reward + self.gamma * self.q[next_state].max()
         self.q[state][action] += self.alpha * (target - self.q[state][action])
         self.visits[state] += 1
+        self.steps += 1
 
     @property
     def known_states(self):
@@ -62,9 +66,25 @@ class QLearningAgent:
 
     def save(self, path):
         path = Path(path); path.parent.mkdir(parents=True, exist_ok=True)
-        np.savez_compressed(path, q=self.q, visits=self.visits, epsilon=self.epsilon)
+        np.savez_compressed(
+            path,
+            q=self.q,
+            visits=self.visits,
+            alpha=self.alpha,
+            gamma=self.gamma,
+            epsilon=self.epsilon,
+            steps=self.steps,
+            rng_state=json.dumps(self.rng.bit_generator.state),
+        )
 
     def load(self, path):
-        data = np.load(path)
+        data = np.load(path, allow_pickle=False)
         self.q, self.visits, self.epsilon = data["q"], data["visits"], float(data["epsilon"])
+        if "alpha" in data:
+            self.alpha = float(data["alpha"])
+        if "gamma" in data:
+            self.gamma = float(data["gamma"])
+        self.steps = int(data["steps"]) if "steps" in data else 0
+        if "rng_state" in data:
+            self.rng.bit_generator.state = json.loads(str(data["rng_state"]))
         return self

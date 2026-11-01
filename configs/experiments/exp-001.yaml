@@ -1,0 +1,16 @@
+experiment_id: exp-001
+hypothesis: "Q-learning establece el baseline de éxito en el nivel N2"
+level_id: n2
+algorithm: qlearning
+budget_timesteps: 200000
+seeds: [1, 2, 3]
+hyperparams:
+  alpha: 0.2
+  gamma: 0.98
+  epsilon_min: 0.05
+normalize_obs: false
+parent_run_id: null
+environment:
+  max_steps: 400
+  ray_noise: 0.02
+  rock_jitter: 0.0
