@@ -80,8 +80,19 @@ del YAML fuente.
 
 Los pesos se versionan con DVC en el remoto predeterminado de **DagsHub**,
 configurado en `.dvc/config`. Los punteros `models/<run_id>.dvc` y los
-manifiestos JSON se guardan en Git; los binarios no. Tras generar runs,
-sincroniza los objetos con `dvc push`. La autenticación de MLflow/DVC debe
+manifiestos JSON se guardan en Git; los binarios no. Como los punteros DVC
+están dentro de `models/`, sincronízalos explícitamente después de generar
+runs:
+
+```bash
+set -e
+for pointer in models/*.dvc; do
+  dvc push "$pointer"
+done
+```
+
+Comprueba el estado remoto con `dvc status -c -r dagshub models/*.dvc`; no
+deben quedar objetos como `new`. La autenticación de MLflow/DVC debe
 configurarse localmente y nunca guardarse en el repositorio.
 
 Para validar ambos algoritmos rápidamente (incluye overrides temporales de
