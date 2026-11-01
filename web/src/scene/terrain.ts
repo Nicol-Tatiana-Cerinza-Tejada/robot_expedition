@@ -1,0 +1,257 @@
+import * as THREE from 'three'
+import type { EpisodeRock, ExpeditionMap } from '../types'
+
+interface BeaconVisual {
+  head: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>
+  ring: THREE.Mesh<THREE.RingGeometry, THREE.MeshBasicMaterial>
+}
+
+const material = (color: THREE.ColorRepresentation, extra: THREE.MeshStandardMaterialParameters = {}) =>
+  new THREE.MeshStandardMaterial({ color, roughness: 0.92, ...extra })
+
+const box = (
+  width: number,
+  height: number,
+  depth: number,
+  meshMaterial: THREE.MeshStandardMaterial,
+) => {
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, height, depth), meshMaterial)
+  mesh.castShadow = true
+  mesh.receiveShadow = true
+  return mesh
+}
+
+const createGroundTexture = () => {
+  const canvas = document.createElement('canvas')
+  canvas.width = 1024
+  canvas.height = 1024
+  const context = canvas.getContext('2d')
+  if (!context) throw new Error('Canvas 2D no disponible.')
+
+  context.fillStyle = '#bd6d3f'
+  context.fillRect(0, 0, 1024, 1024)
+  let seed = 3_188_291
+  const random = () => {
+    seed = (seed * 48_271) % 2_147_483_647
+    return seed / 2_147_483_647
+  }
+
+  for (let index = 0; index < 2600; index += 1) {
+    const red = 86 + random() * 64
+    const green = 35 + random() * 32
+    context.fillStyle = `rgba(${red}, ${green}, 18, ${0.04 + random() * 0.14})`
+    context.fillRect(random() * 1024, random() * 1024, 2 + random() * 5, 2 + random() * 5)
+  }
+
+  context.strokeStyle = 'rgba(25, 11, 6, 0.18)'
+  context.lineWidth = 2
+  for (let index = 0; index <= 12; index += 1) {
+    const coordinate = (index * 1024) / 12
+    context.beginPath()
+    context.moveTo(coordinate, 0)
+    context.lineTo(coordinate, 1024)
+    context.moveTo(0, coordinate)
+    context.lineTo(1024, coordinate)
+    context.stroke()
+  }
+
+  const texture = new THREE.CanvasTexture(canvas)
+  texture.colorSpace = THREE.SRGBColorSpace
+  texture.anisotropy = 4
+  return texture
+}
+
+const createLabel = (text: string, color = '#ffffff', size = 0.6) => {
+  const canvas = document.createElement('canvas')
+  canvas.width = 256
+  canvas.height = 128
+  const context = canvas.getContext('2d')
+  if (!context) throw new Error('Canvas 2D no disponible.')
+  context.font = '600 58px Manrope, sans-serif'
+  context.textAlign = 'center'
+  context.textBaseline = 'middle'
+  context.lineWidth = 10
+  context.strokeStyle = 'rgba(0, 0, 0, 0.66)'
+  context.strokeText(text, 128, 64)
+  context.fillStyle = color
+  context.fillText(text, 128, 64)
+  const sprite = new THREE.Sprite(
+    new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(canvas), depthWrite: false }),
+  )
+  sprite.scale.set(size * 2, size, 1)
+  return sprite
+}
+
+export class TerrainWorld {
+  readonly group = new THREE.Group()
+  readonly rocks = new THREE.Group()
+  width = 12
+  height = 12
+  private map?: ExpeditionMap
+  private beacons: BeaconVisual[] = []
+  private block?: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>
+
+  constructor(scene: THREE.Scene) {
+    scene.add(this.group, this.rocks)
+  }
+
+  build(map: ExpeditionMap) {
+    this.map = map
+    this.width = map.size[0]
+    this.height = map.size[1]
+    this.group.clear()
+    this.rocks.clear()
+    this.beacons = []
+
+    const outside = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), material(0x512718))
+    outside.rotation.x = -Math.PI / 2
+    outside.position.y = -0.035
+    outside.receiveShadow = true
+    this.group.add(outside, this.buildTerrain(map))
+
+    const wallMaterial = material(0x5f5550, { metalness: 0.08 })
+    const thickness = 0.15
+    const wallHeight = 0.58
+    const walls: Array<[number, number, number, number]> = [
+      [this.width / 2, this.height / 2 + thickness / 2, this.width + 2 * thickness, thickness],
+      [this.width / 2, -this.height / 2 - thickness / 2, this.width + 2 * thickness, thickness],
+      [-thickness / 2, 0, thickness, this.height],
+      [this.width + thickness / 2, 0, thickness, this.height],
+    ]
+    for (const [x, y, width, depth] of walls) {
+      const wall = box(width, wallHeight, depth, wallMaterial)
+      wall.position.copy(this.position(x, y, 0.2))
+      this.group.add(wall)
+    }
+
+    const [baseX, baseY, halfX, halfY] = map.base
+    const landingPad = box(
+      halfX * 2,
+      0.045,
+      halfY * 2,
+      material(0x286f3c, { emissive: 0x092914, emissiveIntensity: 0.6 }),
+    )
+    landingPad.position.copy(this.position(baseX, baseY, 0.022))
+    this.group.add(landingPad)
+    const baseLabel = createLabel('BASE', '#cbffda', 0.48)
+    baseLabel.position.copy(this.position(baseX, baseY - halfY - 0.35, 0.3))
+    this.group.add(baseLabel)
+
+    this.beacons = map.beacons.map(([x, y], index) => {
+      const beacon = new THREE.Group()
+      beacon.position.copy(this.position(x, y))
+      const post = box(0.1, 0.82, 0.1, material(0x232a2d))
+      post.position.y = 0.41
+      beacon.add(post)
+      const head = box(
+        0.32,
+        0.32,
+        0.32,
+        material(0x61d5d2, { emissive: 0x0d4547, emissiveIntensity: 1.2 }),
+      )
+      head.position.y = 1
+      beacon.add(head)
+      const ring = new THREE.Mesh(
+        new THREE.RingGeometry(Math.max(0.05, map.visit_radius - 0.05), map.visit_radius, 48),
+        new THREE.MeshBasicMaterial({ color: 0x61d5d2, transparent: true, opacity: 0.58, side: THREE.DoubleSide }),
+      )
+      ring.rotation.x = -Math.PI / 2
+      ring.position.y = 0.018
+      beacon.add(ring)
+      const label = createLabel(`B${index + 1}`, '#ffffff', 0.5)
+      label.position.y = 1.48
+      beacon.add(label)
+      this.group.add(beacon)
+      return { head, ring }
+    })
+
+    const [, blockX, blockY, blockHalfX, blockHalfY, blockHeight] = map.block
+    this.block = box(
+      blockHalfX * 2,
+      blockHeight,
+      blockHalfY * 2,
+      material(0xff5546, { transparent: true, opacity: 0.86, emissive: 0x5d110b }),
+    )
+    this.block.position.copy(this.position(blockX, blockY, blockHeight / 2))
+    this.block.visible = false
+    this.group.add(this.block)
+    this.setRocks()
+  }
+
+  setRocks(episodeRocks?: EpisodeRock[]) {
+    if (!this.map) return
+    this.rocks.clear()
+    const rockMaterial = material(0x6f6966, { roughness: 1 })
+    const rocks = episodeRocks ?? this.map.rocks.map(([, x, y, halfX, halfY, height]) => [x, y, halfX, halfY, height])
+    for (const [x, y, halfX, halfY, height] of rocks) {
+      const rock = box(halfX * 2, height + 0.08, halfY * 2, rockMaterial)
+      rock.position.copy(this.position(x, y, height / 2 - 0.04))
+      rock.rotation.y = (x * 0.31 + y * 0.17) % 0.3
+      this.rocks.add(rock)
+    }
+  }
+
+  updateMission(stage: number, blockActive: boolean) {
+    this.beacons.forEach(({ head, ring }, index) => {
+      const completed = stage > index + 1
+      const target = stage === index + 1
+      head.material.color.set(completed ? 0x7fd692 : 0x61d5d2)
+      head.material.emissive.set(completed ? 0x1b5a30 : target ? 0x1f7777 : 0x0d4547)
+      ring.material.color.set(completed ? 0x7fd692 : 0x61d5d2)
+      ring.material.opacity = target ? 0.9 : 0.45
+    })
+    if (this.block) this.block.visible = blockActive && stage >= 2
+  }
+
+  position(x: number, y: number, elevation = 0) {
+    return new THREE.Vector3(x - this.width / 2, elevation, -y)
+  }
+
+  setShadows(enabled: boolean) {
+    for (const root of [this.group, this.rocks]) {
+      root.traverse((object) => {
+        if (object instanceof THREE.Mesh) {
+          object.castShadow = enabled
+          object.receiveShadow = true
+        }
+      })
+    }
+  }
+
+  private buildTerrain(map: ExpeditionMap) {
+    const { n, heights } = map.terrain
+    const geometry = new THREE.PlaneGeometry(this.width, this.height, n - 1, n - 1)
+    const positions = geometry.attributes.position
+    const colors = new Float32Array(positions.count * 3)
+    const [sandX, sandY, halfX, halfY] = map.sand
+
+    for (let row = 0; row < n; row += 1) {
+      for (let column = 0; column < n; column += 1) {
+        const vertex = row * n + column
+        const elevation = heights[(n - 1 - row) * n + column] ?? 0
+        positions.setZ(vertex, elevation)
+        const x = (column / (n - 1)) * this.width
+        const y = this.height / 2 - (row / (n - 1)) * this.height
+        let color: [number, number, number]
+        if (elevation < -0.05) color = [0.22, 0.11, 0.07]
+        else if (Math.abs(x - sandX) <= halfX && Math.abs(y - sandY) <= halfY) color = [1, 0.83, 0.57]
+        else {
+          const light = 0.86 + Math.min(elevation, 0.3) * 0.9
+          color = [1 * light, 0.82 * light, 0.67 * light]
+        }
+        colors.set(color, vertex * 3)
+      }
+    }
+
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+    geometry.computeVertexNormals()
+    const mesh = new THREE.Mesh(
+      geometry,
+      new THREE.MeshStandardMaterial({ map: createGroundTexture(), vertexColors: true, roughness: 1 }),
+    )
+    mesh.rotation.x = -Math.PI / 2
+    mesh.receiveShadow = true
+    mesh.castShadow = true
+    return mesh
+  }
+}
