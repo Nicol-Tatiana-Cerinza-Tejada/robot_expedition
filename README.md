@@ -78,11 +78,21 @@ configuración con el run que contiene el checkpoint. `config_sha256` verifica
 el `config.json` resuelto del run y `source_config_sha256` conserva el hash
 del YAML fuente.
 
-Los pesos se versionan con DVC en el remoto predeterminado de **DagsHub**,
-configurado en `.dvc/config`. Los punteros `models/<run_id>.dvc` y los
-manifiestos JSON se guardan en Git; los binarios no. Como los punteros DVC
-están dentro de `models/`, sincronízalos explícitamente después de generar
-runs:
+Los pesos se versionan con DVC en el remoto privado de **DagsHub**
+`tomas-gonzalez2006/robot_expedition`, configurado en `.dvc/config`. Invita a
+los colaboradores desde DagsHub para que puedan descargar los modelos. Los
+punteros `models/<run_id>.dvc` y los manifiestos JSON se guardan en Git; los
+binarios no. Configura la autenticación localmente (sin guardar el token en
+Git):
+
+```bash
+dvc remote modify --local dagshub auth basic
+dvc remote modify --local dagshub user "$DAGSHUB_USER"
+dvc remote modify --local dagshub password "$DAGSHUB_TOKEN"
+```
+
+Como los punteros DVC están dentro de `models/`, sincronízalos explícitamente
+después de generar runs:
 
 ```bash
 set -e
@@ -92,8 +102,8 @@ done
 ```
 
 Comprueba el estado remoto con `dvc status -c -r dagshub models/*.dvc`; no
-deben quedar objetos como `new`. La autenticación de MLflow/DVC debe
-configurarse localmente y nunca guardarse en el repositorio.
+deben quedar objetos como `new`. Configura también la autenticación de MLflow
+localmente si vas a compartir runs.
 
 Para validar ambos algoritmos rápidamente (incluye overrides temporales de
 presupuesto y límite de episodio):
