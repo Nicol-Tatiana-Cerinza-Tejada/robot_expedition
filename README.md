@@ -28,7 +28,9 @@ La aplicación del docente está en `web/`. Presenta el terreno, el rover, los
 nueve rayos, el rastro y las métricas del episodio. Consume el catálogo y las
 evaluaciones de la API; si la API no responde muestra un error visible y no
 reemplaza los resultados con datos de ejemplo. Los archivos locales se cargan
-manualmente y quedan identificados como `REPLAY`.
+manualmente y quedan identificados como `REPLAY`. El botón **Ver demo REPLAY**
+carga y reproduce la evidencia real de `docs/demo/expedition_replays.json`; no
+la presenta como una evaluación en vivo.
 
 Versiones verificadas para este frontend:
 

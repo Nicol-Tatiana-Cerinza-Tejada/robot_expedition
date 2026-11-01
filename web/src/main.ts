@@ -29,6 +29,7 @@ const levelSelect = required<HTMLSelectElement>('#levelSelect')
 const seedsInput = required<HTMLInputElement>('#seedsInput')
 const evaluateButton = required<HTMLButtonElement>('#evaluateButton')
 const manualButton = required<HTMLButtonElement>('#manualButton')
+const demoReplayButton = required<HTMLButtonElement>('#demoReplayButton')
 const keypadButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-action]'))
 
 const scene = new ExpeditionScene(required<HTMLElement>('#scene'), {
@@ -116,6 +117,20 @@ const loadEpisode = (
   timeline.value = '0'
   timeline.disabled = false
   playButton.disabled = false
+}
+
+const loadReplay = (value: unknown, label: string) => {
+  const bundle = normalizeReplayBundle(value)
+  loadEpisode(bundle.episodes[0], bundle.map, 'replay', `REPLAY · ${label}`)
+  scene.setPlaying(true)
+  if (apiOnline) {
+    hud.hideNotice()
+  } else {
+    hud.showNotice(
+      'REPLAY activo · API no configurada',
+      'El rover se mueve con evidencia guardada. El control manual seguirá deshabilitado hasta conectar la API HTTPS.',
+    )
+  }
 }
 
 const selectedRun = (): RunOption | undefined => catalog.runs.find((run) => run.runId === runSelect.value)
@@ -325,14 +340,25 @@ window.addEventListener('keydown', (event) => {
   void sendManualAction(action)
 })
 
+demoReplayButton.addEventListener('click', async () => {
+  setBusy(demoReplayButton, true, 'Ver demo REPLAY', 'Cargando…')
+  try {
+    const response = await fetch('/demo/expedition_replays.json', { cache: 'force-cache' })
+    if (!response.ok) throw new Error(`No fue posible cargar el replay incluido (${response.status}).`)
+    loadReplay(await response.json() as unknown, 'demo incluido')
+  } catch (error) {
+    hud.showNotice('No fue posible cargar la demo', errorMessage(error))
+  } finally {
+    setBusy(demoReplayButton, false, 'Ver demo REPLAY', 'Cargando…')
+  }
+})
+
 required<HTMLInputElement>('#replayInput').addEventListener('change', async (event) => {
   const input = event.currentTarget as HTMLInputElement
   const file = input.files?.[0]
   if (!file) return
   try {
-    const bundle = normalizeReplayBundle(JSON.parse(await file.text()) as unknown)
-    loadEpisode(bundle.episodes[0], bundle.map, 'replay', `REPLAY · ${file.name}`)
-    if (apiOnline) hud.hideNotice()
+    loadReplay(JSON.parse(await file.text()) as unknown, file.name)
   } catch (error) {
     hud.showNotice('Replay incompatible', errorMessage(error))
   } finally {

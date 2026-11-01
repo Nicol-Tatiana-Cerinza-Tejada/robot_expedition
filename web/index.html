@@ -165,11 +165,16 @@
             <div class="section-heading">
               <div><span class="eyebrow">Archivo local</span><h2>Inspeccionar un replay</h2></div>
             </div>
-            <p class="section-copy">El archivo no sustituye la API ni se presenta como evaluación en vivo.</p>
-            <label class="file-button">
-              <input id="replayInput" type="file" accept="application/json,.json" />
-              <span>Cargar replay JSON</span>
-            </label>
+            <p class="section-copy">El replay no sustituye la API ni se presenta como evaluación en vivo.</p>
+            <div class="replay-actions">
+              <button id="demoReplayButton" class="secondary-button" type="button">
+                <span>Ver demo REPLAY</span>
+              </button>
+              <label class="file-button">
+                <input id="replayInput" type="file" accept="application/json,.json" />
+                <span>Cargar replay JSON</span>
+              </label>
+            </div>
           </section>
         </aside>
       </main>
