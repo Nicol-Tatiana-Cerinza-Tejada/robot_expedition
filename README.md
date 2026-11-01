@@ -22,6 +22,47 @@ source .venv/bin/activate
 pip install gymnasium mujoco numpy matplotlib pytest
 ```
 
+## Web Vite + Three.js
+
+La aplicación del docente está en `web/`. Presenta el terreno, el rover, los
+nueve rayos, el rastro y las métricas del episodio. Consume el catálogo y las
+evaluaciones de la API; si la API no responde muestra un error visible y no
+reemplaza los resultados con datos de ejemplo. Los archivos locales se cargan
+manualmente y quedan identificados como `REPLAY`.
+
+Versiones verificadas para este frontend:
+
+- Node.js **26.13.0 LTS** (`web/.nvmrc`; Vercel usa la línea `26.x`).
+- npm **11.20.0**.
+- Vite **8.3.5**.
+- Three.js y `@types/three` **0.187.0**.
+
+```bash
+cd web
+cp .env.example .env.local
+# Reemplazar VITE_API_BASE_URL por la API HTTPS real
+npm ci
+npm run dev
+npm run build
+```
+
+El control manual usa las flechas y los endpoints `POST /sim/reset` y
+`POST /sim/step`. El modo ligero desactiva sombras y reduce la densidad de
+píxeles para equipos con menos capacidad gráfica.
+
+Despliegue en Vercel:
+
+- Root Directory: `web`
+- Build Command: `npm run build`
+- Output Directory: `dist`
+- Variable: `VITE_API_BASE_URL` con la URL HTTPS del backend
+
+URL de la web: <https://web-five-gules-83.vercel.app>
+
+La URL ya publica el frontend. La variable `VITE_API_BASE_URL` se añadirá en
+Vercel cuando el equipo entregue la URL HTTPS de la API; hasta entonces la web
+muestra explícitamente que la API no está configurada.
+
 ## CLI: entrenar, evaluar y ver el proceso
 
 Todos los comandos se ejecutan desde la raíz del repositorio:

@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Panel de evaluación y reproducción 3D de Robot Expedition."
+    />
+    <title>Robot Expedition · Mission Control</title>
+  </head>
+  <body>
+    <div id="app">
+      <header class="topbar">
+        <a class="brand" href="#mission" aria-label="Robot Expedition, inicio">
+          <span class="brand-mark" aria-hidden="true">RE</span>
+          <span>
+            <strong>Robot Expedition</strong>
+            <small>Mission control / Mars surface</small>
+          </span>
+        </a>
+        <div class="topbar-status">
+          <span class="eyebrow">Estado de enlace</span>
+          <span id="apiStatus" class="connection connection-offline">
+            <i aria-hidden="true"></i>
+            Sin conexión
+          </span>
+        </div>
+      </header>
+
+      <main id="mission" class="workspace">
+        <section class="viewport-panel" aria-label="Simulación tridimensional">
+          <div id="scene" class="scene"></div>
+
+          <div class="scene-heading">
+            <span id="modeBadge" class="mode-badge">SIN DATOS</span>
+            <div>
+              <span class="eyebrow">Objetivo activo</span>
+              <h1 id="objectiveValue">Esperando telemetría</h1>
+            </div>
+          </div>
+
+          <section class="telemetry" aria-label="Telemetría del episodio">
+            <div class="telemetry-primary">
+              <div><span>Episodio</span><strong id="episodeValue">—</strong></div>
+              <div><span>Paso</span><strong id="stepValue">—</strong></div>
+              <div><span>Recompensa</span><strong id="rewardValue">—</strong></div>
+              <div><span>Batería</span><strong id="batteryValue">—</strong></div>
+            </div>
+            <div class="battery-track" aria-hidden="true"><i id="batteryBar"></i></div>
+            <div class="telemetry-secondary">
+              <span>Acción <b id="actionValue">—</b></span>
+              <span>Choques <b id="collisionsValue">—</b></span>
+              <span>Fin <b id="endValue">—</b></span>
+            </div>
+          </section>
+
+          <div id="notice" class="notice" role="alert" hidden>
+            <div class="notice-icon" aria-hidden="true">!</div>
+            <div>
+              <strong id="noticeTitle">No fue posible conectar</strong>
+              <p id="noticeText"></p>
+            </div>
+            <button id="dismissNotice" class="icon-button" type="button" aria-label="Cerrar aviso">×</button>
+          </div>
+
+          <div class="playback-dock">
+            <button id="playButton" class="round-button" type="button" aria-label="Reproducir" disabled>
+              <span id="playIcon">▶</span>
+            </button>
+            <label class="timeline-wrap">
+              <span class="sr-only">Posición del episodio</span>
+              <input id="timeline" type="range" min="0" max="0" value="0" disabled />
+            </label>
+            <span id="timeValue" class="time-value">00:00 / 00:00</span>
+            <label class="select-compact">
+              <span class="sr-only">Velocidad de reproducción</span>
+              <select id="speedSelect">
+                <option value="1">1×</option>
+                <option value="2">2×</option>
+                <option value="4" selected>4×</option>
+                <option value="8">8×</option>
+              </select>
+            </label>
+            <button id="followButton" class="dock-button" type="button" aria-pressed="false">Seguir rover</button>
+            <button id="lightModeButton" class="dock-button" type="button" aria-pressed="false">Modo ligero</button>
+          </div>
+        </section>
+
+        <aside class="control-panel">
+          <section class="identity-card">
+            <div class="section-heading">
+              <div><span class="eyebrow">Identidad activa</span><h2>Modelo y ambiente</h2></div>
+              <span id="sourceBadge" class="source-badge">SIN FUENTE</span>
+            </div>
+            <dl class="identity-grid">
+              <div><dt>run_id</dt><dd id="runValue">—</dd></div>
+              <div><dt>Modelo</dt><dd id="modelValue">—</dd></div>
+              <div><dt>Ambiente</dt><dd id="environmentValue">—</dd></div>
+              <div><dt>Nivel</dt><dd id="levelValue">—</dd></div>
+            </dl>
+          </section>
+
+          <section class="panel-section">
+            <div class="section-heading">
+              <div><span class="eyebrow">Model registry</span><h2>Ejecutar evaluación</h2></div>
+              <span id="catalogCount" class="count-chip">0 runs</span>
+            </div>
+            <label class="field">
+              <span>Modelo histórico</span>
+              <select id="runSelect" disabled><option value="">Sin catálogo disponible</option></select>
+            </label>
+            <div class="field-row">
+              <label class="field">
+                <span>Nivel</span>
+                <select id="levelSelect">
+                  <option value="n1">N1 · Base</option>
+                  <option value="n2" selected>N2 · Rutas</option>
+                  <option value="n3">N3 · Perturbación</option>
+                </select>
+              </label>
+              <label class="field"><span>Semillas</span><input id="seedsInput" value="7, 17, 42" inputmode="numeric" /></label>
+            </div>
+            <button id="evaluateButton" class="primary-button" type="button" disabled>
+              <span>Evaluar modelo</span><span aria-hidden="true">↗</span>
+            </button>
+          </section>
+
+          <section class="panel-section">
+            <div class="section-heading">
+              <div><span class="eyebrow">Evidencia</span><h2>Resultado del episodio</h2></div>
+            </div>
+            <div class="result-grid">
+              <article><span>Éxito</span><strong id="successValue">—</strong></article>
+              <article><span>Recorrido</span><strong id="pathValue">—</strong></article>
+              <article><span>Balizas</span><strong id="visitedValue">—</strong></article>
+              <article><span>Latencia</span><strong id="latencyValue">—</strong></article>
+            </div>
+            <canvas id="curve" class="curve" aria-label="Curva de recompensa y éxito"></canvas>
+            <div class="curve-legend">
+              <span><i class="legend-reward"></i> recompensa</span>
+              <span><i class="legend-success"></i> éxito</span>
+              <span><i class="legend-current"></i> episodio actual</span>
+            </div>
+          </section>
+
+          <section class="panel-section manual-section">
+            <div class="section-heading">
+              <div><span class="eyebrow">Control manual</span><h2>Conducir el rover</h2></div>
+              <button id="manualButton" class="secondary-button" type="button" disabled>Iniciar</button>
+            </div>
+            <p class="section-copy">Usa las flechas del teclado o los controles. Cada orden se envía a <code>/sim/step</code>.</p>
+            <div class="keypad" aria-label="Controles del rover">
+              <button type="button" data-action="1" aria-label="Avanzar y girar a la izquierda">↖</button>
+              <button type="button" data-action="0" aria-label="Avanzar">↑</button>
+              <button type="button" data-action="2" aria-label="Avanzar y girar a la derecha">↗</button>
+              <button type="button" data-action="3" aria-label="Girar a la izquierda">←</button>
+              <span class="keypad-core">ROVER</span>
+              <button type="button" data-action="4" aria-label="Girar a la derecha">→</button>
+            </div>
+          </section>
+
+          <section class="panel-section replay-section">
+            <div class="section-heading">
+              <div><span class="eyebrow">Archivo local</span><h2>Inspeccionar un replay</h2></div>
+            </div>
+            <p class="section-copy">El archivo no sustituye la API ni se presenta como evaluación en vivo.</p>
+            <label class="file-button">
+              <input id="replayInput" type="file" accept="application/json,.json" />
+              <span>Cargar replay JSON</span>
+            </label>
+          </section>
+        </aside>
+      </main>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
