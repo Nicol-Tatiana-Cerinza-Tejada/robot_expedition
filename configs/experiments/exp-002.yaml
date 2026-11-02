@@ -1,0 +1,17 @@
+experiment_id: exp-002
+hypothesis: "PPO con observaciones normalizadas supera el baseline Q-learning en éxito en N2"
+level_id: n2
+algorithm: ppo
+budget_timesteps: 300000
+seeds: [1, 2, 3]
+hyperparams:
+  learning_rate: 0.0003
+  n_steps: 2048
+  batch_size: 64
+  gamma: 0.99
+normalize_obs: true
+parent_run_id: null
+environment:
+  max_steps: 400
+  ray_noise: 0.02
+  rock_jitter: 0.0

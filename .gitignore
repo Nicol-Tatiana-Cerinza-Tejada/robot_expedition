@@ -16,10 +16,12 @@ node_modules/
 .vercel/
 
 # Artefactos generados por entrenamientos
-models/
+models/*
+!models/*.dvc
 logs/
 outputs/
-
+.dvc/tmp/
+mlflow.db
 
 # Semillas del test final reservado (no se publican)
 configs/suites/*.local.yaml

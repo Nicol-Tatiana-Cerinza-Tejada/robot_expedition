@@ -133,6 +133,74 @@ Lo que genera cada comando:
 - `logs/expedition_replays.json`: trayectorias grabadas para la vista 3D.
 - `logs/expedition_live.json`: el último episodio, para el modo en vivo.
 
+## Experimentos MLOps
+
+`pipelines/train.py` ejecuta un run MLflow independiente por semilla. Los
+experimentos [exp-001.yaml](configs/experiments/exp-001.yaml) y
+[exp-002.yaml](configs/experiments/exp-002.yaml) comparan Q-learning y PPO en
+N2. PPO usa `MlpPolicy`, cuatro entornos paralelos fijos y `VecNormalize` para
+las observaciones. Las métricas de entrenamiento (`training/reward` y
+`training/success_rate`) se registran aparte de las métricas de evaluación
+determinista (`evaluation/reward` y `evaluation/success_rate`).
+
+```bash
+python pipelines/train.py --config configs/experiments/exp-001.yaml
+python pipelines/train.py --config configs/experiments/exp-002.yaml
+```
+
+MLflow guarda los artefactos en `./mlruns` localmente por defecto y usa SQLite
+para el tracking y el Model Registry locales.
+Para compartir runs con DagsHub, define `MLFLOW_TRACKING_URI` en un `.env`
+local (no se versiona), por ejemplo:
+
+```dotenv
+MLFLOW_TRACKING_URI=https://dagshub.com/SuleilyMoreno/robot_expedition.mlflow
+```
+
+Cada run guarda el modelo, la normalización PPO, `config.json`,
+`evaluacion.json` y el checkpoint (incluido el optimizador y contador de pasos
+PPO) en MLflow; también genera `manifests/<run_id>.json`. Para Q-learning,
+`vecnormalize.pkl` es un sentinel serializado `None`, porque ese algoritmo no
+normaliza observaciones. Para continuar, define `parent_run_id` en la
+configuración con el run que contiene el checkpoint. `config_sha256` verifica
+el `config.json` resuelto del run y `source_config_sha256` conserva el hash
+del YAML fuente.
+
+Los pesos se versionan con DVC en el remoto privado de **DagsHub**
+`tomas-gonzalez2006/robot_expedition`, configurado en `.dvc/config`. Invita a
+los colaboradores desde DagsHub para que puedan descargar los modelos. Los
+punteros `models/<run_id>.dvc` y los manifiestos JSON se guardan en Git; los
+binarios no. Configura la autenticación localmente (sin guardar el token en
+Git):
+
+```bash
+dvc remote modify --local dagshub auth basic
+dvc remote modify --local dagshub user "$DAGSHUB_USER"
+dvc remote modify --local dagshub password "$DAGSHUB_TOKEN"
+```
+
+Como los punteros DVC están dentro de `models/`, sincronízalos explícitamente
+después de generar runs:
+
+```bash
+set -e
+for pointer in models/*.dvc; do
+  dvc push "$pointer"
+done
+```
+
+Comprueba el estado remoto con `dvc status -c -r dagshub models/*.dvc`; no
+deben quedar objetos como `new`. Configura también la autenticación de MLflow
+localmente si vas a compartir runs.
+
+Para validar ambos algoritmos rápidamente (incluye overrides temporales de
+presupuesto y límite de episodio):
+
+```bash
+python pipelines/train.py --config configs/experiments/exp-001.yaml --seed 1 --budget-timesteps 8 --eval-episodes 1 --max-episode-steps 2
+python pipelines/train.py --config configs/experiments/exp-002.yaml --seed 1 --budget-timesteps 8 --eval-episodes 1 --max-episode-steps 2 --n-steps 2 --batch-size 4
+```
+
 ### Vista 3D (Three.js)
 
 `expedicion_3d.html` reproduce las **trayectorias reales** que graba el CLI.
