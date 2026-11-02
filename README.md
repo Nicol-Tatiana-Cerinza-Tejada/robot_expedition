@@ -110,6 +110,18 @@ latencia. Los baselines están en
 (`--suite test-final`) lee sus semillas de `EXPEDITION_TEST_SEEDS` y no se
 publican.
 
+## API (FastAPI)
+
+```bash
+python -m uvicorn api.main:app --reload --port 8000
+```
+
+La API expone las rutas `/health`, `/version`, `/monitor`, `/catalog`,
+`/runs/{id}`, `/evaluate`, `/sim/reset` y `/sim/step`. Usa el mismo ambiente
+MuJoCo y las mismas políticas que el entrenamiento y verifica el SHA-256 de
+cada modelo. La ejecución, el despliegue en Hugging Face Spaces (Docker) y las
+variables están en [`docs/despliegue-api.md`](docs/despliegue-api.md).
+
 ## CLI: entrenar, evaluar y ver el proceso
 
 Todos los comandos se ejecutan desde la raíz del repositorio:

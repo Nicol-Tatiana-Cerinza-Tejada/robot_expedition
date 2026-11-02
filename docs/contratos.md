@@ -53,6 +53,11 @@ runs con métricas y estado, un `recommended_run_id` por nivel y
 | `POST /evaluate` | `{run_id, level_id, seeds}`; devuelve métricas, casos y cuadros |
 | `POST /sim/reset` | Crea una sesión de simulación |
 | `POST /sim/step` | Ejecuta una acción manual o por regla en una sesión |
+| `GET /monitor` | Solicitudes, errores y latencia por ruta (monitoreo) |
+
+Detalle de cuerpos, respuestas y errores en [`despliegue-api.md`](despliegue-api.md).
+Los baselines `baseline-random` y `baseline-rule` aparecen en el catálogo con
+`level_id: "todos"` porque sirven en cualquier nivel.
 
 ## Cuadro de episodio
 

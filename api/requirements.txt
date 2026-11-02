@@ -1,0 +1,10 @@
+# Dependencias de la imagen de la API (subconjunto fijado de requirements.txt).
+# torch se instala antes, desde el indice CPU: ver Dockerfile.
+gymnasium==1.1.1
+mujoco==3.3.6
+numpy==2.2.6
+PyYAML==6.0.3
+stable-baselines3==2.6.0
+fastapi==0.119.0
+uvicorn==0.38.0
+dvc==3.67.1

@@ -19,3 +19,4 @@ dvc==3.67.1
 SQLAlchemy==2.0.55
 cryptography==46.0.7
 asyncssh==2.23.1
+httpx==0.28.1

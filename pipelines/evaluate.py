@@ -96,11 +96,20 @@ def reference_route(beacon_count: int) -> float:
     return float(sum(math.dist(a, b) for a, b in zip(points, points[1:])))
 
 
-def run_case(env: BeaconExpeditionEnv, policy, seed: int) -> dict:
-    """Un episodio completo con la politica congelada."""
+def frame(env: BeaconExpeditionEnv, action: int, reward: float, collision: bool) -> list:
+    """Cuadro del contrato: [x, y, z, qw, qx, qy, qz, etapa, bateria, accion, recompensa, choque, rayos]."""
+    return [round(env.x, 3), round(env.y, 3), round(env.z, 3), *np.round(env.quat, 4).tolist(),
+            env.stage, round(env.battery, 2), int(action), round(float(reward), 3), int(collision),
+            [round(float(r), 2) for r in env.last_rays]]
+
+
+def run_case(env: BeaconExpeditionEnv, policy, seed: int, frames: list | None = None) -> dict:
+    """Un episodio completo con la politica congelada. Si se pasa frames, graba los cuadros."""
     if hasattr(policy, "reset"):
         policy.reset(seed)
     obs, info = env.reset(seed=seed)
+    if frames is not None:
+        frames.append(frame(env, -1, 0.0, False))
     total, latencies = 0.0, []
     while True:
         t0 = time.perf_counter()
@@ -108,6 +117,8 @@ def run_case(env: BeaconExpeditionEnv, policy, seed: int) -> dict:
         latencies.append((time.perf_counter() - t0) * 1000)
         obs, reward, terminated, truncated, info = env.step(action)
         total += reward
+        if frames is not None:
+            frames.append(frame(env, action, reward, info["collision"]))
         if terminated or truncated:
             break
     return {
