@@ -269,17 +269,20 @@ async function sendManualAction(action: number) {
     if (!frame) throw new Error('/sim/step no devolvió un cuadro compatible.')
     const frames = [...manualEpisode.frames, frame]
     const finished = Boolean(response.terminated || response.truncated)
+    const map = response.map ? normalizeMap(response.map) : currentMap
+    // La etapa 3 es siempre "volver a la base": en N1 se pasa de 1 a 3, con una sola baliza.
+    const visitedNow = Math.min(frame[FRAME_INDEX.stage] - 1, map.beacons.length)
     manualEpisode = {
       ...manualEpisode,
       frames,
       steps: frames.length - 1,
       battery: frame[FRAME_INDEX.battery],
       reward: frames.reduce((total, item) => total + item[FRAME_INDEX.reward], 0),
-      visited: Math.max(manualEpisode.visited, frame[FRAME_INDEX.stage] - 1),
+      visited: Math.max(manualEpisode.visited, visitedNow),
       success: response.end === 'exito' || manualEpisode.success,
       end: typeof response.end === 'string' ? response.end : finished ? 'finished' : 'running',
     }
-    loadEpisode(manualEpisode, response.map ? normalizeMap(response.map) : currentMap, 'api', 'API · MANUAL')
+    loadEpisode(manualEpisode, map, 'api', 'API · MANUAL')
     scene.seek(frames.length - 1)
     if (finished) {
       manualSessionId = undefined
