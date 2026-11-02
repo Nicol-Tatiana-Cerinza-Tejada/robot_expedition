@@ -330,7 +330,7 @@ class BeaconExpeditionEnv(gym.Env):
         for _ in range(50):
             rocks = [(cx + self.np_random.uniform(-1, 1) * self.rock_jitter,
                       cy + self.np_random.uniform(-1, 1) * self.rock_jitter, hx, hy, h)
-                     for _, cx, cy, hx, hy, h in ROCKS]
+                     for _, cx, cy, hx, hy, h in self._level_rocks]
             if all(not _circle_hits_rect(px, py, 1.0, r) for r in rocks for px, py in keep_clear):
                 self.rocks = rocks
                 if self._route_exists():
@@ -355,7 +355,7 @@ class BeaconExpeditionEnv(gym.Env):
         super().reset(seed=seed)
         mujoco.mj_resetData(self.model, self.data)
         self._set_block(False)
-        self._place_rocks([r[1:] for r in ROCKS])
+        self._place_rocks([r[1:] for r in self._level_rocks])
         if self.rock_jitter > 0:
             self._jitter_rocks()
         self.set_pose(*START)

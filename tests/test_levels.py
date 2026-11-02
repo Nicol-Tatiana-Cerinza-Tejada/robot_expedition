@@ -43,3 +43,12 @@ def test_n3_activates_block_and_dead_ray_degrades_sensor():
     rays = env.rays()
     assert rays[4] == 5.0
     assert env.ray_noise == 0.08
+
+
+def test_level_rocks_match_physics_after_reset_and_jitter():
+    # Antes reset() volvia a cargar las 5 rocas en la lista aunque N1 solo tiene 2 en MuJoCo.
+    for jitter in (0.0, 0.5):
+        env = BeaconExpeditionEnv(level="n1", rock_jitter=jitter)
+        env.reset(seed=3)
+        assert len(env.rocks) == len(env._rock_ids) == 2
+        assert [r[0] for r in env.map_spec()["rocks"]] == ["R1", "R2"]
