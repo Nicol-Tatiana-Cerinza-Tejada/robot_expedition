@@ -158,8 +158,11 @@ const fillCatalog = (data: CatalogData) => {
   evaluateButton.disabled = !data.runs.length
   required<HTMLElement>('#catalogCount').textContent = `${data.runs.length} run${data.runs.length === 1 ? '' : 's'}`
   const run = selectedRun()
-  if (run) levelSelect.value = run.levelId
+  if (run && hasLevel(run.levelId)) levelSelect.value = run.levelId
 }
+
+// Los baselines sirven en cualquier nivel (level_id "todos"): solo se copia un nivel que exista.
+const hasLevel = (levelId: string) => [...levelSelect.options].some((option) => option.value === levelId)
 
 const connectApi = async () => {
   try {
@@ -325,7 +328,7 @@ required<HTMLButtonElement>('#lightModeButton').addEventListener('click', (event
 
 runSelect.addEventListener('change', () => {
   const run = selectedRun()
-  if (run) levelSelect.value = run.levelId
+  if (run && hasLevel(run.levelId)) levelSelect.value = run.levelId
 })
 evaluateButton.addEventListener('click', () => { void evaluateSelectedRun() })
 manualButton.addEventListener('click', () => { void startManualMode() })
