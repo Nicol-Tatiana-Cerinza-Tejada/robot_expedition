@@ -14,3 +14,8 @@ matplotlib==3.10.7
 ruff==0.14.4
 python-dotenv==1.2.4
 dvc==3.67.1
+# Dependencias transitivas fijadas: mlflow 3.5 falla con SQLAlchemy 2.1 y exige cryptography<47;
+# asyncssh (de dvc) se fija en una version compatible con ese cryptography.
+SQLAlchemy==2.0.55
+cryptography==46.0.7
+asyncssh==2.23.1
