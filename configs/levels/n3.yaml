@@ -1,0 +1,8 @@
+level_id: n3
+description: "N2 con bloqueo del corredor y sensores degradados"
+beacons: 2
+active_rocks: 5
+dunes: true
+blocking: true
+ray_noise: 0.08
+dead_ray: 4

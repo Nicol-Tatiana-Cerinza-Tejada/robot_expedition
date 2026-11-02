@@ -1,18 +1,14 @@
-# Simulación y aprendizaje por refuerzo
-gymnasium
-# Simulacion fisica 3D (MuJoCo incluye su binario multiplataforma)
-mujoco
-# Opcional: instalar después si se requiere RL con PyTorch
-# stable-baselines3
-
-# Datos, visualización y experimentación
-numpy
-pandas
-matplotlib
-# Opcional: requiere SDL y compilador nativo en Linux
-# pygame
-jupyterlab
-
-# Calidad del proyecto
-pytest
-ruff
+gymnasium==1.1.1
+mujoco==3.3.6
+torch==2.15.0
+stable-baselines3==2.6.0
+mlflow==3.5.0
+fastapi==0.119.0
+uvicorn==0.38.0
+numpy==2.2.6
+PyYAML==6.0.3
+prefect==3.4.20
+pytest==8.4.2
+pandas==2.3.3
+matplotlib==3.10.7
+ruff==0.14.4
