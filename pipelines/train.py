@@ -31,9 +31,19 @@ from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
-ENVIRONMENT_VERSION = "robot-expedition-3d/1.0.0"
+
+from robot_expedition.envs.beacon_expedition import (  # noqa: E402
+    ENVIRONMENT_VERSION, BeaconExpeditionEnv, environment_hash, load_level_config,
+)
+from pipelines.evaluate import evaluate  # noqa: E402
+from pipelines.policies import PPOPolicy, QTablePolicy  # noqa: E402
+
 N_ENVS = 4
-EVALUATION_SUITE = "suite-n2-v1"
+
+
+def evaluation_suite(level_id: str) -> str:
+    """Suite fija del paso 2 para el nivel (configs/suites)."""
+    return f"suite-{level_id}-v1"
 
 
 def sha256_file(path: Path) -> str:
@@ -70,8 +80,9 @@ def read_config(path: Path) -> dict[str, Any]:
         raise ValueError(f"Faltan campos de configuración: {', '.join(missing)}")
     if config["algorithm"] not in ("ppo", "qlearning"):
         raise ValueError("algorithm debe ser 'ppo' o 'qlearning'")
-    if config["level_id"] != "n2":
-        raise ValueError("El ambiente BeaconExpeditionEnv implementado corresponde al nivel n2")
+    if config["level_id"] not in ("n1", "n2", "n3"):
+        raise ValueError("level_id debe ser n1, n2 o n3 (configs/levels)")
+    load_level_config(config["level_id"])
     if not isinstance(config["seeds"], list) or not config["seeds"]:
         raise ValueError("seeds debe ser una lista no vacía")
     if any(not isinstance(seed, int) or isinstance(seed, bool) for seed in config["seeds"]):
@@ -86,13 +97,18 @@ def read_config(path: Path) -> dict[str, Any]:
     config.setdefault("environment", {})
     if not isinstance(config["environment"], dict):
         raise TypeError("environment debe ser un mapa")
+    # El ruido de rayos, rocas, dunas y bloqueo salen del nivel (configs/levels/<nivel>.yaml);
+    # environment solo puede sobrescribirlos de forma explicita.
     config["environment"] = {
         "max_steps": 400,
-        "ray_noise": 0.02,
         "rock_jitter": 0.0,
         **config["environment"],
     }
     return config
+
+
+def build_env(config: dict[str, Any]) -> BeaconExpeditionEnv:
+    return BeaconExpeditionEnv(level=config["level_id"], **config["environment"])
 
 
 def _git_value(*args: str) -> str:
@@ -142,10 +158,8 @@ def _flatten_params(value: dict[str, Any], prefix: str = "") -> dict[str, str]:
     return flattened
 
 
-def _make_env(environment: dict[str, Any], seed: int | None = None) -> Monitor:
-    from robot_expedition.envs.beacon_expedition import BeaconExpeditionEnv
-
-    env = BeaconExpeditionEnv(**environment)
+def _make_env(config: dict[str, Any], seed: int | None = None) -> Monitor:
+    env = build_env(config)
     if seed is not None:
         env.reset(seed=seed)
     return Monitor(env, info_keywords=("success",))
@@ -177,11 +191,9 @@ def _train_qlearning(
     model_dir: Path,
     parent_run_id: str | None,
 ) -> tuple[Path, int]:
-    from robot_expedition.envs.beacon_expedition import BeaconExpeditionEnv
     from robot_expedition.qlearning import QLearningAgent, discretize
 
-    environment = config["environment"]
-    env = BeaconExpeditionEnv(**environment)
+    env = build_env(config)
     hyperparams = config["hyperparams"]
     agent = QLearningAgent(
         env.action_space.n,
@@ -252,10 +264,9 @@ def _train_ppo(
 ) -> tuple[Path, int, Path]:
     if not config["normalize_obs"]:
         raise ValueError("PPO requiere normalize_obs: true")
-    environment = config["environment"]
     set_random_seed(seed)
     factories = [
-        lambda env=environment: _make_env(env)
+        lambda cfg=config: _make_env(cfg)
         for _ in range(N_ENVS)
     ]
     base_env = DummyVecEnv(factories)
@@ -309,78 +320,18 @@ def _train_ppo(
     return model_path, steps_trained, vecnormalize_path
 
 
-def _evaluate_qlearning(
-    model_path: Path, config: dict[str, Any], seed: int, episodes: int
-) -> list[dict[str, Any]]:
-    from robot_expedition.envs.beacon_expedition import BeaconExpeditionEnv
-    from robot_expedition.qlearning import QLearningAgent, discretize
+def _evaluate(
+    config: dict[str, Any], model_path: Path, normalization_path: Path | None, episodes: int | None
+) -> dict[str, Any]:
+    """Evalua el modelo congelado con la suite fija del nivel (paso 2).
 
-    env = BeaconExpeditionEnv(**config["environment"])
-    agent = QLearningAgent(env.action_space.n).load(model_path)
-    results = []
-    for index in range(episodes):
-        obs, _ = env.reset(seed=seed + 1_000_000 + index)
-        state = discretize(obs)
-        total_reward = 0.0
-        while True:
-            action = agent.choose(state, explore=False, deterministic=True)
-            obs, reward, terminated, truncated, info = env.step(action)
-            state = discretize(obs)
-            total_reward += reward
-            if terminated or truncated:
-                results.append(
-                    {
-                        "seed": seed + 1_000_000 + index,
-                        "reward": float(total_reward),
-                        "success": bool(info["success"]),
-                        "steps": int(env.steps),
-                        "end": info["end"],
-                    }
-                )
-                break
-    env.close()
-    return results
-
-
-def _evaluate_ppo(
-    model_path: Path,
-    vecnormalize_path: Path,
-    config: dict[str, Any],
-    seed: int,
-    episodes: int,
-) -> list[dict[str, Any]]:
-    environment = config["environment"]
-    base_env = DummyVecEnv([lambda: _make_env(environment)])
-    base_env.seed(seed + 1_000_000)
-    vec_env = VecNormalize.load(vecnormalize_path, base_env)
-    vec_env.training = False
-    vec_env.norm_reward = False
-    model = PPO.load(model_path, env=vec_env, device="auto")
-    results = []
-    for index in range(episodes):
-        vec_env.seed(seed + 1_000_000 + index)
-        obs = vec_env.reset()
-        total_reward = 0.0
-        steps = 0
-        while True:
-            action, _ = model.predict(obs, deterministic=True)
-            obs, rewards, dones, infos = vec_env.step(action)
-            total_reward += float(rewards[0])
-            steps += 1
-            if dones[0]:
-                info = infos[0]
-                results.append(
-                    {
-                        "seed": seed + 1_000_000 + index,
-                        "reward": total_reward,
-                        "success": bool(info.get("success", False)),
-                        "steps": steps,
-                        "end": info.get("end"),
-                    }
-                )
-                break
-    vec_env.close()
-    return results
+    episodes limita la suite para pruebas cortas; el resultado queda marcado como parcial.
+    """
+    if config["algorithm"] == "qlearning":
+        policy = QTablePolicy(model_path)
+    else:
+        policy = PPOPolicy(model_path, normalization_path)
+    return evaluate(policy, config["level_id"], evaluation_suite(config["level_id"]), episodes=episodes)
 
 
 def _register_dvc_model(model_dir: Path, run_id: str) -> str:
@@ -445,10 +396,11 @@ def _manifest(
         "model_uri": model_uri,
         "model_sha256": model_hash,
         "normalization_uri": normalization_uri,
-        "obs_spec": "20 floats, ver docs/ambiente-v0.1.md",
+        "environment_hash": environment_hash(config["level_id"]),
+        "obs_spec": "20 floats, ver docs/contratos.md",
         "action_spec": "Discrete(5)",
         "runtime_ref": f"requirements.txt + python {platform.python_version()}",
-        "evaluation_suite_id": EVALUATION_SUITE,
+        "evaluation_suite_id": evaluation_suite(config["level_id"]),
         "seed": seed,
         "budget_timesteps": budget,
         "effective_budget_timesteps": effective_budget,
@@ -466,7 +418,7 @@ def train_seed(
     source_config_hash: str,
     seed: int,
     budget_override: int | None = None,
-    eval_episodes: int = 10,
+    eval_episodes: int | None = None,
     n_steps_override: int | None = None,
     batch_size_override: int | None = None,
     max_episode_steps: int | None = None,
@@ -576,36 +528,27 @@ def train_seed(
                     batch_size_override,
                 )
 
-            if config["algorithm"] == "qlearning":
-                evaluations = _evaluate_qlearning(
-                    model_path, config, seed, eval_episodes
-                )
-            else:
-                evaluations = _evaluate_ppo(
-                    model_path,
-                    normalization_path,
-                    config,
-                    seed,
-                    eval_episodes,
-                )
-            success_rate = float(np.mean([item["success"] for item in evaluations]))
-            evaluation_reward = float(np.mean([item["reward"] for item in evaluations]))
-            metrics = {
-                "success_rate": success_rate,
-                "evaluation_reward": evaluation_reward,
-            }
-            save_json(
-                model_dir / "evaluacion.json",
-                {
-                    "evaluation_suite_id": EVALUATION_SUITE,
-                    "deterministic": True,
-                    "episodes": evaluations,
-                    "success_rate": success_rate,
-                    "mean_reward": evaluation_reward,
-                },
+            evaluation = _evaluate(
+                config,
+                model_path,
+                normalization_path if config["algorithm"] == "ppo" else None,
+                eval_episodes,
             )
-            mlflow.log_metric("evaluation/success_rate", success_rate, step=effective_budget)
-            mlflow.log_metric("evaluation/reward", evaluation_reward, step=effective_budget)
+            suite_metrics = evaluation["metrics"]
+            metrics = {
+                "success_rate": suite_metrics["success_rate"],
+                "evaluation_reward": suite_metrics["return_mean"],
+                "collisions_per_episode": suite_metrics["collisions_per_episode"],
+                "steps_mean": suite_metrics["steps_mean"],
+                "failures_by_cause": suite_metrics["failures_by_cause"],
+                "evaluation_episodes": suite_metrics["episodes"],
+                "evaluation_partial": evaluation["partial"],
+            }
+            save_json(model_dir / "evaluacion.json", evaluation)
+            # Curva de evaluacion determinista, separada de training/* (con exploracion).
+            for key in ("success_rate", "return_mean", "collisions_per_episode", "steps_mean", "latency_ms_mean"):
+                if suite_metrics.get(key) is not None:
+                    mlflow.log_metric(f"evaluation/{key}", float(suite_metrics[key]), step=effective_budget)
             model_hash = sha256_file(model_path)
             normalization_uri = (
                 f"runs:/{run_id}/vecnormalize.pkl"
@@ -693,7 +636,8 @@ def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, required=True)
     parser.add_argument("--budget-timesteps", type=int)
-    parser.add_argument("--eval-episodes", type=int, default=10)
+    parser.add_argument("--eval-episodes", type=int,
+                        help="limita la suite fija de evaluacion (por defecto, completa: 50 episodios)")
     parser.add_argument("--seed", type=int, help="ejecuta solo esta semilla del experimento")
     parser.add_argument("--n-steps", type=int, help="override PPO para pruebas cortas")
     parser.add_argument("--batch-size", type=int, help="override PPO para pruebas cortas")
@@ -701,7 +645,7 @@ def main(argv: list[str] | None = None) -> None:
     args = parser.parse_args(argv)
     if args.budget_timesteps is not None and args.budget_timesteps <= 0:
         parser.error("--budget-timesteps debe ser positivo")
-    if args.eval_episodes <= 0:
+    if args.eval_episodes is not None and args.eval_episodes <= 0:
         parser.error("--eval-episodes debe ser positivo")
     if args.n_steps is not None and args.n_steps <= 0:
         parser.error("--n-steps debe ser positivo")

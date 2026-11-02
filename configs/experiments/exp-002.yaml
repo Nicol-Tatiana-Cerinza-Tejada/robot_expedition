@@ -13,5 +13,4 @@ normalize_obs: true
 parent_run_id: null
 environment:
   max_steps: 400
-  ray_noise: 0.02
   rock_jitter: 0.0

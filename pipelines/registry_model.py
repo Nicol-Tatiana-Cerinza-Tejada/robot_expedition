@@ -25,7 +25,7 @@ class ExpeditionPolicy(mlflow.pyfunc.PythonModel):
             from robot_expedition.envs.beacon_expedition import BeaconExpeditionEnv
             from robot_expedition.qlearning import QLearningAgent
 
-            env = BeaconExpeditionEnv(**environment)
+            env = BeaconExpeditionEnv(level=config["level_id"], **environment)
             self.agent = QLearningAgent(env.action_space.n).load(context.artifacts["weights"])
             env.close()
             return
@@ -33,7 +33,7 @@ class ExpeditionPolicy(mlflow.pyfunc.PythonModel):
         def make_env():
             from robot_expedition.envs.beacon_expedition import BeaconExpeditionEnv
 
-            return Monitor(BeaconExpeditionEnv(**environment), info_keywords=("success",))
+            return Monitor(BeaconExpeditionEnv(level=config["level_id"], **environment), info_keywords=("success",))
 
         base_env = DummyVecEnv([make_env])
         self.vec_env = VecNormalize.load(context.artifacts["vecnormalize"], base_env)
