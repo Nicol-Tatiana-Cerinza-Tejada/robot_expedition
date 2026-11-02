@@ -27,7 +27,8 @@ def test_n1_success_after_b1_and_base():
     env.reset(seed=1)
     place(env, BEACONS[0][0] - 0.7, BEACONS[0][1])
     _, _, terminated, _, info = env.step(0)
-    assert info["stage"] == 2 and not terminated
+    assert info["stage"] == 3 and not terminated        # etapa 3 = volver a la base en todo nivel
+    assert env.target() == BASE[:2]
     place(env, BASE[0] + BASE[2] + 0.2, BASE[1], math.pi)
     _, _, terminated, _, info = env.step(0)
     assert terminated and info["success"] and info["end"] == "exito"

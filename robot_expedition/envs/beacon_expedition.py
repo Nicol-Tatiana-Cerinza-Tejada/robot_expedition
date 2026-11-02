@@ -405,11 +405,13 @@ class BeaconExpeditionEnv(gym.Env):
                 self.visited[self.stage - 1] = True
                 event = f"visita B{self.stage}"
                 reward += 10.0
-                self.stage += 1
-                if self.stage == 2 and self.beacon_count >= 2 and self.perturbation:
+                # La etapa 3 siempre significa "volver a la base", en todos los niveles:
+                # asi la observacion (one-hot) y los cuadros tienen el mismo significado.
+                self.stage = self.stage + 1 if self.stage < self.beacon_count else 3
+                if self.stage == 2 and self.perturbation:
                     self._set_block(True)
 
-        success = self.stage == self.beacon_count + 1 and _in_rect(self.x, self.y, BASE) and self.battery > 0
+        success = self.stage == 3 and _in_rect(self.x, self.y, BASE) and self.battery > 0
         end = None
         if success:
             reward += 50.0 + 20.0 * self.battery / 100.0

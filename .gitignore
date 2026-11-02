@@ -20,3 +20,6 @@ models/
 logs/
 outputs/
 
+
+# Semillas del test final reservado (no se publican)
+configs/suites/*.local.yaml

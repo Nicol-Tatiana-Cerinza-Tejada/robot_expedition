@@ -93,6 +93,23 @@ La URL ya publica el frontend. La variable `VITE_API_BASE_URL` se añadirá en
 Vercel cuando el equipo entregue la URL HTTPS de la API; hasta entonces la web
 muestra explícitamente que la API no está configurada.
 
+## Evaluación fija y baselines
+
+```bash
+python pipelines/evaluate.py --policy rule --level n2                 # suite-n2-v1, 50 episodios
+python pipelines/evaluate.py --policy ppo --model model.zip --vecnormalize vecnormalize.pkl --level n3
+python pipelines/evaluate.py --policy qlearning --model models/q.npz --level n1
+python pipelines/evaluate.py --baselines                              # aleatorio y regla en N1-N3
+```
+
+Cada evaluación guarda un JSON con los resultados por caso y las métricas de
+misión: éxito, fallos por causa, eficiencia, choques, batería, pasos, retorno y
+latencia. Los baselines están en
+[`docs/resultados/baselines.md`](docs/resultados/baselines.md) y el formato en
+[`docs/contratos.md`](docs/contratos.md#evaluación). El test reservado
+(`--suite test-final`) lee sus semillas de `EXPEDITION_TEST_SEEDS` y no se
+publican.
+
 ## CLI: entrenar, evaluar y ver el proceso
 
 Todos los comandos se ejecutan desde la raíz del repositorio:
