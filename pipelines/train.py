@@ -12,6 +12,7 @@ import shutil
 import signal
 import subprocess
 import sys
+import time
 import uuid
 from pathlib import Path
 from typing import Any
@@ -339,18 +340,23 @@ def _register_dvc_model(model_dir: Path, run_id: str) -> str:
     if dvc_executable is None:
         executable_name = "dvc.exe" if os.name == "nt" else "dvc"
         dvc_executable = str(Path(sys.executable).with_name(executable_name))
-    result = subprocess.run(
-        [
-            dvc_executable,
-            "add",
-            "--force",
-            str(model_dir.relative_to(ROOT)),
-        ],
-        cwd=ROOT,
-        check=False,
-        capture_output=True,
-        text=True,
-    )
+    # Varios entrenamientos en paralelo comparten el lock del repositorio DVC: se reintenta.
+    for attempt in range(30):
+        result = subprocess.run(
+            [
+                dvc_executable,
+                "add",
+                "--force",
+                str(model_dir.relative_to(ROOT)),
+            ],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode == 0 or "lock" not in (result.stderr + result.stdout).lower():
+            break
+        time.sleep(1 + attempt % 5)
     if result.returncode:
         raise RuntimeError(f"dvc add falló: {result.stderr.strip() or result.stdout.strip()}")
     return f"dvc://dagshub/{model_dir.relative_to(ROOT).as_posix()}"

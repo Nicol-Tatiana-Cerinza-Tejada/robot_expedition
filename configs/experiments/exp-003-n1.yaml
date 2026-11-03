@@ -1,0 +1,18 @@
+experiment_id: exp-003-n1
+hypothesis: "Etapa 1 del curriculo de exp-003: PPO en N1 (1 baliza, 2 rocas) durante la mitad del presupuesto"
+change: "nivel N1 y mitad del presupuesto; su checkpoint es el padre de exp-003"
+reference: exp-002
+level_id: n1
+algorithm: ppo
+budget_timesteps: 150000
+seeds: [1]
+hyperparams:
+  learning_rate: 0.0003
+  n_steps: 2048
+  batch_size: 64
+  gamma: 0.99
+normalize_obs: true
+parent_run_id: null
+environment:
+  max_steps: 400
+  rock_jitter: 0.0

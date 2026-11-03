@@ -1,5 +1,7 @@
 experiment_id: exp-002
-hypothesis: "PPO con observaciones normalizadas supera el baseline Q-learning en éxito en N2"
+hypothesis: "PPO con la observacion continua normalizada supera en exito a Q-learning en N2 con el mismo presupuesto"
+change: "algoritmo: PPO (MLP sobre los 20 floats) en lugar de Q-learning discretizado"
+reference: exp-001
 level_id: n2
 algorithm: ppo
 budget_timesteps: 300000
