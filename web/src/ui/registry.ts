@@ -32,7 +32,7 @@ function h(tag: string, attrs: Attrs = {}, ...children: Child[]): HTMLElement {
 const pct = (value?: number | null) => (value === undefined || value === null ? '—' : `${Math.round(value * 100)} %`)
 const num = (value?: number | null, digits = 1) =>
   value === undefined || value === null ? '—' : value.toLocaleString('es-CO', { maximumFractionDigits: digits })
-const short = (id?: string | null) => (id ? id.slice(0, 8) : '—')
+const short = (id?: string | null) => (id ? (/^[0-9a-f]{32,64}$/.test(id) ? id.slice(0, 8) : id) : '—')
 const duration = (seconds?: number | null) => {
   if (!seconds && seconds !== 0) return '—'
   const minutes = Math.floor(seconds / 60)
@@ -284,7 +284,7 @@ export class RegistryView {
     const points = series.flat()
     const width = 420
     const height = 160
-    const pad = 28
+    const pad = 46
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
     svg.setAttribute('viewBox', `0 0 ${width} ${height}`)
     svg.setAttribute('class', 'curve-chart')

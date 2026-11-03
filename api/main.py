@@ -9,6 +9,7 @@ modelos con sus reglas originales.
 
 from __future__ import annotations
 
+import math
 import os
 import subprocess
 import sys
@@ -80,7 +81,7 @@ class Monitor:
                 lat = sorted(self.latency_ms[route])
                 routes[route] = {"requests": count, "errors": self.errors[route],
                                  "latency_ms_mean": round(sum(lat) / len(lat), 2) if lat else None,
-                                 "latency_ms_p95": round(lat[int(0.95 * (len(lat) - 1))], 2) if lat else None}
+                                 "latency_ms_p95": round(lat[max(0, math.ceil(0.95 * len(lat)) - 1)], 2) if lat else None}
             return {"routes": routes, "last_errors": list(self.last_errors)}
 
 
@@ -91,6 +92,8 @@ monitor = Monitor()
 async def measure(request: Request, call_next):
     t0 = time.perf_counter()
     response = await call_next(request)
+    if request.method == "OPTIONS":                 # preflight CORS: no es trafico de la aplicacion
+        return response
     route = request.scope.get("route")
     path = getattr(route, "path", request.url.path)
     monitor.record(f"{request.method} {path}", response.status_code, (time.perf_counter() - t0) * 1000)

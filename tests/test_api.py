@@ -130,6 +130,14 @@ def test_missing_weights_is_a_clear_error(trained_store):
     assert res.status_code == 503 and "DVC" in res.json()["detail"]
 
 
+def test_monitor_p95_uses_nearest_rank():
+    monitor = api_main.Monitor()
+    for ms in (1, 2, 3, 100):
+        monitor.record("GET /x", 200, ms)
+    route = monitor.snapshot()["routes"]["GET /x"]
+    assert route["latency_ms_p95"] == 100 and route["latency_ms_p95"] >= route["latency_ms_mean"]
+
+
 def test_cors_allows_the_vercel_origin_only():
     ok = client.options("/catalog", headers={"Origin": "https://web-five-gules-83.vercel.app",
                                              "Access-Control-Request-Method": "GET"})

@@ -1,4 +1,4 @@
-<!-- Generado por scripts/report_experiments.py desde catalog-v2 (2026-11-03T02:14:42+00:00). No editar a mano. -->
+<!-- Generado por scripts/report_experiments.py desde catalog-v6 (2026-11-03T02:21:22+00:00). No editar a mano. -->
 
 ### Éxito por experimento y nivel (suite fija, 50 episodios; media ± d.e. entre semillas)
 
