@@ -178,9 +178,9 @@ configuración con el run que contiene el checkpoint. `config_sha256` verifica
 el `config.json` resuelto del run y `source_config_sha256` conserva el hash
 del YAML fuente.
 
-Los pesos se versionan con DVC en el remoto privado de **DagsHub**
-`tomas-gonzalez2006/robot_expedition`, configurado en `.dvc/config`. Invita a
-los colaboradores desde DagsHub para que puedan descargar los modelos. Los
+Los pesos se versionan con DVC en el remoto de **DagsHub**
+`tomas-gonzalez2006/robot_expedition`, configurado en `.dvc/config`. Cada integrante que descargue mediante DVC debe tener permisos y configurar sus credenciales locales.
+ Los
 punteros `models/<run_id>.dvc` y los manifiestos JSON se guardan en Git; los
 binarios no. Configura la autenticación localmente (sin guardar el token en
 Git):
@@ -202,7 +202,7 @@ done
 ```
 
 Comprueba el estado remoto con `dvc status -c -r dagshub models/*.dvc`; no
-deben quedar objetos como `new`. Configura también la autenticación de MLflow
+deben quedar objetos como `new`. Esta comprobación autenticada no garantiza acceso anónimo; en la prueba, `dvc pull` sin credenciales no pudo descargar del remoto de DagsHub. Para acceso público, descarga [robot-expedition-models-v1.zip](https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition/releases/download/models-v1/robot-expedition-models-v1.zip) y descomprime el ZIP en la raíz; contiene los 14 runs DVC y manifiestos disponibles. Configura también la autenticación de MLflow
 localmente si vas a compartir runs.
 
 Para validar ambos algoritmos rápidamente (incluye overrides temporales de
