@@ -38,16 +38,34 @@ son `completed`, `failed`, `interrupted` y `rejected`.
 
 ## Catálogo
 
-`catalog/catalog.json` se genera desde los manifiestos. Contiene la lista de
-runs con métricas y estado, un `recommended_run_id` por nivel y
-`served_version`. No se sobrescriben artefactos silenciosamente.
+`catalog/catalog.json` lo publica `pipelines/catalog.py` (o el flow de
+Prefect, `pipelines/flow.py`) a partir de los manifiestos y de las
+evaluaciones por nivel.
+
+| Campo | Contenido |
+|---|---|
+| `catalog_version`, `served_version` | Entero creciente y su etiqueta (`catalog-vN`). Publicar el mismo contenido no crea versión nueva |
+| `content_sha256`, `previous_version` | Huella del contenido y versión anterior |
+| `published_at`, `published_by`, `git_commit` | Quién publicó, cuándo y desde qué commit |
+| `selection_criteria` | Ruta, versión y SHA-256 de `configs/selection.yaml` |
+| `recommended_run_id` | `{n1, n2, n3}`: el run recomendado por nivel (o `null`) |
+| `pins` | Niveles fijados por un rollback: `{run_id, from_run_id, reason, at}` |
+| `decisions` | Por nivel, la decisión y el motivo de cada candidato (recomendado, rechazado, no elegible, se mantiene, rollback) |
+| `runs[]` | Campos del manifiesto + `hypothesis`, `change`, `reference`, `training_time_s`, `commit_url`, `mlflow_run_id`, `metrics.success_rate` (en su nivel de entrenamiento), `metrics_by_level` (métricas de la suite de **cada** nivel con `results_path`) y `curves` (curvas de entrenamiento resumidas) |
+
+- **Resultados por caso:** `catalog/results/<run_id>/<nivel>.json`. Solo se
+  reutilizan si coinciden el SHA-256 del modelo, el de la suite y el hash del
+  ambiente.
+- **Historial:** `catalog/history.jsonl`, una línea por publicación, rollback
+  o quitada de pin (`actor`, `at`, `recommended_before`, `recommended_after` y
+  `reason`).
 
 ## API
 
 | Ruta | Contrato |
 |---|---|
 | `GET /health` | Estado del servicio |
-| `GET /version` | Commit, release y versión del ambiente |
+| `GET /version` | Commit, release, versión del ambiente, `served_version` y `recommended_run_id` del catálogo servido |
 | `GET /catalog` | Catálogo de runs |
 | `GET /runs/{run_id}` | Manifiesto del run |
 | `POST /evaluate` | `{run_id, level_id, seeds}`; devuelve métricas, casos y cuadros |

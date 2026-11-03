@@ -149,3 +149,38 @@ def make_policy(name: str, model: str | None = None, vecnormalize: str | None = 
             raise ValueError("--model es obligatorio para ppo (.zip)")
         return PPOPolicy(model, vecnormalize)
     raise ValueError(f"politica desconocida: {name}")
+
+
+# ------------------------------------------------- modelos de un manifiesto
+class ModelUnavailable(RuntimeError):
+    """Los pesos del run no estan disponibles."""
+
+
+class ModelIntegrityError(RuntimeError):
+    """El SHA-256 de los pesos no coincide con el manifiesto."""
+
+
+def model_files(models_dir: Path, manifest: dict) -> tuple[Path, Path | None]:
+    """Rutas de los pesos (y de VecNormalize) de un run dentro de models/<run_id>/."""
+    model_dir = Path(models_dir) / manifest["run_id"]
+    if manifest["algorithm"] == "qlearning":
+        return model_dir / "qlearning.npz", None
+    return model_dir / "ppo_model.zip", model_dir / "vecnormalize.pkl"
+
+
+def verified_policy(models_dir: Path, manifest: dict):
+    """Politica de un run entrenado, solo si sus pesos coinciden con el SHA-256 del manifiesto."""
+    run_id = manifest["run_id"]
+    if manifest.get("status") != "completed" or not manifest.get("model_sha256"):
+        raise ModelUnavailable(f"el run {run_id} tiene estado {manifest.get('status')} y no tiene "
+                               f"checkpoint disponible ({manifest.get('diagnosis') or 'sin diagnóstico'})")
+    weights, normalization = model_files(models_dir, manifest)
+    if not weights.exists():
+        raise ModelUnavailable(f"los pesos de {run_id} no están en models/{run_id}/")
+    actual = sha256_file(weights)
+    if actual != manifest["model_sha256"]:
+        raise ModelIntegrityError(f"SHA-256 de {weights.name} = {actual[:12]}…, el manifiesto dice "
+                                  f"{manifest['model_sha256'][:12]}…: el modelo no es el registrado")
+    if manifest["algorithm"] == "qlearning":
+        return QTablePolicy(weights)
+    return PPOPolicy(weights, normalization if normalization and normalization.exists() else None)

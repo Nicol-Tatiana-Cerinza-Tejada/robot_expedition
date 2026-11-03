@@ -10,14 +10,19 @@ Antes de usar un modelo se comprueba su SHA-256 contra el manifiesto.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import shutil
 import subprocess
+import urllib.request
+import zipfile
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from pipelines.policies import PPOPolicy, QTablePolicy, RandomPolicy, RulePolicy, sha256_file
+from pipelines.policies import (
+    ModelIntegrityError, ModelUnavailable, RandomPolicy, RulePolicy, model_files, verified_policy,
+)
 from robot_expedition.envs.beacon_expedition import ENVIRONMENT_VERSION
 
 LEVELS = ("n1", "n2", "n3")
@@ -33,12 +38,7 @@ class RunNotFound(LookupError):
     pass
 
 
-class ModelUnavailable(RuntimeError):
-    """Los pesos no estan disponibles (ni locales ni en DVC)."""
-
-
-class ModelIntegrityError(RuntimeError):
-    """El SHA-256 de los pesos no coincide con el manifiesto."""
+__all__ = ["LEVELS", "BASELINES", "ModelIntegrityError", "ModelUnavailable", "RunNotFound", "Store"]
 
 
 @dataclass
@@ -98,12 +98,6 @@ class Store:
         return manifest
 
     # ------------------------------------------------------------- modelos
-    def _model_files(self, manifest: dict) -> tuple[Path, Path | None]:
-        model_dir = self.models_dir / manifest["run_id"]
-        if manifest["algorithm"] == "qlearning":
-            return model_dir / "qlearning.npz", None
-        return model_dir / "ppo_model.zip", model_dir / "vecnormalize.pkl"
-
     def _dvc_pull(self, run_id: str) -> str | None:
         dvc_file = self.models_dir / f"{run_id}.dvc"
         if os.environ.get("API_DVC_PULL") != "1" or not dvc_file.exists() or not shutil.which("dvc"):
@@ -112,6 +106,34 @@ class Store:
                                 capture_output=True, text=True, timeout=300)
         return None if result.returncode == 0 else (result.stderr or result.stdout).strip()[-300:]
 
+    def _release_pull(self, run_id: str) -> str | None:
+        """Extrae models/<run_id>/ del ZIP publico de la release (API_MODELS_URL, una o varias URL)."""
+        urls = [u.strip() for u in os.environ.get("API_MODELS_URL", "").split(",") if u.strip()]
+        error = None
+        for url in urls:
+            cache = self.models_dir / f".release-{hashlib.sha256(url.encode()).hexdigest()[:12]}.zip"
+            try:
+                if not cache.exists():
+                    self.models_dir.mkdir(parents=True, exist_ok=True)
+                    with urllib.request.urlopen(url, timeout=120) as response, open(cache.with_suffix(".tmp"), "wb") as fh:
+                        shutil.copyfileobj(response, fh)
+                    cache.with_suffix(".tmp").replace(cache)
+                prefix = f"models/{run_id}/"
+                with zipfile.ZipFile(cache) as archive:
+                    for member in archive.infolist():
+                        name = member.filename.replace("\\", "/")      # ZIP armados en Windows
+                        if not name.startswith(prefix) or member.is_dir() or ".." in name.split("/"):
+                            continue
+                        target = self.root / name
+                        target.parent.mkdir(parents=True, exist_ok=True)
+                        with archive.open(member) as src, open(target, "wb") as dst:
+                            shutil.copyfileobj(src, dst)
+                if (self.models_dir / run_id).exists():
+                    return None
+            except (OSError, zipfile.BadZipFile, ValueError) as exc:
+                error = f"{type(exc).__name__}: {exc}"
+        return error
+
     def policy(self, run_id: str):
         """Politica lista para actuar; los modelos se verifican y se guardan en memoria."""
         if run_id == "baseline-random":
@@ -119,26 +141,18 @@ class Store:
         if run_id == "baseline-rule":
             return RulePolicy()
         manifest = self.run(run_id)
-        if manifest.get("status") != "completed" or not manifest.get("model_sha256"):
-            raise ModelUnavailable(f"el run {run_id} tiene estado {manifest.get('status')} y no tiene "
-                                   f"checkpoint disponible ({manifest.get('diagnosis') or 'sin diagnóstico'})")
         cached = self._policies.get(run_id)
         if cached is not None:
             return cached
-        weights, normalization = self._model_files(manifest)
-        if not weights.exists():
+        weights, _ = model_files(self.models_dir, manifest)
+        if manifest.get("status") == "completed" and not weights.exists():
             error = self._dvc_pull(run_id)
             if not weights.exists():
+                error = self._release_pull(run_id) or error
+            if not weights.exists():
                 raise ModelUnavailable(f"los pesos de {run_id} no están en models/{run_id}/ y no se pudieron "
-                                       f"recuperar con DVC" + (f": {error}" if error else
-                                       " (define API_DVC_PULL=1 y las credenciales del remoto)"))
-        actual = sha256_file(weights)
-        if actual != manifest["model_sha256"]:
-            raise ModelIntegrityError(f"SHA-256 de {weights.name} = {actual[:12]}…, el manifiesto dice "
-                                      f"{manifest['model_sha256'][:12]}…: el modelo no es el registrado")
-        if manifest["algorithm"] == "qlearning":
-            policy = QTablePolicy(weights)
-        else:
-            policy = PPOPolicy(weights, normalization if normalization and normalization.exists() else None)
+                                       f"recuperar con DVC ni de la release" + (f": {error}" if error else
+                                       " (define API_MODELS_URL o API_DVC_PULL=1 con las credenciales del remoto)"))
+        policy = verified_policy(self.models_dir, manifest)
         self._policies[run_id] = policy
         return policy
