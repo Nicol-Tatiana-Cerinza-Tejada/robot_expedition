@@ -96,25 +96,30 @@ def run_tests(skip: bool) -> dict:
 
 @task(name="3-entrenar")
 def train(config_path: str, seeds: list[int], budget: int | None) -> dict:
-    """Entrena una semilla por subproceso. Un fallo deja su manifiesto (failed/interrupted) y no borra nada."""
+    """Entrena cada semilla en su propio subproceso (en paralelo). Un fallo deja su manifiesto
+    (failed/interrupted) y no borra nada."""
     log = get_run_logger()
     done, failed = [], []
+    before = {p.name for p in (ROOT / "manifests").glob("*.json")}
+    procs = {}
     for seed in seeds:
-        before = {p.name for p in (ROOT / "manifests").glob("*.json")}
         cmd = [sys.executable, "pipelines/train.py", "--config", config_path, "--seed", str(seed)]
         if budget:
             cmd += ["--budget-timesteps", str(budget)]
         log.info("entrenando: %s", " ".join(cmd))
-        result = subprocess.run(cmd, cwd=ROOT, capture_output=True, text=True)
-        ids = re.findall(r"Run ([0-9a-f]{32}):", result.stdout)
-        if result.returncode == 0 and ids:
+        procs[seed] = subprocess.Popen(cmd, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+                                       env={**os.environ, "OMP_NUM_THREADS": os.environ.get("OMP_NUM_THREADS", "1")})
+    for seed, proc in procs.items():
+        stdout, stderr = proc.communicate()
+        ids = re.findall(r"Run ([0-9a-f]{32}):", stdout)
+        if proc.returncode == 0 and ids:
             done += ids
             continue
-        new = sorted({p.name for p in (ROOT / "manifests").glob("*.json")} - before)
-        diagnosis = (result.stderr.strip().splitlines() or ["sin diagnóstico"])[-1]
-        failed.append({"seed": seed, "manifests": new, "diagnosis": diagnosis})
-        log.warning("semilla %s falló: %s (manifiestos: %s)", seed, diagnosis, new)
-    return {"run_ids": done, "failed": failed}
+        diagnosis = (stderr.strip().splitlines() or ["sin diagnóstico"])[-1]
+        failed.append({"seed": seed, "diagnosis": diagnosis})
+        log.warning("semilla %s falló: %s", seed, diagnosis)
+    new = sorted({p.name for p in (ROOT / "manifests").glob("*.json")} - before)
+    return {"run_ids": done, "failed": failed, "new_manifests": new}
 
 
 @task(name="4-evaluar")
