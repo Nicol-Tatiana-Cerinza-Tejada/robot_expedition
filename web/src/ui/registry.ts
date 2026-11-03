@@ -224,7 +224,9 @@ export class RegistryView {
         field('Tiempo de entrenamiento', duration(run.training_time_s)),
         field('Padre (continúa de)', run.parent_run_id ? short(run.parent_run_id) : '—'),
         field('Commit', commit),
-        field('MLflow', run.mlflow_run_id ? `run ${short(run.mlflow_run_id)} · ${run.mlflow_run_name ?? ''}` : '—'),
+        field('MLflow', run.mlflow_url
+          ? h('a', { href: run.mlflow_url, target: '_blank', rel: 'noopener' }, `run ${short(run.mlflow_run_id)} · ${run.mlflow_run_name ?? ''}`)
+          : run.mlflow_run_id ? `run ${short(run.mlflow_run_id)} · ${run.mlflow_run_name ?? ''} (local)` : '—'),
         field('Ambiente', run.environment_version),
         field('SHA-256 del modelo', run.model_sha256 ? h('code', {}, short(run.model_sha256)) : '—'),
         field('Configuración', run.config_path ?? '—'),

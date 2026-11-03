@@ -95,6 +95,7 @@ def test_publish_is_idempotent_and_versioned(paths):
 
 
 def test_rollback_records_who_when_from_to_and_why(paths):
+    cat.publish(paths, catalog_with({"n2": "old"}), action="publish", reason="r", who="test")
     cat.publish(paths, catalog_with({"n2": "new"}), action="publish", reason="r", who="test")
     result = cat.rollback(paths, "n2", "old", "el nuevo falla en la demo", who="nicol")
     published = cat.load_catalog(paths)
@@ -103,11 +104,21 @@ def test_rollback_records_who_when_from_to_and_why(paths):
     last = cat.history(paths)[-1]
     assert last["action"] == "rollback" and last["actor"] == "nicol" and last["at"]
     assert last["recommended_before"]["n2"] == "new" and "el nuevo falla" in last["reason"]
-    assert result["catalog_version"] == 2
-    with pytest.raises(KeyError):
-        cat.rollback(paths, "n2", "no-existe", "x")
+    assert result["catalog_version"] == 3
+    with pytest.raises(ValueError):
+        cat.rollback(paths, "n2", "no-existe", "x")              # nunca fue servido
     unpinned = cat.unpin(paths, "n2", "volver a la seleccion", who="nicol")
     assert unpinned["changed"] and "n2" not in cat.load_catalog(paths)["pins"]
+
+
+def test_promotion_then_rollback_restores_the_previous_served_run(paths):
+    cat.publish(paths, catalog_with({"n2": "new"}), action="publish", reason="r", who="test")
+    cat.promote(paths, "n2", "old", "simulacro", who="nicol")
+    assert cat.load_catalog(paths)["recommended_run_id"]["n2"] == "old"
+    cat.rollback(paths, "n2", "new", "la promoción degradó N2", who="nicol")
+    published = cat.load_catalog(paths)
+    assert published["recommended_run_id"]["n2"] == "new" and published["catalog_version"] == 3
+    assert [h["action"] for h in cat.history(paths)] == ["publish", "promote", "rollback"]
 
 
 def test_release_pull_extracts_only_the_run_and_normalizes_windows_paths(tmp_path, monkeypatch):

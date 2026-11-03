@@ -164,6 +164,7 @@ export interface CatalogRun {
   model_uri?: string | null
   mlflow_run_id?: string | null
   mlflow_run_name?: string | null
+  mlflow_url?: string | null
   metrics?: { success_rate?: number }
   metrics_by_level: Partial<Record<'n1' | 'n2' | 'n3', LevelMetrics>>
   curves?: { training_success_rate?: Array<[number, number]>; training_reward?: Array<[number, number]> }

@@ -2,6 +2,7 @@
 node_modules/
 .env
 mlruns/
+mlartifacts/
 __pycache__/
 *.py[cod]
 .pytest_cache/

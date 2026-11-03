@@ -5,6 +5,7 @@ comandos. Contratos: docs/contratos.md (seccion catalogo).
 
     python pipelines/catalog.py build                     # evalua lo pendiente, selecciona y publica
     python pipelines/catalog.py rollback --level n2 --to <run_id> --reason "..."
+    python pipelines/catalog.py promote --level n2 --to <run_id> --reason "..."
     python pipelines/catalog.py unpin --level n2 --reason "..."
     python pipelines/catalog.py history
 
@@ -330,7 +331,13 @@ def _read_config(paths: Paths, manifest: dict) -> dict:
     return {}
 
 
-def run_entry(paths: Paths, manifest: dict) -> dict:
+def mlflow_links(paths: Paths) -> dict:
+    """Enlaces a la UI de MLflow remota (scripts/mlflow_sync.py), si existen."""
+    mapping = paths.catalog_dir / "mlflow-remote.json"
+    return json.loads(mapping.read_text(encoding="utf-8")) if mapping.exists() else {}
+
+
+def run_entry(paths: Paths, manifest: dict, links: dict | None = None) -> dict:
     config = _read_config(paths, manifest)
     training = training_info(paths, manifest["run_id"]) if manifest.get("status") != "failed" else {}
     by_level = level_metrics(paths, manifest["run_id"])
@@ -363,6 +370,7 @@ def run_entry(paths: Paths, manifest: dict) -> dict:
         "normalization_uri": manifest.get("normalization_uri"),
         "mlflow_run_id": training.get("mlflow_run_id") or manifest["run_id"],
         "mlflow_run_name": training.get("run_name"),
+        "mlflow_url": (links or {}).get(manifest["run_id"], {}).get("url"),
         "evaluation_suite_id": manifest.get("evaluation_suite_id"),
         "metrics": {"success_rate": by_level.get(trained_level, {}).get("success_rate",
                                                                         (manifest.get("metrics") or {}).get("success_rate"))},
@@ -385,7 +393,8 @@ def build_catalog(paths: Paths) -> dict:
     criteria = load_selection(paths)
     previous = load_catalog(paths) or {}
     manifests = load_manifests(paths)
-    runs = [run_entry(paths, m) for m in manifests.values()]
+    links = mlflow_links(paths)
+    runs = [run_entry(paths, m, links) for m in manifests.values()]
     runs.sort(key=lambda r: (r["experiment_id"], r.get("seed") or 0, r["run_id"]))
     baselines = [baseline_entry(paths, b) for b in BASELINES]
     pins = previous.get("pins", {})
@@ -429,25 +438,39 @@ def publish(paths: Paths, catalog: dict, *, action: str, reason: str, who: str |
     return {"changed": True, **entry}
 
 
-def rollback(paths: Paths, level_id: str, to_run_id: str, reason: str, who: str | None = None) -> dict:
-    """Restaura como recomendado de un nivel un run anterior identificado y lo fija (pin)."""
+def _serve(paths: Paths, level_id: str, run_id: str, reason: str, action: str, who: str | None) -> dict:
+    """Fija run_id como recomendado de un nivel (pin) y publica una version nueva."""
     current = load_catalog(paths)
     if current is None:
         raise FileNotFoundError("no hay catálogo publicado; corre primero `catalog.py build`")
-    entry = next((r for r in current["runs"] if r["run_id"] == to_run_id), None)
+    entry = next((r for r in current["runs"] if r["run_id"] == run_id), None)
     if entry is None:
-        raise KeyError(f"el run {to_run_id} no está en el catálogo")
+        raise KeyError(f"el run {run_id} no está en el catálogo")
     problem = _eligible(entry, level_id, load_selection(paths))
     if problem:
-        raise ValueError(f"no se puede servir {to_run_id} en {level_id}: {problem}")
+        raise ValueError(f"no se puede servir {run_id} en {level_id}: {problem}")
     catalog = {k: v for k, v in current.items() if k not in VOLATILE_KEYS}
     before = (catalog.get("recommended_run_id") or {}).get(level_id)
-    catalog["recommended_run_id"] = {**catalog["recommended_run_id"], level_id: to_run_id}
-    catalog["pins"] = {**catalog.get("pins", {}), level_id: {"run_id": to_run_id, "reason": reason,
+    catalog["recommended_run_id"] = {**catalog["recommended_run_id"], level_id: run_id}
+    catalog["pins"] = {**catalog.get("pins", {}), level_id: {"run_id": run_id, "reason": reason, "action": action,
                                                              "from_run_id": before, "at": _now()}}
     catalog["decisions"] = {**catalog.get("decisions", {}), level_id: [
-        {"run_id": to_run_id, "decision": "rollback", "reason": f"{reason} (antes: {before})"}]}
-    return publish(paths, catalog, action="rollback", reason=f"{level_id}: {before} -> {to_run_id}. {reason}", who=who)
+        {"run_id": run_id, "decision": action, "reason": f"{reason} (antes: {before})"}]}
+    return publish(paths, catalog, action=action, reason=f"{level_id}: {before} -> {run_id}. {reason}", who=who)
+
+
+def rollback(paths: Paths, level_id: str, to_run_id: str, reason: str, who: str | None = None) -> dict:
+    """Restaura como recomendado de un nivel un run anterior identificado y lo fija (pin)."""
+    served_before = {h["recommended_after"].get(level_id) for h in history(paths) if h.get("recommended_after")}
+    if served_before and to_run_id not in served_before:
+        raise ValueError(f"{to_run_id} nunca fue el recomendado de {level_id}: un rollback restaura una versión "
+                         f"anterior servida (usa promote para una promoción manual)")
+    return _serve(paths, level_id, to_run_id, reason, "rollback", who)
+
+
+def promote(paths: Paths, level_id: str, run_id: str, reason: str, who: str | None = None) -> dict:
+    """Promocion manual (fuera de los criterios), con motivo y pin. Queda en el historial."""
+    return _serve(paths, level_id, run_id, reason, "promote", who)
 
 
 def unpin(paths: Paths, level_id: str, reason: str, who: str | None = None) -> dict:
@@ -478,6 +501,10 @@ def main(argv=None) -> None:
     rb.add_argument("--level", choices=LEVELS, required=True)
     rb.add_argument("--to", required=True, help="run_id a servir")
     rb.add_argument("--reason", required=True)
+    pr = sub.add_parser("promote", help="promoción manual de un run en un nivel (queda fijado y registrado)")
+    pr.add_argument("--level", choices=LEVELS, required=True)
+    pr.add_argument("--to", required=True, help="run_id a servir")
+    pr.add_argument("--reason", required=True)
     up = sub.add_parser("unpin", help="quita el pin de un rollback y vuelve a la selección automática")
     up.add_argument("--level", choices=LEVELS, required=True)
     up.add_argument("--reason", required=True)
@@ -491,6 +518,8 @@ def main(argv=None) -> None:
         result = publish(paths, build_catalog(paths), action="publish", reason=args.reason)
     elif args.cmd == "rollback":
         result = rollback(paths, args.level, args.to, args.reason)
+    elif args.cmd == "promote":
+        result = promote(paths, args.level, args.to, args.reason)
     elif args.cmd == "unpin":
         result = unpin(paths, args.level, args.reason)
     else:

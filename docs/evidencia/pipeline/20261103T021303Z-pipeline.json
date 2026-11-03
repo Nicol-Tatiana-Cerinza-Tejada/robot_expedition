@@ -1,0 +1,197 @@
+{
+  "started_at": "2026-11-03T01:58:52+00:00",
+  "params": {
+    "config": "configs/experiments/exp-005.yaml",
+    "seeds": [
+      2,
+      3
+    ],
+    "runs": [],
+    "budget": null,
+    "skip_tests": false,
+    "api_url": null
+  },
+  "1_validar": {
+    "configs/levels": true,
+    "configs/suites": true,
+    "configs/selection.yaml": true,
+    "manifests": 6,
+    "pipelines/train.py": true,
+    "selection_version": 1,
+    "config": {
+      "experiment_id": "exp-005",
+      "level_id": "n3",
+      "algorithm": "ppo",
+      "budget_timesteps": 300000,
+      "environment_hash": "8ece567b32d3a9713e3be7c0b8ca564aa10cd30eedaec6cb7cc01bbe04accca1"
+    },
+    "manifests_with_missing_fields": {}
+  },
+  "2_pytest": {
+    "skipped": false,
+    "summary": "56 passed, 1 warning in 19.53s"
+  },
+  "3_entrenar": {
+    "run_ids": [
+      "f3b2dc4c3500435784db83e1e9ab7599",
+      "3dd6e0f778314110bb6d2cf1ca00b41f"
+    ],
+    "failed": [],
+    "new_manifests": [
+      "3dd6e0f778314110bb6d2cf1ca00b41f.json",
+      "4ecd569ee0214dbba3e10390c2dbec36.json",
+      "90be8649c2404ed390ee89f6fabe9eb7.json",
+      "b724b2e7eb8142609e0c95bfba73e5b6.json",
+      "f3b2dc4c3500435784db83e1e9ab7599.json"
+    ]
+  },
+  "4_evaluar": {
+    "baseline-rule": {
+      "n1": "catalog/results/baseline-rule/n1.json",
+      "n2": "catalog/results/baseline-rule/n2.json",
+      "n3": "catalog/results/baseline-rule/n3.json"
+    },
+    "baseline-random": {
+      "n1": "catalog/results/baseline-random/n1.json",
+      "n2": "catalog/results/baseline-random/n2.json",
+      "n3": "catalog/results/baseline-random/n3.json"
+    },
+    "f3b2dc4c3500435784db83e1e9ab7599": {
+      "n1": "catalog/results/f3b2dc4c3500435784db83e1e9ab7599/n1.json",
+      "n2": "catalog/results/f3b2dc4c3500435784db83e1e9ab7599/n2.json",
+      "n3": "catalog/results/f3b2dc4c3500435784db83e1e9ab7599/n3.json"
+    },
+    "3dd6e0f778314110bb6d2cf1ca00b41f": {
+      "n1": "catalog/results/3dd6e0f778314110bb6d2cf1ca00b41f/n1.json",
+      "n2": "catalog/results/3dd6e0f778314110bb6d2cf1ca00b41f/n2.json",
+      "n3": "catalog/results/3dd6e0f778314110bb6d2cf1ca00b41f/n3.json"
+    }
+  },
+  "5_registro": {
+    "f3b2dc4c3500435784db83e1e9ab7599": {
+      "status": "completed",
+      "git_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+      "model_sha256_ok": true,
+      "dvc_pointer": true,
+      "mlflow_run": true,
+      "training_time_s": 775.6
+    },
+    "3dd6e0f778314110bb6d2cf1ca00b41f": {
+      "status": "completed",
+      "git_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+      "model_sha256_ok": true,
+      "dvc_pointer": true,
+      "mlflow_run": true,
+      "training_time_s": 766.9
+    }
+  },
+  "6_7_publicar": {
+    "changed": true,
+    "catalog_version": 1,
+    "action": "publish",
+    "at": "2026-11-03T02:13:03+00:00",
+    "actor": "nicol",
+    "git_commit": "72d616e9cf1c2ff5cc7af43bc201cc42955fdb40",
+    "reason": "paso 10: intervencion exp-005 (semillas 2 y 3) por el pipeline",
+    "recommended_before": null,
+    "recommended_after": {
+      "n1": "a1752d56c065467d8592d52cb229cad6",
+      "n2": "92cdc692fdca465b917fa7c5e8a9902d",
+      "n3": "3dd6e0f778314110bb6d2cf1ca00b41f"
+    },
+    "content_sha256": "ad8ef7ea4a21a3766bd42aa1b290f244eb8f3e1bf0e06aae9e623a475435a7d9",
+    "recommended_run_id": {
+      "n1": "a1752d56c065467d8592d52cb229cad6",
+      "n2": "92cdc692fdca465b917fa7c5e8a9902d",
+      "n3": "3dd6e0f778314110bb6d2cf1ca00b41f"
+    },
+    "decisions": {
+      "n1": [
+        {
+          "run_id": "4ecd569ee0214dbba3e10390c2dbec36",
+          "decision": "no elegible",
+          "reason": "sin evaluación en este nivel"
+        },
+        {
+          "run_id": "b724b2e7eb8142609e0c95bfba73e5b6",
+          "decision": "no elegible",
+          "reason": "sin evaluación en este nivel"
+        },
+        {
+          "run_id": "90be8649c2404ed390ee89f6fabe9eb7",
+          "decision": "no elegible",
+          "reason": "sin evaluación en este nivel"
+        },
+        {
+          "run_id": "5d5c58397f77408b9b8374c5e38c4d50",
+          "decision": "no elegible",
+          "reason": "sin evaluación en este nivel"
+        },
+        {
+          "run_id": "a1752d56c065467d8592d52cb229cad6",
+          "decision": "recomendado",
+          "reason": "primer recomendado: éxito 100% ≥ 50%"
+        }
+      ],
+      "n2": [
+        {
+          "run_id": "4ecd569ee0214dbba3e10390c2dbec36",
+          "decision": "no elegible",
+          "reason": "sin evaluación en este nivel"
+        },
+        {
+          "run_id": "b724b2e7eb8142609e0c95bfba73e5b6",
+          "decision": "no elegible",
+          "reason": "sin evaluación en este nivel"
+        },
+        {
+          "run_id": "90be8649c2404ed390ee89f6fabe9eb7",
+          "decision": "no elegible",
+          "reason": "sin evaluación en este nivel"
+        },
+        {
+          "run_id": "5d5c58397f77408b9b8374c5e38c4d50",
+          "decision": "no elegible",
+          "reason": "sin evaluación en este nivel"
+        },
+        {
+          "run_id": "92cdc692fdca465b917fa7c5e8a9902d",
+          "decision": "recomendado",
+          "reason": "primer recomendado: éxito 100% ≥ 50%"
+        }
+      ],
+      "n3": [
+        {
+          "run_id": "4ecd569ee0214dbba3e10390c2dbec36",
+          "decision": "no elegible",
+          "reason": "sin evaluación en este nivel"
+        },
+        {
+          "run_id": "b724b2e7eb8142609e0c95bfba73e5b6",
+          "decision": "no elegible",
+          "reason": "sin evaluación en este nivel"
+        },
+        {
+          "run_id": "90be8649c2404ed390ee89f6fabe9eb7",
+          "decision": "no elegible",
+          "reason": "sin evaluación en este nivel"
+        },
+        {
+          "run_id": "5d5c58397f77408b9b8374c5e38c4d50",
+          "decision": "no elegible",
+          "reason": "sin evaluación en este nivel"
+        },
+        {
+          "run_id": "3dd6e0f778314110bb6d2cf1ca00b41f",
+          "decision": "recomendado",
+          "reason": "primer recomendado: éxito 100% ≥ 50%"
+        }
+      ]
+    }
+  },
+  "8_version_servida": {
+    "checked": false,
+    "reason": "sin API_URL; despliega y vuelve a correr con --api-url"
+  },
+  "finished_at": "2026-11-03T02:13:03+00:00"
+}

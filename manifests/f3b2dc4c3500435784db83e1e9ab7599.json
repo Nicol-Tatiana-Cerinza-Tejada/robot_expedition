@@ -1,0 +1,39 @@
+{
+  "action_spec": "Discrete(5)",
+  "algorithm": "ppo",
+  "budget_timesteps": 300000,
+  "checkpoint_uri": "runs:/f3b2dc4c3500435784db83e1e9ab7599/checkpoint",
+  "config_sha256": "c8f780064725a5fbf23ffefc7edb0b5ac5fa05652b53797d6170d80344b7098d",
+  "diagnosis": null,
+  "effective_budget_timesteps": 303104,
+  "environment_hash": "8ece567b32d3a9713e3be7c0b8ca564aa10cd30eedaec6cb7cc01bbe04accca1",
+  "environment_version": "robot-expedition-3d/1.0.0",
+  "evaluation_suite_id": "suite-n3-v1",
+  "experiment_id": "exp-005",
+  "git_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+  "level_id": "n3",
+  "metrics": {
+    "collisions_per_episode": 0.0,
+    "evaluation_episodes": 50,
+    "evaluation_partial": false,
+    "evaluation_reward": 100.4986,
+    "failures_by_cause": {},
+    "steps_mean": 97.84,
+    "success_rate": 1.0
+  },
+  "model_sha256": "7bc1622b55ca008efe49d7b8953cccda0420d2e65edeb450c758e25f95883085",
+  "model_uri": "dvc://dagshub/models/f3b2dc4c3500435784db83e1e9ab7599",
+  "normalization_uri": "runs:/f3b2dc4c3500435784db83e1e9ab7599/vecnormalize.pkl",
+  "obs_spec": "20 floats, ver docs/contratos.md",
+  "origin": {
+    "config_path": "configs/experiments/exp-005.yaml",
+    "repository": "https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition.git",
+    "type": "experiment_config"
+  },
+  "parent_run_id": null,
+  "run_id": "f3b2dc4c3500435784db83e1e9ab7599",
+  "runtime_ref": "requirements.txt + python 3.12.16",
+  "seed": 2,
+  "source_config_sha256": "0c977ca236ffaab7387b80d294605ae18d1323b5b6e9f8848676d96c9978b579",
+  "status": "completed"
+}
