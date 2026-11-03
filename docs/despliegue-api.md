@@ -60,8 +60,9 @@ Una evaluación de 5 episodios tarda unos 0.3 s, muy por debajo del límite de
 3. En **Settings → Variables and secrets** del Space:
    - `ALLOWED_ORIGINS` = la URL de Vercel (por ejemplo `https://web-five-gules-83.vercel.app`).
    - `GIT_COMMIT` y `RELEASE`, para que `/version` identifique el código servido.
-   - Secretos `DVC_REMOTE_USER` y `DVC_REMOTE_PASSWORD` (usuario y token de
-     DagsHub), para que la API descargue los pesos con `dvc pull`.
+   - Opcional: secretos `DVC_REMOTE_USER` y `DVC_REMOTE_PASSWORD` (usuario y
+     token de DagsHub) para usar también `dvc pull`. Sin ellos, la API toma
+     los pesos del ZIP público de la release (`API_MODELS_URL`).
 4. Comprobar `https://<usuario>-robot-expedition-api.hf.space/health` y `/version`.
 5. En Vercel, poner `VITE_API_BASE_URL` = esa URL HTTPS y volver a desplegar
    la web.
@@ -77,9 +78,23 @@ docker run -p 7860:7860 -e ALLOWED_ORIGINS=https://web-five-gules-83.vercel.app 
 
 La API no guarda pesos en Git. Para cada run del catálogo:
 1. Busca `models/<run_id>/` (`qlearning.npz`, o `ppo_model.zip` + `vecnormalize.pkl`).
-2. Si no los encuentra y `API_DVC_PULL=1`, ejecuta `dvc pull models/<run_id>.dvc`.
-3. Antes de usarlos, **verifica el SHA-256 contra el manifiesto**.
+2. Si no los encuentra, descarga el ZIP público de la release
+   (`API_MODELS_URL`, una o varias URL separadas por comas) y extrae **solo**
+   `models/<run_id>/`. Acepta ZIP armados en Windows (rutas con `\`) e ignora
+   rutas con `..`.
+3. Si `API_DVC_PULL=1` y hay credenciales, también intenta `dvc pull models/<run_id>.dvc`.
+4. Antes de usarlos, **verifica el SHA-256 contra el manifiesto**. Si no
+   coincide, responde 409 y no evalúa.
 
-El remoto DVC actual (DagsHub de Tomás) es privado: hay que hacerlo público o
-dar un token de lectura para que la API desplegada y el docente puedan
-recuperar los modelos.
+El `Dockerfile` trae por defecto
+`API_MODELS_URL=https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition/releases/download/models-v2/robot-expedition-models-v2.zip`.
+Ese ZIP lo genera `python scripts/package_models.py` y contiene los modelos de
+`exp-001` a `exp-005` con su manifiesto. El docente lo puede usar igual, sin
+cuentas:
+
+```bash
+curl -LO https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition/releases/download/models-v2/robot-expedition-models-v2.zip
+python -m zipfile -e robot-expedition-models-v2.zip .
+```
+
+El remoto DVC (DagsHub de Tomás) sigue siendo la copia autenticada del equipo.

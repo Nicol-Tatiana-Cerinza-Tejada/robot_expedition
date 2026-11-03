@@ -3,5 +3,11 @@
   "framework": "vite",
   "installCommand": "npm --prefix web ci",
   "buildCommand": "npm --prefix web run build",
-  "outputDirectory": "web/dist"
+  "outputDirectory": "web/dist",
+  "rewrites": [
+    {
+      "source": "/run/:run_id",
+      "destination": "/index.html"
+    }
+  ]
 }

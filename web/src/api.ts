@@ -59,6 +59,10 @@ export class ExpeditionApi {
     return this.request('/version')
   }
 
+  async monitor(): Promise<unknown> {
+    return this.request('/monitor')
+  }
+
   async evaluate(runId: string, levelId: string, seeds: number[]): Promise<unknown> {
     return this.request('/evaluate', {
       method: 'POST',

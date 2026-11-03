@@ -18,7 +18,8 @@ COPY --chown=user . .
 # Identidad del codigo servido: docker build --build-arg GIT_COMMIT=$(git rev-parse HEAD) --build-arg RELEASE=v1.0
 ARG GIT_COMMIT=desconocido
 ARG RELEASE=sin-release
-ENV GIT_COMMIT=$GIT_COMMIT RELEASE=$RELEASE API_DVC_PULL=1 PORT=7860
+ENV GIT_COMMIT=$GIT_COMMIT RELEASE=$RELEASE API_DVC_PULL=1 PORT=7860 \
+    API_MODELS_URL=https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition/releases/download/models-v2/robot-expedition-models-v2.zip
 
 USER user
 EXPOSE 7860
