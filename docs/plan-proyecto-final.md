@@ -1,5 +1,10 @@
 # Plan del proyecto final · Robot Expedition
 
+> **Estado al 2026-11-03:** los pasos 0 a 12 están hechos en la rama `entrega`.
+> Quedan el merge a `main`, el despliegue del Space, `VITE_API_BASE_URL` en
+> Vercel y el tag `v1.0`: ver [checklist-entrega.md](checklist-entrega.md).
+> Las tablas de abajo son el plan original y se conservan como historial.
+
 Plan de trabajo del equipo (Suleily, Tomás, Natalia y Nicol) para el
 **Proyecto final de MLOps**. Sale del enunciado del 30 de octubre de 2026 y de
 lo que ya hay en el repositorio. Cada paso trae el **prompt** para pegar en

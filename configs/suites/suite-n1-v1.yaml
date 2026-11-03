@@ -1,0 +1,7 @@
+suite_id: suite-n1-v1
+version: 1
+level_id: n1
+description: "Suite fija de evaluacion del nivel N1: 50 episodios con semillas que no se usan al entrenar"
+episodes: 50
+seed_start: 100000
+max_steps: 400

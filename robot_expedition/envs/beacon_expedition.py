@@ -10,11 +10,19 @@ puede caer, rocas y paredes con colision, ruedas con motor y rayos lanzados en
 from __future__ import annotations
 
 import math
+import hashlib
+import inspect
+import json
+from pathlib import Path
 
 import numpy as np
 import gymnasium as gym
 from gymnasium import spaces
 import mujoco
+import yaml
+
+
+ENVIRONMENT_VERSION = "robot-expedition-3d/1.0.0"
 
 
 # --- Mapa (metros). Rectangulos como (cx, cy, medio_ancho_x, medio_ancho_y, alto).
@@ -83,12 +91,12 @@ def _circle_hits_rect(x, y, r, rect):
     return dx * dx + dy * dy < r * r
 
 
-def terrain_heights(n=TERRAIN_N):
+def terrain_heights(n=TERRAIN_N, dunes=None):
     """Altura del suelo (m) en una rejilla n x n; fila = y, columna = x."""
     xs, ys = np.linspace(0, MAP_W, n), np.linspace(-MAP_H / 2, MAP_H / 2, n)
     X, Y = np.meshgrid(xs, ys)
     H = np.zeros_like(X)
-    for cx, cy, amp, sigma in DUNES:
+    for cx, cy, amp, sigma in DUNES if dunes is None else dunes:
         H += amp * np.exp(-((X - cx) ** 2 + (Y - cy) ** 2) / (2 * sigma ** 2))
     for px, py, r in [(BASE[0], BASE[1], 1.5), (*BEACONS[0], 0.9), (*BEACONS[1], 0.9)]:
         H *= np.clip((np.hypot(X - px, Y - py) - r) / 0.8, 0, 1)
@@ -99,9 +107,10 @@ def terrain_heights(n=TERRAIN_N):
     return H
 
 
-def _build_xml():
+def _build_xml(rocks=None, dunes=None):
+    rocks = ROCKS if rocks is None else rocks
     lo = -CRACK_DEPTH
-    heights = terrain_heights()
+    heights = terrain_heights(dunes=dunes)
     elevation = float(heights.max() - lo)
     walls = []
     for name, x, y, sx, sy in [("wall_n", MAP_W / 2, MAP_H / 2 + .075, MAP_W / 2 + .15, .075),
@@ -109,8 +118,8 @@ def _build_xml():
                                ("wall_w", -.075, 0, .075, MAP_H / 2),
                                ("wall_e", MAP_W + .075, 0, .075, MAP_H / 2)]:
         walls.append(f'<geom name="{name}" type="box" pos="{x} {y} .2" size="{sx} {sy} .3" material="wall" group="0"/>')
-    rocks = [f'<geom name="rock_{i}" type="box" pos="{cx} {cy} {h / 2 - .05}" size="{hx} {hy} {h / 2 + .05}" '
-             f'material="rock" group="0"/>' for i, (_, cx, cy, hx, hy, h) in enumerate(ROCKS)]
+    rocks_xml = [f'<geom name="rock_{i}" type="box" pos="{cx} {cy} {h / 2 - .05}" size="{hx} {hy} {h / 2 + .05}" '
+                 f'material="rock" group="0"/>' for i, (_, cx, cy, hx, hy, h) in enumerate(rocks)]
     _, bx, by, bhx, bhy, bh = BLOCK
     xml = f"""
 <mujoco model="robot_expedition_3d">
@@ -130,7 +139,7 @@ def _build_xml():
     <light name="sun" pos="2 -4 12" dir="-.2 .3 -1" diffuse="1 .85 .7" castshadow="true"/>
     <geom name="terrain" type="hfield" hfield="terrain" pos="{MAP_W / 2} 0 {lo}" material="mars" group="1"/>
     {''.join(walls)}
-    {''.join(rocks)}
+    {''.join(rocks_xml)}
     <geom name="block" type="box" pos="{bx} {by} -5" size="{bhx} {bhy} {bh / 2}" rgba=".94 .36 .3 1" group="0"/>
     <body name="rover" pos="{START[0]} {START[1]} .02">
       <freejoint name="root"/>
@@ -159,17 +168,54 @@ def _build_xml():
     return xml, heights, lo, elevation
 
 
+def load_level_config(level_config=None):
+    """Load a level mapping, level id, or YAML path using the shared contract."""
+    defaults = {"beacons": 2, "active_rocks": 5, "dunes": True,
+                "blocking": False, "ray_noise": 0.02, "dead_ray": None}
+    if level_config is None:
+        return defaults
+    if isinstance(level_config, str):
+        path = Path(level_config)
+        if not path.exists():
+            path = Path(__file__).parents[2] / "configs" / "levels" / f"{level_config}.yaml"
+        with path.open(encoding="utf-8") as fh:
+            level_config = yaml.safe_load(fh) or {}
+    result = defaults | dict(level_config)
+    if result["beacons"] not in (1, 2):
+        raise ValueError("beacons debe ser 1 o 2")
+    if not 0 <= result["active_rocks"] <= len(ROCKS):
+        raise ValueError("active_rocks fuera del rango de rocas disponibles")
+    return result
+
+
+def environment_hash(config=None):
+    """SHA-256 reproducible del código del ambiente y configuración resuelta."""
+    payload = inspect.getsource(inspect.getmodule(BeaconExpeditionEnv))
+    payload += json.dumps(load_level_config(config), sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
 class BeaconExpeditionEnv(gym.Env):
-    """Visitar B1, luego B2 y volver a la base sin agotar la bateria (MuJoCo 3D)."""
+    """Visitar las balizas configuradas y volver a la base (MuJoCo 3D)."""
 
     metadata = {"render_modes": ["rgb_array"], "render_fps": 2}
 
-    def __init__(self, max_steps=400, ray_noise=0.02, rock_jitter=0.0,
-                 perturbation=False, render_mode=None):
+    def __init__(self, max_steps=400, ray_noise=None, rock_jitter=0.0,
+                 perturbation=False, render_mode=None, level_config=None,
+                 level=None, config=None):
         super().__init__()
-        self.max_steps, self.ray_noise, self.rock_jitter = max_steps, ray_noise, rock_jitter
-        self.perturbation, self.render_mode = perturbation, render_mode
-        xml, self.heights, self._terrain_lo, elevation = _build_xml()
+        self.level_config = load_level_config(level_config or config or level)
+        self.beacon_count = int(self.level_config["beacons"])
+        self.active_rocks = int(self.level_config["active_rocks"])
+        self.dunes_enabled = bool(self.level_config["dunes"])
+        self.blocking = bool(self.level_config["blocking"])
+        self.ray_noise = float(self.level_config["ray_noise"] if ray_noise is None else ray_noise)
+        self.dead_ray = self.level_config.get("dead_ray")
+        self.max_steps, self.rock_jitter = max_steps, rock_jitter
+        self.perturbation, self.render_mode = perturbation or self.blocking, render_mode
+        self._level_rocks = ROCKS[:self.active_rocks]
+        xml, self.heights, self._terrain_lo, elevation = _build_xml(
+            rocks=self._level_rocks, dunes=DUNES if self.dunes_enabled else [])
         self.model = mujoco.MjModel.from_xml_string(xml)
         self.model.hfield_data[:] = ((self.heights - self._terrain_lo) / elevation).ravel()
         self.data = mujoco.MjData(self.model)
@@ -177,20 +223,19 @@ class BeaconExpeditionEnv(gym.Env):
         gid = lambda name: mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_GEOM, name)
         self._rover = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, "rover")
         self._sensor = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_SITE, "sensor")
-        self._rock_ids = [gid(f"rock_{i}") for i in range(len(ROCKS))]
+        self._rock_ids = [gid(f"rock_{i}") for i in range(len(self._level_rocks))]
         self._block_id = gid("block")
         self._rock_pos0 = self.model.geom_pos[self._rock_ids].copy()
         self._obstacle_ids = set(self._rock_ids) | {self._block_id} | {gid(w) for w in ("wall_n", "wall_s", "wall_w", "wall_e")}
         self._is_obstacle = np.isin(np.arange(self.model.ngeom), list(self._obstacle_ids))
         self._is_rover = self.model.geom_bodyid != 0
-        self._ray_groups = np.array([1, 0, 0, 0, 0, 0], dtype=np.uint8)   # solo paredes, rocas y bloqueo
+        self._ray_groups = np.array([1, 0, 0, 0, 0, 0], dtype=np.uint8)
         self._substeps = int(round(DT / TIMESTEP))
         self.action_space = spaces.Discrete(len(ACTIONS))
-        # 9 rayos, distancia, sen/cos al objetivo, v, w, bateria, etapa one-hot, cabeceo, alabeo.
         low = np.array([0] * N_RAYS + [0, -1, -1, -1, -1, 0, 0, 0, 0, -math.pi, -math.pi], dtype=np.float32)
         high = np.array([RAY_RANGE] * N_RAYS + [17, 1, 1, 1, 1, 1, 1, 1, 1, math.pi, math.pi], dtype=np.float32)
         self.observation_space = spaces.Box(low, high, dtype=np.float32)
-        self.rocks = [r[1:] for r in ROCKS]
+        self.rocks = [r[1:] for r in self._level_rocks]
         self.block_active = False
 
     # ------------------------------------------------------------- consultas
@@ -233,7 +278,7 @@ class BeaconExpeditionEnv(gym.Env):
         return rocks
 
     def target(self):
-        return BEACONS[self.stage - 1] if self.stage < 3 else BASE[:2]
+        return BEACONS[self.stage - 1] if self.stage <= self.beacon_count else BASE[:2]
 
     def _distance_to_target(self):
         tx, ty = self.target()
@@ -251,6 +296,8 @@ class BeaconExpeditionEnv(gym.Env):
             out[i] = RAY_RANGE if d < 0 else min(d, RAY_RANGE)
         if self.ray_noise > 0:
             out += self.np_random.normal(0, self.ray_noise, N_RAYS).astype(np.float32)
+        if self.dead_ray is not None:
+            out[int(self.dead_ray)] = RAY_RANGE
         return np.clip(out, 0, RAY_RANGE)
 
     # ------------------------------------------------------ rutas y rocas
@@ -270,7 +317,7 @@ class BeaconExpeditionEnv(gym.Env):
             for a, b in ((i + 1, j), (i - 1, j), (i, j + 1), (i, j - 1)):
                 if 0 <= a < nx and 0 <= b < ny and grid[a, b] and (a, b) not in seen:
                     seen.add((a, b)); queue.append((a, b))
-        return all(idx(b) in seen for b in BEACONS)
+        return all(idx(b) in seen for b in BEACONS[:self.beacon_count])
 
     def _place_rocks(self, rocks):
         self.rocks = rocks
@@ -283,13 +330,13 @@ class BeaconExpeditionEnv(gym.Env):
         for _ in range(50):
             rocks = [(cx + self.np_random.uniform(-1, 1) * self.rock_jitter,
                       cy + self.np_random.uniform(-1, 1) * self.rock_jitter, hx, hy, h)
-                     for _, cx, cy, hx, hy, h in ROCKS]
+                     for _, cx, cy, hx, hy, h in self._level_rocks]
             if all(not _circle_hits_rect(px, py, 1.0, r) for r in rocks for px, py in keep_clear):
                 self.rocks = rocks
                 if self._route_exists():
                     self._place_rocks(rocks)
                     return
-        self._place_rocks([r[1:] for r in ROCKS])
+        self._place_rocks([r[1:] for r in self._level_rocks])
 
     def _set_block(self, active):
         self.block_active = active
@@ -308,7 +355,7 @@ class BeaconExpeditionEnv(gym.Env):
         super().reset(seed=seed)
         mujoco.mj_resetData(self.model, self.data)
         self._set_block(False)
-        self._place_rocks([r[1:] for r in ROCKS])
+        self._place_rocks([r[1:] for r in self._level_rocks])
         if self.rock_jitter > 0:
             self._jitter_rocks()
         self.set_pose(*START)
@@ -352,13 +399,15 @@ class BeaconExpeditionEnv(gym.Env):
         progress = d_before - self._distance_to_target()
         reward = 1.0 * progress - 0.01 - 0.02 * energy - 0.5 * collision
         event = None
-        if self.stage < 3:
+        if self.stage <= self.beacon_count:
             bx, by = BEACONS[self.stage - 1]
             if math.hypot(bx - self.x, by - self.y) < VISIT_RADIUS:
                 self.visited[self.stage - 1] = True
                 event = f"visita B{self.stage}"
                 reward += 10.0
-                self.stage += 1
+                # La etapa 3 siempre significa "volver a la base", en todos los niveles:
+                # asi la observacion (one-hot) y los cuadros tienen el mismo significado.
+                self.stage = self.stage + 1 if self.stage < self.beacon_count else 3
                 if self.stage == 2 and self.perturbation:
                     self._set_block(True)
 
@@ -397,12 +446,12 @@ class BeaconExpeditionEnv(gym.Env):
                 "visited": list(self.visited), "battery": self.battery,
                 "collisions": self.collisions, "path_length": self.path_length,
                 "success": end == "exito", "end": end,
-                "mission_progress": (sum(self.visited) + (end == "exito")) / 3}
+                "mission_progress": (sum(self.visited) + (end == "exito")) / (self.beacon_count + 1)}
 
     def map_spec(self):
         """Descripcion del mundo 3D para la visualizacion con Three.js."""
         return {
-            "size": [MAP_W, MAP_H], "base": BASE, "beacons": BEACONS,
+            "size": [MAP_W, MAP_H], "base": BASE, "beacons": BEACONS[:self.beacon_count],
             "visit_radius": VISIT_RADIUS, "crack": CRACK, "crack_depth": CRACK_DEPTH, "sand": SAND,
             "rocks": [[name, *rect] for (name, *_), rect in zip(ROCKS, self.rocks)],
             "block": list(BLOCK), "wheel_radius": WHEEL_R, "wheel_base": WHEEL_BASE,

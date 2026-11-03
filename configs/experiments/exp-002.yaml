@@ -1,0 +1,18 @@
+experiment_id: exp-002
+hypothesis: "PPO con la observacion continua normalizada supera en exito a Q-learning en N2 con el mismo presupuesto"
+change: "algoritmo: PPO (MLP sobre los 20 floats) en lugar de Q-learning discretizado"
+reference: exp-001
+level_id: n2
+algorithm: ppo
+budget_timesteps: 300000
+seeds: [1, 2, 3]
+hyperparams:
+  learning_rate: 0.0003
+  n_steps: 2048
+  batch_size: 64
+  gamma: 0.99
+normalize_obs: true
+parent_run_id: null
+environment:
+  max_steps: 400
+  rock_jitter: 0.0

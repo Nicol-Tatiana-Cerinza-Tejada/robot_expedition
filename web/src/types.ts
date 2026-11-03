@@ -80,6 +80,7 @@ export interface RunOption {
 export interface CatalogData {
   runs: RunOption[]
   recommendedRunId?: string
+  recommendedByLevel?: Record<string, string>
   servedVersion?: string
 }
 
@@ -119,4 +120,88 @@ export const END_LABELS: Record<string, string> = {
   tiempo: 'Tiempo agotado',
   collision: 'Colisión',
   running: 'En curso',
+}
+
+export interface LevelMetrics {
+  success_rate: number
+  failures_by_cause: Record<string, number>
+  beacons_visited_mean?: number
+  steps_mean: number
+  collisions_per_episode: number
+  final_battery_success?: number | null
+  route_efficiency?: number | null
+  return_mean: number
+  latency_ms_mean: number
+  latency_ms_p95: number
+  episodes: number
+  suite_id: string
+  partial: boolean
+  results_path?: string
+}
+
+export interface CatalogRun {
+  run_id: string
+  experiment_id: string
+  model_name: string
+  algorithm: string
+  level_id: string
+  status: string
+  diagnosis?: string | null
+  hypothesis?: string | null
+  change?: string | null
+  reference?: string | null
+  seed?: number | null
+  budget_timesteps?: number | null
+  effective_budget_timesteps?: number | null
+  training_time_s?: number | null
+  parent_run_id?: string | null
+  environment_version: string
+  environment_hash?: string | null
+  git_commit?: string | null
+  commit_url?: string | null
+  config_path?: string | null
+  model_sha256?: string | null
+  model_uri?: string | null
+  mlflow_run_id?: string | null
+  mlflow_run_name?: string | null
+  mlflow_url?: string | null
+  metrics?: { success_rate?: number }
+  metrics_by_level: Partial<Record<'n1' | 'n2' | 'n3', LevelMetrics>>
+  curves?: { training_success_rate?: Array<[number, number]>; training_reward?: Array<[number, number]> }
+}
+
+export interface CatalogDecision {
+  run_id: string | null
+  decision: string
+  reason: string
+}
+
+export interface RichCatalog {
+  catalog_version?: number
+  served_version?: string
+  published_at?: string
+  published_by?: string
+  git_commit?: string
+  content_sha256?: string
+  source?: string
+  environment_version?: string
+  recommended_run_id: Partial<Record<string, string | null>>
+  pins?: Record<string, { run_id: string; reason: string; from_run_id?: string | null; at?: string }>
+  decisions?: Record<string, CatalogDecision[]>
+  selection_criteria?: { path: string; version: number; fixed_at: string; sha256: string }
+  runs: CatalogRun[]
+}
+
+export interface MonitorRoute {
+  requests: number
+  errors: number
+  latency_ms_mean: number | null
+  latency_ms_p95: number | null
+}
+
+export interface MonitorData {
+  routes: Record<string, MonitorRoute>
+  last_errors: Array<{ at: string; route: string; status: number; detail?: string | null }>
+  sessions: number
+  uptime_s: number
 }

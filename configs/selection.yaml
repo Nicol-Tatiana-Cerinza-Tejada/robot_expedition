@@ -1,0 +1,34 @@
+# Criterios de seleccion del modelo recomendado por nivel (paso 8).
+# Se fijaron el 2026-11-02, ANTES de ver los resultados de evaluacion de exp-001..exp-005.
+# Si se cambian, se sube la version y se deja el motivo en el historial de Git.
+version: 1
+fixed_at: "2026-11-02"
+primary_metric: success_rate          # tasa de exito en la suite fija del nivel (50 episodios)
+levels: [n1, n2, n3]
+
+# Un candidato solo entra a la seleccion si cumple todo esto.
+eligible:
+  status: completed                   # failed, interrupted y rejected se conservan pero no se sirven
+  environment_family: robot-expedition-3d
+  full_suite: true                    # evaluaciones parciales no cuentan
+  max_latency_ms_p95: 5.0             # la API decide a 2 Hz; 5 ms es menos del 1 % del paso
+
+# Primer recomendado de un nivel (no hay uno anterior).
+first_recommendation:
+  min_success_rate: 0.5
+
+# Reemplazar al recomendado actual exige mejorar de verdad y no empeorar la seguridad.
+replace_recommended:
+  min_improvement: 0.05               # +5 puntos de exito
+  max_extra_rollovers: 1              # vuelcos (volco) adicionales en los 50 episodios
+  max_extra_crack: 1                  # caidas en la grieta adicionales
+
+# Desempate entre candidatos del mismo nivel.
+tie_break:
+  - success_rate: desc
+  - collisions_per_episode: asc
+  - steps_mean: asc
+
+# Los baselines (regla y aleatoria) son referencias: se evaluan con las mismas suites
+# pero no se recomiendan, porque no son modelos versionados con MLflow/DVC.
+recommend_baselines: false

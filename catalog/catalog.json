@@ -1,0 +1,4527 @@
+{
+  "catalog_version": 6,
+  "served_version": "catalog-v6",
+  "previous_version": 5,
+  "published_at": "2026-11-03T02:21:22+00:00",
+  "published_by": "nicol",
+  "git_commit": "5c5acb857f67384ce59147b677d5331070c3a386",
+  "content_sha256": "810a7a4f878f8f92bfa8207c8fc4705b9973b91ded1de7890c22edb42ab28e63",
+  "schema": "robot-expedition-catalog/1",
+  "environment_version": "robot-expedition-3d/1.0.0",
+  "environment_hashes": {
+    "n1": "1e0b15706550acc04af62ddad0c5cc94df1b87747215711e88d281dd2125879e",
+    "n2": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+    "n3": "8ece567b32d3a9713e3be7c0b8ca564aa10cd30eedaec6cb7cc01bbe04accca1"
+  },
+  "selection_criteria": {
+    "path": "configs/selection.yaml",
+    "version": 1,
+    "fixed_at": "2026-11-02",
+    "sha256": "9c6287ba8088384512a5c9ae0afdd9168b7f8b6e740f5f24967d2031d38cb4b6"
+  },
+  "recommended_run_id": {
+    "n1": "a1752d56c065467d8592d52cb229cad6",
+    "n2": "92cdc692fdca465b917fa7c5e8a9902d",
+    "n3": "3dd6e0f778314110bb6d2cf1ca00b41f"
+  },
+  "pins": {},
+  "decisions": {
+    "n1": [
+      {
+        "run_id": "92cdc692fdca465b917fa7c5e8a9902d",
+        "decision": "rechazado",
+        "reason": "mejora +0% < +5% sobre a1752d56"
+      },
+      {
+        "run_id": "90be8649c2404ed390ee89f6fabe9eb7",
+        "decision": "rechazado",
+        "reason": "mejora +0% < +5% sobre a1752d56"
+      },
+      {
+        "run_id": "6376e42d713946daabb026e9c978d636",
+        "decision": "rechazado",
+        "reason": "mejora +0% < +5% sobre a1752d56"
+      },
+      {
+        "run_id": "37314d941d7541d3bdfc232a1af47466",
+        "decision": "rechazado",
+        "reason": "mejora +0% < +5% sobre a1752d56"
+      },
+      {
+        "run_id": "5d5c58397f77408b9b8374c5e38c4d50",
+        "decision": "rechazado",
+        "reason": "mejora +0% < +5% sobre a1752d56"
+      },
+      {
+        "run_id": "b724b2e7eb8142609e0c95bfba73e5b6",
+        "decision": "rechazado",
+        "reason": "mejora -6% < +5% sobre a1752d56"
+      },
+      {
+        "run_id": "3dd6e0f778314110bb6d2cf1ca00b41f",
+        "decision": "rechazado",
+        "reason": "mejora -22% < +5% sobre a1752d56"
+      },
+      {
+        "run_id": "f3b2dc4c3500435784db83e1e9ab7599",
+        "decision": "rechazado",
+        "reason": "mejora -30% < +5% sobre a1752d56"
+      },
+      {
+        "run_id": "4d91d98f05b248cfaa699285cc7680f0",
+        "decision": "rechazado",
+        "reason": "mejora -80% < +5% sobre a1752d56"
+      },
+      {
+        "run_id": "4ecd569ee0214dbba3e10390c2dbec36",
+        "decision": "rechazado",
+        "reason": "mejora -96% < +5% sobre a1752d56"
+      },
+      {
+        "run_id": "4b9b4353fd4f41c4b99a2d43ce290095",
+        "decision": "rechazado",
+        "reason": "mejora -98% < +5% sobre a1752d56"
+      },
+      {
+        "run_id": "a1752d56c065467d8592d52cb229cad6",
+        "decision": "se mantiene",
+        "reason": "ningún candidato cumple los criterios de reemplazo"
+      }
+    ],
+    "n2": [
+      {
+        "run_id": "5d5c58397f77408b9b8374c5e38c4d50",
+        "decision": "rechazado",
+        "reason": "mejora +0% < +5% sobre 92cdc692"
+      },
+      {
+        "run_id": "a1752d56c065467d8592d52cb229cad6",
+        "decision": "rechazado",
+        "reason": "mejora +0% < +5% sobre 92cdc692"
+      },
+      {
+        "run_id": "90be8649c2404ed390ee89f6fabe9eb7",
+        "decision": "rechazado",
+        "reason": "mejora +0% < +5% sobre 92cdc692"
+      },
+      {
+        "run_id": "6376e42d713946daabb026e9c978d636",
+        "decision": "rechazado",
+        "reason": "mejora +0% < +5% sobre 92cdc692"
+      },
+      {
+        "run_id": "4ecd569ee0214dbba3e10390c2dbec36",
+        "decision": "rechazado",
+        "reason": "mejora +0% < +5% sobre 92cdc692"
+      },
+      {
+        "run_id": "b724b2e7eb8142609e0c95bfba73e5b6",
+        "decision": "rechazado",
+        "reason": "mejora +0% < +5% sobre 92cdc692"
+      },
+      {
+        "run_id": "f3b2dc4c3500435784db83e1e9ab7599",
+        "decision": "rechazado",
+        "reason": "mejora +0% < +5% sobre 92cdc692"
+      },
+      {
+        "run_id": "37314d941d7541d3bdfc232a1af47466",
+        "decision": "rechazado",
+        "reason": "mejora +0% < +5% sobre 92cdc692"
+      },
+      {
+        "run_id": "4d91d98f05b248cfaa699285cc7680f0",
+        "decision": "rechazado",
+        "reason": "mejora -8% < +5% sobre 92cdc692"
+      },
+      {
+        "run_id": "4b9b4353fd4f41c4b99a2d43ce290095",
+        "decision": "rechazado",
+        "reason": "mejora -84% < +5% sobre 92cdc692"
+      },
+      {
+        "run_id": "3dd6e0f778314110bb6d2cf1ca00b41f",
+        "decision": "rechazado",
+        "reason": "mejora -84% < +5% sobre 92cdc692"
+      },
+      {
+        "run_id": "92cdc692fdca465b917fa7c5e8a9902d",
+        "decision": "se mantiene",
+        "reason": "ningún candidato cumple los criterios de reemplazo"
+      }
+    ],
+    "n3": [
+      {
+        "run_id": "f3b2dc4c3500435784db83e1e9ab7599",
+        "decision": "rechazado",
+        "reason": "mejora +0% < +5% sobre 3dd6e0f7"
+      },
+      {
+        "run_id": "4b9b4353fd4f41c4b99a2d43ce290095",
+        "decision": "rechazado",
+        "reason": "mejora +0% < +5% sobre 3dd6e0f7"
+      },
+      {
+        "run_id": "b724b2e7eb8142609e0c95bfba73e5b6",
+        "decision": "rechazado",
+        "reason": "mejora -32% < +5% sobre 3dd6e0f7"
+      },
+      {
+        "run_id": "4d91d98f05b248cfaa699285cc7680f0",
+        "decision": "rechazado",
+        "reason": "mejora -42% < +5% sobre 3dd6e0f7"
+      },
+      {
+        "run_id": "4ecd569ee0214dbba3e10390c2dbec36",
+        "decision": "rechazado",
+        "reason": "mejora -76% < +5% sobre 3dd6e0f7"
+      },
+      {
+        "run_id": "37314d941d7541d3bdfc232a1af47466",
+        "decision": "rechazado",
+        "reason": "mejora -80% < +5% sobre 3dd6e0f7"
+      },
+      {
+        "run_id": "92cdc692fdca465b917fa7c5e8a9902d",
+        "decision": "rechazado",
+        "reason": "mejora -100% < +5% sobre 3dd6e0f7"
+      },
+      {
+        "run_id": "6376e42d713946daabb026e9c978d636",
+        "decision": "rechazado",
+        "reason": "mejora -100% < +5% sobre 3dd6e0f7"
+      },
+      {
+        "run_id": "90be8649c2404ed390ee89f6fabe9eb7",
+        "decision": "rechazado",
+        "reason": "mejora -100% < +5% sobre 3dd6e0f7"
+      },
+      {
+        "run_id": "a1752d56c065467d8592d52cb229cad6",
+        "decision": "rechazado",
+        "reason": "mejora -100% < +5% sobre 3dd6e0f7"
+      },
+      {
+        "run_id": "5d5c58397f77408b9b8374c5e38c4d50",
+        "decision": "rechazado",
+        "reason": "mejora -100% < +5% sobre 3dd6e0f7"
+      },
+      {
+        "run_id": "3dd6e0f778314110bb6d2cf1ca00b41f",
+        "decision": "se mantiene",
+        "reason": "ningún candidato cumple los criterios de reemplazo"
+      }
+    ]
+  },
+  "runs": [
+    {
+      "run_id": "4d91d98f05b248cfaa699285cc7680f0",
+      "experiment_id": "exp-001",
+      "model_name": "QLEARNING · exp-001 · semilla 1",
+      "algorithm": "qlearning",
+      "level_id": "n2",
+      "status": "completed",
+      "diagnosis": null,
+      "hypothesis": "Q-learning tabular (2592 estados discretos) aprende a completar la mision en N2 y fija el baseline aprendido",
+      "change": "referencia aprendida: Q-learning con la observacion discretizada",
+      "reference": "baseline-rule",
+      "seed": 1,
+      "budget_timesteps": 300000,
+      "effective_budget_timesteps": 300000,
+      "training_time_s": 491.8,
+      "parent_run_id": null,
+      "environment_version": "robot-expedition-3d/1.0.0",
+      "environment_hash": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+      "git_commit": "5f46a09251b68b7aa88df9bd6f3a80a9e3d94062",
+      "commit_url": "https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition/commit/5f46a09251b68b7aa88df9bd6f3a80a9e3d94062",
+      "config_path": "configs/experiments/exp-001.yaml",
+      "config_sha256": "a5b4220b7badeb8a313db1ca5f4cd2462982ee3e8d80f45bd52d96bf3431345f",
+      "model_uri": "dvc://dagshub/models/4d91d98f05b248cfaa699285cc7680f0",
+      "model_sha256": "4af38d50b99fc21be28b042c82f665a446a2b71d01829cd706a9f5cde81a52fb",
+      "normalization_uri": null,
+      "mlflow_run_id": "4d91d98f05b248cfaa699285cc7680f0",
+      "mlflow_run_name": "exp-001-seed-1",
+      "mlflow_url": null,
+      "evaluation_suite_id": "suite-n2-v1",
+      "metrics": {
+        "success_rate": 0.92
+      },
+      "metrics_by_level": {
+        "n1": {
+          "success_rate": 0.2,
+          "failures_by_cause": {
+            "grieta": 33,
+            "tiempo": 6,
+            "volco": 1
+          },
+          "beacons_visited_mean": 1.0,
+          "steps_mean": 163.6,
+          "collisions_per_episode": 1.34,
+          "final_battery_success": 51.878,
+          "route_efficiency": 0.7326,
+          "return_mean": -2.402,
+          "latency_ms_mean": 0.0492,
+          "latency_ms_p95": 0.0619,
+          "episodes": 50,
+          "suite_id": "suite-n1-v1",
+          "suite_sha256": "446864daaf815a4c6a4cb2becbcb80dc7dbc4d2a9c7351ae2ff1f7e3af3156bc",
+          "environment_hash": "1e0b15706550acc04af62ddad0c5cc94df1b87747215711e88d281dd2125879e",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:04:55+00:00",
+          "evaluation_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+          "results_path": "catalog/results/4d91d98f05b248cfaa699285cc7680f0/n1.json"
+        },
+        "n2": {
+          "success_rate": 0.92,
+          "failures_by_cause": {
+            "bateria": 4
+          },
+          "beacons_visited_mean": 1.96,
+          "steps_mean": 194.56,
+          "collisions_per_episode": 9.4,
+          "final_battery_success": 32.4796,
+          "route_efficiency": 0.8949,
+          "return_mean": 79.7453,
+          "latency_ms_mean": 0.0502,
+          "latency_ms_p95": 0.0617,
+          "episodes": 50,
+          "suite_id": "suite-n2-v1",
+          "suite_sha256": "c2c5b2c08e44bd55c19fb4f05e0f604651e4599500d65e2b3909a4894d896121",
+          "environment_hash": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:05:05+00:00",
+          "evaluation_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+          "results_path": "catalog/results/4d91d98f05b248cfaa699285cc7680f0/n2.json"
+        },
+        "n3": {
+          "success_rate": 0.58,
+          "failures_by_cause": {
+            "tiempo": 18,
+            "bateria": 3
+          },
+          "beacons_visited_mean": 1.58,
+          "steps_mean": 308.84,
+          "collisions_per_episode": 163.44,
+          "final_battery_success": 33.2762,
+          "route_efficiency": 0.7941,
+          "return_mean": -23.8001,
+          "latency_ms_mean": 0.0491,
+          "latency_ms_p95": 0.0598,
+          "episodes": 50,
+          "suite_id": "suite-n3-v1",
+          "suite_sha256": "9c6be7827d981d561c393e223c30a38701fee9d1472498bb72208cb88c0df988",
+          "environment_hash": "8ece567b32d3a9713e3be7c0b8ca564aa10cd30eedaec6cb7cc01bbe04accca1",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:05:21+00:00",
+          "evaluation_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+          "results_path": "catalog/results/4d91d98f05b248cfaa699285cc7680f0/n3.json"
+        }
+      },
+      "curves": {
+        "training_success_rate": [
+          [
+            10000,
+            0.0
+          ],
+          [
+            20000,
+            0.0
+          ],
+          [
+            30000,
+            0.0
+          ],
+          [
+            40000,
+            0.0
+          ],
+          [
+            50000,
+            0.0
+          ],
+          [
+            60000,
+            0.0
+          ],
+          [
+            70000,
+            0.0
+          ],
+          [
+            80000,
+            0.0588
+          ],
+          [
+            90000,
+            0.1562
+          ],
+          [
+            100000,
+            0.1622
+          ],
+          [
+            110000,
+            0.6286
+          ],
+          [
+            120000,
+            0.6829
+          ],
+          [
+            130000,
+            0.8372
+          ],
+          [
+            140000,
+            0.8478
+          ],
+          [
+            150000,
+            0.8302
+          ],
+          [
+            160000,
+            0.96
+          ],
+          [
+            170000,
+            0.9661
+          ],
+          [
+            180000,
+            0.9828
+          ],
+          [
+            190000,
+            0.9667
+          ],
+          [
+            200000,
+            0.9394
+          ],
+          [
+            210000,
+            0.974
+          ],
+          [
+            220000,
+            0.9873
+          ],
+          [
+            230000,
+            1.0
+          ],
+          [
+            240000,
+            0.9877
+          ],
+          [
+            250000,
+            0.9861
+          ],
+          [
+            260000,
+            1.0
+          ],
+          [
+            270000,
+            0.9595
+          ],
+          [
+            280000,
+            0.9873
+          ],
+          [
+            290000,
+            0.9865
+          ],
+          [
+            300000,
+            0.963
+          ]
+        ],
+        "training_reward": [
+          [
+            10000,
+            -98.4162
+          ],
+          [
+            20000,
+            -94.0804
+          ],
+          [
+            30000,
+            -83.5296
+          ],
+          [
+            40000,
+            -79.3204
+          ],
+          [
+            50000,
+            -71.464
+          ],
+          [
+            60000,
+            -73.1937
+          ],
+          [
+            70000,
+            -66.376
+          ],
+          [
+            80000,
+            -48.8367
+          ],
+          [
+            90000,
+            -29.3514
+          ],
+          [
+            100000,
+            -23.7699
+          ],
+          [
+            110000,
+            32.2013
+          ],
+          [
+            120000,
+            45.7882
+          ],
+          [
+            130000,
+            64.9243
+          ],
+          [
+            140000,
+            71.319
+          ],
+          [
+            150000,
+            69.8022
+          ],
+          [
+            160000,
+            86.8622
+          ],
+          [
+            170000,
+            91.74
+          ],
+          [
+            180000,
+            94.1895
+          ],
+          [
+            190000,
+            93.044
+          ],
+          [
+            200000,
+            90.6107
+          ],
+          [
+            210000,
+            96.2333
+          ],
+          [
+            220000,
+            98.8452
+          ],
+          [
+            230000,
+            100.116
+          ],
+          [
+            240000,
+            98.53
+          ],
+          [
+            250000,
+            97.4688
+          ],
+          [
+            260000,
+            99.1228
+          ],
+          [
+            270000,
+            92.8877
+          ],
+          [
+            280000,
+            98.5381
+          ],
+          [
+            290000,
+            97.0525
+          ],
+          [
+            300000,
+            95.3321
+          ]
+        ]
+      }
+    },
+    {
+      "run_id": "4ecd569ee0214dbba3e10390c2dbec36",
+      "experiment_id": "exp-001",
+      "model_name": "QLEARNING · exp-001 · semilla 2",
+      "algorithm": "qlearning",
+      "level_id": "n2",
+      "status": "completed",
+      "diagnosis": null,
+      "hypothesis": "Q-learning tabular (2592 estados discretos) aprende a completar la mision en N2 y fija el baseline aprendido",
+      "change": "referencia aprendida: Q-learning con la observacion discretizada",
+      "reference": "baseline-rule",
+      "seed": 2,
+      "budget_timesteps": 300000,
+      "effective_budget_timesteps": 300000,
+      "training_time_s": 533.1,
+      "parent_run_id": null,
+      "environment_version": "robot-expedition-3d/1.0.0",
+      "environment_hash": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+      "git_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+      "commit_url": "https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition/commit/df91b93655a931dbff3219a8dd14b9fcd830ae28",
+      "config_path": "configs/experiments/exp-001.yaml",
+      "config_sha256": "4fc8c2f4e5dad4069ca16d053ac4f2cf7070c578b283a9ae1dec7e9a77624236",
+      "model_uri": "dvc://dagshub/models/4ecd569ee0214dbba3e10390c2dbec36",
+      "model_sha256": "8dfd89d6e00214a8b82e0d7a1d9547d65d75b5db7acb178c8e5fd00e009fc848",
+      "normalization_uri": null,
+      "mlflow_run_id": "4ecd569ee0214dbba3e10390c2dbec36",
+      "mlflow_run_name": "exp-001-seed-2",
+      "mlflow_url": null,
+      "evaluation_suite_id": "suite-n2-v1",
+      "metrics": {
+        "success_rate": 1.0
+      },
+      "metrics_by_level": {
+        "n1": {
+          "success_rate": 0.04,
+          "failures_by_cause": {
+            "grieta": 34,
+            "volco": 14
+          },
+          "beacons_visited_mean": 1.0,
+          "steps_mean": 75.82,
+          "collisions_per_episode": 0.0,
+          "final_battery_success": 65.29,
+          "route_efficiency": 0.8359,
+          "return_mean": -24.6084,
+          "latency_ms_mean": 0.0299,
+          "latency_ms_p95": 0.0312,
+          "episodes": 50,
+          "suite_id": "suite-n1-v1",
+          "suite_sha256": "446864daaf815a4c6a4cb2becbcb80dc7dbc4d2a9c7351ae2ff1f7e3af3156bc",
+          "environment_hash": "1e0b15706550acc04af62ddad0c5cc94df1b87747215711e88d281dd2125879e",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:13:23+00:00",
+          "evaluation_commit": "72d616e9cf1c2ff5cc7af43bc201cc42955fdb40",
+          "results_path": "catalog/results/4ecd569ee0214dbba3e10390c2dbec36/n1.json"
+        },
+        "n2": {
+          "success_rate": 1.0,
+          "failures_by_cause": {},
+          "beacons_visited_mean": 2.0,
+          "steps_mean": 117.28,
+          "collisions_per_episode": 0.0,
+          "final_battery_success": 55.1798,
+          "route_efficiency": 0.9404,
+          "return_mean": 100.4139,
+          "latency_ms_mean": 0.0306,
+          "latency_ms_p95": 0.0325,
+          "episodes": 50,
+          "suite_id": "suite-n2-v1",
+          "suite_sha256": "c2c5b2c08e44bd55c19fb4f05e0f604651e4599500d65e2b3909a4894d896121",
+          "environment_hash": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:13:27+00:00",
+          "evaluation_commit": "72d616e9cf1c2ff5cc7af43bc201cc42955fdb40",
+          "results_path": "catalog/results/4ecd569ee0214dbba3e10390c2dbec36/n2.json"
+        },
+        "n3": {
+          "success_rate": 0.24,
+          "failures_by_cause": {
+            "tiempo": 38
+          },
+          "beacons_visited_mean": 1.24,
+          "steps_mean": 341.82,
+          "collisions_per_episode": 264.38,
+          "final_battery_success": 46.7042,
+          "route_efficiency": 0.8499,
+          "return_mean": -96.4157,
+          "latency_ms_mean": 0.0298,
+          "latency_ms_p95": 0.0308,
+          "episodes": 50,
+          "suite_id": "suite-n3-v1",
+          "suite_sha256": "9c6be7827d981d561c393e223c30a38701fee9d1472498bb72208cb88c0df988",
+          "environment_hash": "8ece567b32d3a9713e3be7c0b8ca564aa10cd30eedaec6cb7cc01bbe04accca1",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:13:38+00:00",
+          "evaluation_commit": "72d616e9cf1c2ff5cc7af43bc201cc42955fdb40",
+          "results_path": "catalog/results/4ecd569ee0214dbba3e10390c2dbec36/n3.json"
+        }
+      },
+      "curves": {
+        "training_success_rate": [
+          [
+            10000,
+            0.0
+          ],
+          [
+            20000,
+            0.0
+          ],
+          [
+            30000,
+            0.0
+          ],
+          [
+            40000,
+            0.0
+          ],
+          [
+            50000,
+            0.0
+          ],
+          [
+            60000,
+            0.0
+          ],
+          [
+            70000,
+            0.0
+          ],
+          [
+            80000,
+            0.0345
+          ],
+          [
+            90000,
+            0.2333
+          ],
+          [
+            100000,
+            0.2973
+          ],
+          [
+            110000,
+            0.3478
+          ],
+          [
+            120000,
+            0.4872
+          ],
+          [
+            130000,
+            0.7143
+          ],
+          [
+            140000,
+            0.7647
+          ],
+          [
+            150000,
+            0.902
+          ],
+          [
+            160000,
+            0.9355
+          ],
+          [
+            170000,
+            0.7627
+          ],
+          [
+            180000,
+            0.9016
+          ],
+          [
+            190000,
+            0.9254
+          ],
+          [
+            200000,
+            1.0
+          ],
+          [
+            210000,
+            1.0
+          ],
+          [
+            220000,
+            0.9875
+          ],
+          [
+            230000,
+            1.0
+          ],
+          [
+            240000,
+            0.9737
+          ],
+          [
+            250000,
+            0.9861
+          ],
+          [
+            260000,
+            0.9867
+          ],
+          [
+            270000,
+            0.9242
+          ],
+          [
+            280000,
+            1.0
+          ],
+          [
+            290000,
+            0.9873
+          ],
+          [
+            300000,
+            0.9744
+          ]
+        ],
+        "training_reward": [
+          [
+            10000,
+            -98.8461
+          ],
+          [
+            20000,
+            -99.406
+          ],
+          [
+            30000,
+            -79.7795
+          ],
+          [
+            40000,
+            -76.8287
+          ],
+          [
+            50000,
+            -82.1883
+          ],
+          [
+            60000,
+            -65.1882
+          ],
+          [
+            70000,
+            -63.0078
+          ],
+          [
+            80000,
+            -64.8412
+          ],
+          [
+            90000,
+            -27.8338
+          ],
+          [
+            100000,
+            -12.6783
+          ],
+          [
+            110000,
+            -3.4276
+          ],
+          [
+            120000,
+            23.3764
+          ],
+          [
+            130000,
+            54.574
+          ],
+          [
+            140000,
+            56.8503
+          ],
+          [
+            150000,
+            78.8288
+          ],
+          [
+            160000,
+            86.6497
+          ],
+          [
+            170000,
+            58.6537
+          ],
+          [
+            180000,
+            82.5513
+          ],
+          [
+            190000,
+            88.2553
+          ],
+          [
+            200000,
+            96.9571
+          ],
+          [
+            210000,
+            99.0121
+          ],
+          [
+            220000,
+            98.8546
+          ],
+          [
+            230000,
+            100.084
+          ],
+          [
+            240000,
+            96.9262
+          ],
+          [
+            250000,
+            98.4325
+          ],
+          [
+            260000,
+            98.3264
+          ],
+          [
+            270000,
+            90.2066
+          ],
+          [
+            280000,
+            98.4159
+          ],
+          [
+            290000,
+            98.391
+          ],
+          [
+            300000,
+            96.99
+          ]
+        ]
+      }
+    },
+    {
+      "run_id": "b724b2e7eb8142609e0c95bfba73e5b6",
+      "experiment_id": "exp-001",
+      "model_name": "QLEARNING · exp-001 · semilla 3",
+      "algorithm": "qlearning",
+      "level_id": "n2",
+      "status": "completed",
+      "diagnosis": null,
+      "hypothesis": "Q-learning tabular (2592 estados discretos) aprende a completar la mision en N2 y fija el baseline aprendido",
+      "change": "referencia aprendida: Q-learning con la observacion discretizada",
+      "reference": "baseline-rule",
+      "seed": 3,
+      "budget_timesteps": 300000,
+      "effective_budget_timesteps": 300000,
+      "training_time_s": 556.9,
+      "parent_run_id": null,
+      "environment_version": "robot-expedition-3d/1.0.0",
+      "environment_hash": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+      "git_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+      "commit_url": "https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition/commit/df91b93655a931dbff3219a8dd14b9fcd830ae28",
+      "config_path": "configs/experiments/exp-001.yaml",
+      "config_sha256": "55b4f6f22d2934ec181079d4047659630b71d3777da8d660a566ca8053f92db1",
+      "model_uri": "dvc://dagshub/models/b724b2e7eb8142609e0c95bfba73e5b6",
+      "model_sha256": "c15a8fd99d713df02350931b4c4d9601959d405beb36ea208caf2123f789e788",
+      "normalization_uri": null,
+      "mlflow_run_id": "b724b2e7eb8142609e0c95bfba73e5b6",
+      "mlflow_run_name": "exp-001-seed-3",
+      "mlflow_url": null,
+      "evaluation_suite_id": "suite-n2-v1",
+      "metrics": {
+        "success_rate": 1.0
+      },
+      "metrics_by_level": {
+        "n1": {
+          "success_rate": 0.94,
+          "failures_by_cause": {
+            "tiempo": 3
+          },
+          "beacons_visited_mean": 1.0,
+          "steps_mean": 107.74,
+          "collisions_per_episode": 0.0,
+          "final_battery_success": 68.6762,
+          "route_efficiency": 0.943,
+          "return_mean": 82.9259,
+          "latency_ms_mean": 0.031,
+          "latency_ms_p95": 0.0321,
+          "episodes": 50,
+          "suite_id": "suite-n1-v1",
+          "suite_sha256": "446864daaf815a4c6a4cb2becbcb80dc7dbc4d2a9c7351ae2ff1f7e3af3156bc",
+          "environment_hash": "1e0b15706550acc04af62ddad0c5cc94df1b87747215711e88d281dd2125879e",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:14:30+00:00",
+          "evaluation_commit": "72d616e9cf1c2ff5cc7af43bc201cc42955fdb40",
+          "results_path": "catalog/results/b724b2e7eb8142609e0c95bfba73e5b6/n1.json"
+        },
+        "n2": {
+          "success_rate": 1.0,
+          "failures_by_cause": {},
+          "beacons_visited_mean": 2.0,
+          "steps_mean": 130.62,
+          "collisions_per_episode": 0.0,
+          "final_battery_success": 54.4376,
+          "route_efficiency": 0.9535,
+          "return_mean": 100.2029,
+          "latency_ms_mean": 0.0307,
+          "latency_ms_p95": 0.0321,
+          "episodes": 50,
+          "suite_id": "suite-n2-v1",
+          "suite_sha256": "c2c5b2c08e44bd55c19fb4f05e0f604651e4599500d65e2b3909a4894d896121",
+          "environment_hash": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:14:35+00:00",
+          "evaluation_commit": "72d616e9cf1c2ff5cc7af43bc201cc42955fdb40",
+          "results_path": "catalog/results/b724b2e7eb8142609e0c95bfba73e5b6/n2.json"
+        },
+        "n3": {
+          "success_rate": 0.68,
+          "failures_by_cause": {
+            "tiempo": 14,
+            "bateria": 2
+          },
+          "beacons_visited_mean": 1.7,
+          "steps_mean": 222.28,
+          "collisions_per_episode": 92.5,
+          "final_battery_success": 48.8135,
+          "route_efficiency": 0.8633,
+          "return_mean": 24.3498,
+          "latency_ms_mean": 0.0303,
+          "latency_ms_p95": 0.0317,
+          "episodes": 50,
+          "suite_id": "suite-n3-v1",
+          "suite_sha256": "9c6be7827d981d561c393e223c30a38701fee9d1472498bb72208cb88c0df988",
+          "environment_hash": "8ece567b32d3a9713e3be7c0b8ca564aa10cd30eedaec6cb7cc01bbe04accca1",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:14:42+00:00",
+          "evaluation_commit": "72d616e9cf1c2ff5cc7af43bc201cc42955fdb40",
+          "results_path": "catalog/results/b724b2e7eb8142609e0c95bfba73e5b6/n3.json"
+        }
+      },
+      "curves": {
+        "training_success_rate": [
+          [
+            10000,
+            0.0
+          ],
+          [
+            20000,
+            0.0
+          ],
+          [
+            30000,
+            0.0
+          ],
+          [
+            40000,
+            0.0
+          ],
+          [
+            50000,
+            0.0
+          ],
+          [
+            60000,
+            0.0
+          ],
+          [
+            70000,
+            0.0
+          ],
+          [
+            80000,
+            0.0303
+          ],
+          [
+            90000,
+            0.0645
+          ],
+          [
+            100000,
+            0.0667
+          ],
+          [
+            110000,
+            0.2647
+          ],
+          [
+            120000,
+            0.7692
+          ],
+          [
+            130000,
+            0.7317
+          ],
+          [
+            140000,
+            0.7727
+          ],
+          [
+            150000,
+            0.9583
+          ],
+          [
+            160000,
+            1.0
+          ],
+          [
+            170000,
+            0.8909
+          ],
+          [
+            180000,
+            0.9859
+          ],
+          [
+            190000,
+            0.987
+          ],
+          [
+            200000,
+            0.9189
+          ],
+          [
+            210000,
+            1.0
+          ],
+          [
+            220000,
+            0.9873
+          ],
+          [
+            230000,
+            0.963
+          ],
+          [
+            240000,
+            1.0
+          ],
+          [
+            250000,
+            0.9865
+          ],
+          [
+            260000,
+            1.0
+          ],
+          [
+            270000,
+            1.0
+          ],
+          [
+            280000,
+            1.0
+          ],
+          [
+            290000,
+            0.988
+          ],
+          [
+            300000,
+            0.9881
+          ]
+        ],
+        "training_reward": [
+          [
+            10000,
+            -102.419
+          ],
+          [
+            20000,
+            -95.7208
+          ],
+          [
+            30000,
+            -84.0636
+          ],
+          [
+            40000,
+            -81.4852
+          ],
+          [
+            50000,
+            -74.0699
+          ],
+          [
+            60000,
+            -66.2707
+          ],
+          [
+            70000,
+            -61.1542
+          ],
+          [
+            80000,
+            -53.714
+          ],
+          [
+            90000,
+            -44.1988
+          ],
+          [
+            100000,
+            -37.8286
+          ],
+          [
+            110000,
+            -7.5826
+          ],
+          [
+            120000,
+            54.139
+          ],
+          [
+            130000,
+            53.5614
+          ],
+          [
+            140000,
+            55.6176
+          ],
+          [
+            150000,
+            84.3299
+          ],
+          [
+            160000,
+            94.8615
+          ],
+          [
+            170000,
+            78.705
+          ],
+          [
+            180000,
+            96.3437
+          ],
+          [
+            190000,
+            97.3703
+          ],
+          [
+            200000,
+            87.277
+          ],
+          [
+            210000,
+            99.8232
+          ],
+          [
+            220000,
+            97.8567
+          ],
+          [
+            230000,
+            95.1964
+          ],
+          [
+            240000,
+            100.2288
+          ],
+          [
+            250000,
+            98.4803
+          ],
+          [
+            260000,
+            99.7534
+          ],
+          [
+            270000,
+            99.9815
+          ],
+          [
+            280000,
+            100.0382
+          ],
+          [
+            290000,
+            98.55
+          ],
+          [
+            300000,
+            99.4948
+          ]
+        ]
+      }
+    },
+    {
+      "run_id": "a1752d56c065467d8592d52cb229cad6",
+      "experiment_id": "exp-002",
+      "model_name": "PPO · exp-002 · semilla 1",
+      "algorithm": "ppo",
+      "level_id": "n2",
+      "status": "completed",
+      "diagnosis": null,
+      "hypothesis": "PPO con la observacion continua normalizada supera en exito a Q-learning en N2 con el mismo presupuesto",
+      "change": "algoritmo: PPO (MLP sobre los 20 floats) en lugar de Q-learning discretizado",
+      "reference": "exp-001",
+      "seed": 1,
+      "budget_timesteps": 300000,
+      "effective_budget_timesteps": 303104,
+      "training_time_s": 735.2,
+      "parent_run_id": null,
+      "environment_version": "robot-expedition-3d/1.0.0",
+      "environment_hash": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+      "git_commit": "5f46a09251b68b7aa88df9bd6f3a80a9e3d94062",
+      "commit_url": "https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition/commit/5f46a09251b68b7aa88df9bd6f3a80a9e3d94062",
+      "config_path": "configs/experiments/exp-002.yaml",
+      "config_sha256": "dde49cbaed735e763efbff23603d55b50b16741392d13c2182bf0b01d0088163",
+      "model_uri": "dvc://dagshub/models/a1752d56c065467d8592d52cb229cad6",
+      "model_sha256": "400dd44c921875c56ce7c4123ca093fa5b65ba29ee8f6a1a925d001c7f8c8246",
+      "normalization_uri": "runs:/a1752d56c065467d8592d52cb229cad6/vecnormalize.pkl",
+      "mlflow_run_id": "a1752d56c065467d8592d52cb229cad6",
+      "mlflow_run_name": "exp-002-seed-1",
+      "mlflow_url": null,
+      "evaluation_suite_id": "suite-n2-v1",
+      "metrics": {
+        "success_rate": 1.0
+      },
+      "metrics_by_level": {
+        "n1": {
+          "success_rate": 1.0,
+          "failures_by_cause": {},
+          "beacons_visited_mean": 1.0,
+          "steps_mean": 63.0,
+          "collisions_per_episode": 0.0,
+          "final_battery_success": 70.81,
+          "route_efficiency": 0.9994,
+          "return_mean": 88.1161,
+          "latency_ms_mean": 0.4092,
+          "latency_ms_p95": 0.5708,
+          "episodes": 50,
+          "suite_id": "suite-n1-v1",
+          "suite_sha256": "446864daaf815a4c6a4cb2becbcb80dc7dbc4d2a9c7351ae2ff1f7e3af3156bc",
+          "environment_hash": "1e0b15706550acc04af62ddad0c5cc94df1b87747215711e88d281dd2125879e",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:06:24+00:00",
+          "evaluation_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+          "results_path": "catalog/results/a1752d56c065467d8592d52cb229cad6/n1.json"
+        },
+        "n2": {
+          "success_rate": 1.0,
+          "failures_by_cause": {},
+          "beacons_visited_mean": 2.0,
+          "steps_mean": 85.32,
+          "collisions_per_episode": 0.0,
+          "final_battery_success": 61.67,
+          "route_efficiency": 1.0583,
+          "return_mean": 101.9584,
+          "latency_ms_mean": 0.3632,
+          "latency_ms_p95": 0.4725,
+          "episodes": 50,
+          "suite_id": "suite-n2-v1",
+          "suite_sha256": "c2c5b2c08e44bd55c19fb4f05e0f604651e4599500d65e2b3909a4894d896121",
+          "environment_hash": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:06:30+00:00",
+          "evaluation_commit": "72d616e9cf1c2ff5cc7af43bc201cc42955fdb40",
+          "results_path": "catalog/results/a1752d56c065467d8592d52cb229cad6/n2.json"
+        },
+        "n3": {
+          "success_rate": 0.0,
+          "failures_by_cause": {
+            "tiempo": 50
+          },
+          "beacons_visited_mean": 1.0,
+          "steps_mean": 400.0,
+          "collisions_per_episode": 348.66,
+          "final_battery_success": null,
+          "route_efficiency": null,
+          "return_mean": -158.1914,
+          "latency_ms_mean": 0.3644,
+          "latency_ms_p95": 0.4392,
+          "episodes": 50,
+          "suite_id": "suite-n3-v1",
+          "suite_sha256": "9c6be7827d981d561c393e223c30a38701fee9d1472498bb72208cb88c0df988",
+          "environment_hash": "8ece567b32d3a9713e3be7c0b8ca564aa10cd30eedaec6cb7cc01bbe04accca1",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:06:56+00:00",
+          "evaluation_commit": "72d616e9cf1c2ff5cc7af43bc201cc42955fdb40",
+          "results_path": "catalog/results/a1752d56c065467d8592d52cb229cad6/n3.json"
+        }
+      },
+      "curves": {
+        "training_success_rate": [
+          [
+            10098,
+            0.0
+          ],
+          [
+            20195,
+            0.0
+          ],
+          [
+            30293,
+            0.0
+          ],
+          [
+            40390,
+            0.0
+          ],
+          [
+            50488,
+            0.0
+          ],
+          [
+            60586,
+            0.0
+          ],
+          [
+            70683,
+            0.0312
+          ],
+          [
+            80781,
+            0.6
+          ],
+          [
+            90878,
+            0.875
+          ],
+          [
+            100976,
+            1.0
+          ],
+          [
+            111074,
+            1.0
+          ],
+          [
+            121171,
+            1.0
+          ],
+          [
+            131269,
+            1.0
+          ],
+          [
+            141366,
+            1.0
+          ],
+          [
+            151464,
+            1.0
+          ],
+          [
+            161562,
+            1.0
+          ],
+          [
+            171659,
+            1.0
+          ],
+          [
+            181757,
+            1.0
+          ],
+          [
+            191854,
+            1.0
+          ],
+          [
+            201952,
+            1.0
+          ],
+          [
+            212050,
+            1.0
+          ],
+          [
+            222147,
+            1.0
+          ],
+          [
+            232245,
+            1.0
+          ],
+          [
+            242342,
+            1.0
+          ],
+          [
+            252440,
+            1.0
+          ],
+          [
+            262538,
+            1.0
+          ],
+          [
+            272635,
+            1.0
+          ],
+          [
+            282733,
+            1.0
+          ],
+          [
+            292830,
+            1.0
+          ],
+          [
+            302928,
+            1.0
+          ]
+        ],
+        "training_reward": [
+          [
+            10098,
+            -94.7992
+          ],
+          [
+            20195,
+            -83.7003
+          ],
+          [
+            30293,
+            -73.3664
+          ],
+          [
+            40390,
+            -67.5687
+          ],
+          [
+            50488,
+            -58.7506
+          ],
+          [
+            60586,
+            -46.3536
+          ],
+          [
+            70683,
+            -33.0411
+          ],
+          [
+            80781,
+            30.0118
+          ],
+          [
+            90878,
+            64.8111
+          ],
+          [
+            100976,
+            79.9447
+          ],
+          [
+            111074,
+            92.9186
+          ],
+          [
+            121171,
+            94.0472
+          ],
+          [
+            131269,
+            97.301
+          ],
+          [
+            141366,
+            98.08
+          ],
+          [
+            151464,
+            99.9435
+          ],
+          [
+            161562,
+            100.0989
+          ],
+          [
+            171659,
+            100.9676
+          ],
+          [
+            181757,
+            101.267
+          ],
+          [
+            191854,
+            100.9014
+          ],
+          [
+            201952,
+            101.1757
+          ],
+          [
+            212050,
+            101.394
+          ],
+          [
+            222147,
+            101.5381
+          ],
+          [
+            232245,
+            101.6345
+          ],
+          [
+            242342,
+            101.4391
+          ],
+          [
+            252440,
+            101.3993
+          ],
+          [
+            262538,
+            101.5806
+          ],
+          [
+            272635,
+            101.6823
+          ],
+          [
+            282733,
+            101.5433
+          ],
+          [
+            292830,
+            101.5012
+          ],
+          [
+            302928,
+            101.6062
+          ]
+        ]
+      }
+    },
+    {
+      "run_id": "90be8649c2404ed390ee89f6fabe9eb7",
+      "experiment_id": "exp-002",
+      "model_name": "PPO · exp-002 · semilla 2",
+      "algorithm": "ppo",
+      "level_id": "n2",
+      "status": "completed",
+      "diagnosis": null,
+      "hypothesis": "PPO con la observacion continua normalizada supera en exito a Q-learning en N2 con el mismo presupuesto",
+      "change": "algoritmo: PPO (MLP sobre los 20 floats) en lugar de Q-learning discretizado",
+      "reference": "exp-001",
+      "seed": 2,
+      "budget_timesteps": 300000,
+      "effective_budget_timesteps": 303104,
+      "training_time_s": 780.8,
+      "parent_run_id": null,
+      "environment_version": "robot-expedition-3d/1.0.0",
+      "environment_hash": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+      "git_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+      "commit_url": "https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition/commit/df91b93655a931dbff3219a8dd14b9fcd830ae28",
+      "config_path": "configs/experiments/exp-002.yaml",
+      "config_sha256": "c8ac6790365c0939e28f60aee6164be0bf1b3389a4adc0319374cfbb3a334f70",
+      "model_uri": "dvc://dagshub/models/90be8649c2404ed390ee89f6fabe9eb7",
+      "model_sha256": "11039fd2201f848527279c8bc2d119bd8882a96a633a381e3481d90e60ad6179",
+      "normalization_uri": "runs:/90be8649c2404ed390ee89f6fabe9eb7/vecnormalize.pkl",
+      "mlflow_run_id": "90be8649c2404ed390ee89f6fabe9eb7",
+      "mlflow_run_name": "exp-002-seed-2",
+      "mlflow_url": null,
+      "evaluation_suite_id": "suite-n2-v1",
+      "metrics": {
+        "success_rate": 1.0
+      },
+      "metrics_by_level": {
+        "n1": {
+          "success_rate": 1.0,
+          "failures_by_cause": {},
+          "beacons_visited_mean": 1.0,
+          "steps_mean": 64.46,
+          "collisions_per_episode": 0.0,
+          "final_battery_success": 70.765,
+          "route_efficiency": 0.9985,
+          "return_mean": 87.9841,
+          "latency_ms_mean": 0.2436,
+          "latency_ms_p95": 0.2498,
+          "episodes": 50,
+          "suite_id": "suite-n1-v1",
+          "suite_sha256": "446864daaf815a4c6a4cb2becbcb80dc7dbc4d2a9c7351ae2ff1f7e3af3156bc",
+          "environment_hash": "1e0b15706550acc04af62ddad0c5cc94df1b87747215711e88d281dd2125879e",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:14:11+00:00",
+          "evaluation_commit": "72d616e9cf1c2ff5cc7af43bc201cc42955fdb40",
+          "results_path": "catalog/results/90be8649c2404ed390ee89f6fabe9eb7/n1.json"
+        },
+        "n2": {
+          "success_rate": 1.0,
+          "failures_by_cause": {},
+          "beacons_visited_mean": 2.0,
+          "steps_mean": 86.08,
+          "collisions_per_episode": 0.0,
+          "final_battery_success": 61.503,
+          "route_efficiency": 1.0634,
+          "return_mean": 101.5962,
+          "latency_ms_mean": 0.2459,
+          "latency_ms_p95": 0.2628,
+          "episodes": 50,
+          "suite_id": "suite-n2-v1",
+          "suite_sha256": "c2c5b2c08e44bd55c19fb4f05e0f604651e4599500d65e2b3909a4894d896121",
+          "environment_hash": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:14:15+00:00",
+          "evaluation_commit": "72d616e9cf1c2ff5cc7af43bc201cc42955fdb40",
+          "results_path": "catalog/results/90be8649c2404ed390ee89f6fabe9eb7/n2.json"
+        },
+        "n3": {
+          "success_rate": 0.0,
+          "failures_by_cause": {
+            "bateria": 50
+          },
+          "beacons_visited_mean": 1.0,
+          "steps_mean": 242.86,
+          "collisions_per_episode": 41.94,
+          "final_battery_success": null,
+          "route_efficiency": null,
+          "return_mean": -56.4096,
+          "latency_ms_mean": 0.242,
+          "latency_ms_p95": 0.2535,
+          "episodes": 50,
+          "suite_id": "suite-n3-v1",
+          "suite_sha256": "9c6be7827d981d561c393e223c30a38701fee9d1472498bb72208cb88c0df988",
+          "environment_hash": "8ece567b32d3a9713e3be7c0b8ca564aa10cd30eedaec6cb7cc01bbe04accca1",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:14:26+00:00",
+          "evaluation_commit": "72d616e9cf1c2ff5cc7af43bc201cc42955fdb40",
+          "results_path": "catalog/results/90be8649c2404ed390ee89f6fabe9eb7/n3.json"
+        }
+      },
+      "curves": {
+        "training_success_rate": [
+          [
+            10103,
+            0.0
+          ],
+          [
+            20206,
+            0.0
+          ],
+          [
+            30310,
+            0.0
+          ],
+          [
+            40413,
+            0.0
+          ],
+          [
+            50516,
+            0.0
+          ],
+          [
+            60619,
+            0.0
+          ],
+          [
+            70722,
+            0.0
+          ],
+          [
+            80826,
+            0.0
+          ],
+          [
+            90929,
+            0.0
+          ],
+          [
+            101032,
+            0.0
+          ],
+          [
+            111135,
+            0.0645
+          ],
+          [
+            121238,
+            0.4412
+          ],
+          [
+            131342,
+            0.8421
+          ],
+          [
+            141445,
+            1.0
+          ],
+          [
+            151548,
+            1.0
+          ],
+          [
+            161651,
+            0.9804
+          ],
+          [
+            171754,
+            1.0
+          ],
+          [
+            181858,
+            1.0
+          ],
+          [
+            191961,
+            1.0
+          ],
+          [
+            202064,
+            1.0
+          ],
+          [
+            212167,
+            1.0
+          ],
+          [
+            222270,
+            1.0
+          ],
+          [
+            232374,
+            1.0
+          ],
+          [
+            242477,
+            1.0
+          ],
+          [
+            252580,
+            1.0
+          ],
+          [
+            262683,
+            1.0
+          ],
+          [
+            272786,
+            1.0
+          ],
+          [
+            282890,
+            1.0
+          ],
+          [
+            292993,
+            1.0
+          ],
+          [
+            303096,
+            1.0
+          ]
+        ],
+        "training_reward": [
+          [
+            10103,
+            -104.7316
+          ],
+          [
+            20206,
+            -85.2636
+          ],
+          [
+            30310,
+            -66.6173
+          ],
+          [
+            40413,
+            -75.4394
+          ],
+          [
+            50516,
+            -71.6305
+          ],
+          [
+            60619,
+            -69.0524
+          ],
+          [
+            70722,
+            -57.6488
+          ],
+          [
+            80826,
+            -49.0964
+          ],
+          [
+            90929,
+            -34.9065
+          ],
+          [
+            101032,
+            -29.1823
+          ],
+          [
+            111135,
+            -17.0677
+          ],
+          [
+            121238,
+            23.1919
+          ],
+          [
+            131342,
+            68.4852
+          ],
+          [
+            141445,
+            88.3314
+          ],
+          [
+            151548,
+            89.6713
+          ],
+          [
+            161651,
+            88.4763
+          ],
+          [
+            171754,
+            92.189
+          ],
+          [
+            181858,
+            96.7333
+          ],
+          [
+            191961,
+            98.9206
+          ],
+          [
+            202064,
+            99.8266
+          ],
+          [
+            212167,
+            100.7192
+          ],
+          [
+            222270,
+            100.7722
+          ],
+          [
+            232374,
+            101.2518
+          ],
+          [
+            242477,
+            100.9062
+          ],
+          [
+            252580,
+            101.4767
+          ],
+          [
+            262683,
+            101.7346
+          ],
+          [
+            272786,
+            101.4838
+          ],
+          [
+            282890,
+            101.5079
+          ],
+          [
+            292993,
+            100.6482
+          ],
+          [
+            303096,
+            101.382
+          ]
+        ]
+      }
+    },
+    {
+      "run_id": "5d5c58397f77408b9b8374c5e38c4d50",
+      "experiment_id": "exp-002",
+      "model_name": "PPO · exp-002 · semilla 3",
+      "algorithm": "ppo",
+      "level_id": "n2",
+      "status": "completed",
+      "diagnosis": null,
+      "hypothesis": "PPO con la observacion continua normalizada supera en exito a Q-learning en N2 con el mismo presupuesto",
+      "change": "algoritmo: PPO (MLP sobre los 20 floats) en lugar de Q-learning discretizado",
+      "reference": "exp-001",
+      "seed": 3,
+      "budget_timesteps": 300000,
+      "effective_budget_timesteps": 303104,
+      "training_time_s": 823.9,
+      "parent_run_id": null,
+      "environment_version": "robot-expedition-3d/1.0.0",
+      "environment_hash": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+      "git_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+      "commit_url": "https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition/commit/df91b93655a931dbff3219a8dd14b9fcd830ae28",
+      "config_path": "configs/experiments/exp-002.yaml",
+      "config_sha256": "843b2b093dde3348b6afa4658f8350fd657798afb04b2fa74071620744bc5b7e",
+      "model_uri": "dvc://dagshub/models/5d5c58397f77408b9b8374c5e38c4d50",
+      "model_sha256": "c9d63ba6b0cdb7949edb7970095ef9d29e8f05c5f557d1a48b91c04a2205957e",
+      "normalization_uri": "runs:/5d5c58397f77408b9b8374c5e38c4d50/vecnormalize.pkl",
+      "mlflow_run_id": "5d5c58397f77408b9b8374c5e38c4d50",
+      "mlflow_run_name": "exp-002-seed-3",
+      "mlflow_url": null,
+      "evaluation_suite_id": "suite-n2-v1",
+      "metrics": {
+        "success_rate": 1.0
+      },
+      "metrics_by_level": {
+        "n1": {
+          "success_rate": 1.0,
+          "failures_by_cause": {},
+          "beacons_visited_mean": 1.0,
+          "steps_mean": 109.0,
+          "collisions_per_episode": 39.0,
+          "final_battery_success": 66.57,
+          "route_efficiency": 1.0034,
+          "return_mean": 67.4439,
+          "latency_ms_mean": 0.2426,
+          "latency_ms_p95": 0.2495,
+          "episodes": 50,
+          "suite_id": "suite-n1-v1",
+          "suite_sha256": "446864daaf815a4c6a4cb2becbcb80dc7dbc4d2a9c7351ae2ff1f7e3af3156bc",
+          "environment_hash": "1e0b15706550acc04af62ddad0c5cc94df1b87747215711e88d281dd2125879e",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:13:45+00:00",
+          "evaluation_commit": "72d616e9cf1c2ff5cc7af43bc201cc42955fdb40",
+          "results_path": "catalog/results/5d5c58397f77408b9b8374c5e38c4d50/n1.json"
+        },
+        "n2": {
+          "success_rate": 1.0,
+          "failures_by_cause": {},
+          "beacons_visited_mean": 2.0,
+          "steps_mean": 83.0,
+          "collisions_per_episode": 0.0,
+          "final_battery_success": 62.12,
+          "route_efficiency": 1.0813,
+          "return_mean": 101.7913,
+          "latency_ms_mean": 0.2454,
+          "latency_ms_p95": 0.255,
+          "episodes": 50,
+          "suite_id": "suite-n2-v1",
+          "suite_sha256": "c2c5b2c08e44bd55c19fb4f05e0f604651e4599500d65e2b3909a4894d896121",
+          "environment_hash": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:13:49+00:00",
+          "evaluation_commit": "72d616e9cf1c2ff5cc7af43bc201cc42955fdb40",
+          "results_path": "catalog/results/5d5c58397f77408b9b8374c5e38c4d50/n2.json"
+        },
+        "n3": {
+          "success_rate": 0.0,
+          "failures_by_cause": {
+            "tiempo": 50
+          },
+          "beacons_visited_mean": 1.0,
+          "steps_mean": 400.0,
+          "collisions_per_episode": 350.86,
+          "final_battery_success": null,
+          "route_efficiency": null,
+          "return_mean": -159.5872,
+          "latency_ms_mean": 0.2445,
+          "latency_ms_p95": 0.2498,
+          "episodes": 50,
+          "suite_id": "suite-n3-v1",
+          "suite_sha256": "9c6be7827d981d561c393e223c30a38701fee9d1472498bb72208cb88c0df988",
+          "environment_hash": "8ece567b32d3a9713e3be7c0b8ca564aa10cd30eedaec6cb7cc01bbe04accca1",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:14:08+00:00",
+          "evaluation_commit": "72d616e9cf1c2ff5cc7af43bc201cc42955fdb40",
+          "results_path": "catalog/results/5d5c58397f77408b9b8374c5e38c4d50/n3.json"
+        }
+      },
+      "curves": {
+        "training_success_rate": [
+          [
+            10101,
+            0.0
+          ],
+          [
+            20202,
+            0.0
+          ],
+          [
+            30304,
+            0.0
+          ],
+          [
+            40405,
+            0.0
+          ],
+          [
+            50506,
+            0.0
+          ],
+          [
+            60607,
+            0.0345
+          ],
+          [
+            70708,
+            0.4
+          ],
+          [
+            80810,
+            0.7105
+          ],
+          [
+            90911,
+            0.9565
+          ],
+          [
+            101012,
+            0.9811
+          ],
+          [
+            111113,
+            1.0
+          ],
+          [
+            121214,
+            1.0
+          ],
+          [
+            131316,
+            1.0
+          ],
+          [
+            141417,
+            1.0
+          ],
+          [
+            151518,
+            1.0
+          ],
+          [
+            161619,
+            1.0
+          ],
+          [
+            171720,
+            1.0
+          ],
+          [
+            181822,
+            1.0
+          ],
+          [
+            191923,
+            1.0
+          ],
+          [
+            202024,
+            1.0
+          ],
+          [
+            212125,
+            1.0
+          ],
+          [
+            222226,
+            1.0
+          ],
+          [
+            232328,
+            1.0
+          ],
+          [
+            242429,
+            1.0
+          ],
+          [
+            252530,
+            1.0
+          ],
+          [
+            262631,
+            1.0
+          ],
+          [
+            272732,
+            1.0
+          ],
+          [
+            282834,
+            1.0
+          ],
+          [
+            292935,
+            1.0
+          ],
+          [
+            303036,
+            1.0
+          ]
+        ],
+        "training_reward": [
+          [
+            10101,
+            -103.5797
+          ],
+          [
+            20202,
+            -75.5026
+          ],
+          [
+            30304,
+            -66.5775
+          ],
+          [
+            40405,
+            -57.8801
+          ],
+          [
+            50506,
+            -48.4921
+          ],
+          [
+            60607,
+            -38.5915
+          ],
+          [
+            70708,
+            5.354
+          ],
+          [
+            80810,
+            47.5473
+          ],
+          [
+            90911,
+            81.1797
+          ],
+          [
+            101012,
+            88.9012
+          ],
+          [
+            111113,
+            93.7685
+          ],
+          [
+            121214,
+            96.8615
+          ],
+          [
+            131316,
+            98.7645
+          ],
+          [
+            141417,
+            100.1119
+          ],
+          [
+            151518,
+            100.0959
+          ],
+          [
+            161619,
+            100.6594
+          ],
+          [
+            171720,
+            101.0506
+          ],
+          [
+            181822,
+            101.2547
+          ],
+          [
+            191923,
+            101.1297
+          ],
+          [
+            202024,
+            101.3119
+          ],
+          [
+            212125,
+            101.414
+          ],
+          [
+            222226,
+            101.3097
+          ],
+          [
+            232328,
+            101.6362
+          ],
+          [
+            242429,
+            101.6422
+          ],
+          [
+            252530,
+            101.3646
+          ],
+          [
+            262631,
+            101.5342
+          ],
+          [
+            272732,
+            101.5479
+          ],
+          [
+            282834,
+            100.8924
+          ],
+          [
+            292935,
+            101.4917
+          ],
+          [
+            303036,
+            101.6355
+          ]
+        ]
+      }
+    },
+    {
+      "run_id": "6376e42d713946daabb026e9c978d636",
+      "experiment_id": "exp-003",
+      "model_name": "PPO · exp-003 · semilla 1",
+      "algorithm": "ppo",
+      "level_id": "n2",
+      "status": "completed",
+      "diagnosis": null,
+      "hypothesis": "Un curriculo N1 -> N2 (150k pasos en N1 y 150k en N2) alcanza en N2 al menos el exito de PPO entrenado solo en N2 con el mismo presupuesto total",
+      "change": "curriculo: continua el checkpoint de exp-003-n1 (padre) en N2 con la mitad del presupuesto",
+      "reference": "exp-002",
+      "seed": 1,
+      "budget_timesteps": 150000,
+      "effective_budget_timesteps": 155648,
+      "training_time_s": 377.9,
+      "parent_run_id": "37314d941d7541d3bdfc232a1af47466",
+      "environment_version": "robot-expedition-3d/1.0.0",
+      "environment_hash": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+      "git_commit": "39a98095b3b4c73e5e1095a096f9ace71807d4da",
+      "commit_url": "https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition/commit/39a98095b3b4c73e5e1095a096f9ace71807d4da",
+      "config_path": "configs/experiments/exp-003.yaml",
+      "config_sha256": "4943f15e87d9a8b9920fbfd51d4bb60191e5b974ce64feb7ae5211eb7d0146d1",
+      "model_uri": "dvc://dagshub/models/6376e42d713946daabb026e9c978d636",
+      "model_sha256": "8eef0851eea64699638c95188daeb897ff27ea31be5f4a411d0cf1282c90a2d2",
+      "normalization_uri": "runs:/6376e42d713946daabb026e9c978d636/vecnormalize.pkl",
+      "mlflow_run_id": "6376e42d713946daabb026e9c978d636",
+      "mlflow_run_name": "exp-003-seed-1",
+      "mlflow_url": null,
+      "evaluation_suite_id": "suite-n2-v1",
+      "metrics": {
+        "success_rate": 1.0
+      },
+      "metrics_by_level": {
+        "n1": {
+          "success_rate": 1.0,
+          "failures_by_cause": {},
+          "beacons_visited_mean": 1.0,
+          "steps_mean": 65.0,
+          "collisions_per_episode": 0.0,
+          "final_battery_success": 71.41,
+          "route_efficiency": 1.0376,
+          "return_mean": 87.7079,
+          "latency_ms_mean": 0.3377,
+          "latency_ms_p95": 0.4457,
+          "episodes": 50,
+          "suite_id": "suite-n1-v1",
+          "suite_sha256": "446864daaf815a4c6a4cb2becbcb80dc7dbc4d2a9c7351ae2ff1f7e3af3156bc",
+          "environment_hash": "1e0b15706550acc04af62ddad0c5cc94df1b87747215711e88d281dd2125879e",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:05:25+00:00",
+          "evaluation_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+          "results_path": "catalog/results/6376e42d713946daabb026e9c978d636/n1.json"
+        },
+        "n2": {
+          "success_rate": 1.0,
+          "failures_by_cause": {},
+          "beacons_visited_mean": 2.0,
+          "steps_mean": 87.98,
+          "collisions_per_episode": 0.0,
+          "final_battery_success": 61.445,
+          "route_efficiency": 1.0559,
+          "return_mean": 101.8164,
+          "latency_ms_mean": 0.385,
+          "latency_ms_p95": 0.499,
+          "episodes": 50,
+          "suite_id": "suite-n2-v1",
+          "suite_sha256": "c2c5b2c08e44bd55c19fb4f05e0f604651e4599500d65e2b3909a4894d896121",
+          "environment_hash": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:05:31+00:00",
+          "evaluation_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+          "results_path": "catalog/results/6376e42d713946daabb026e9c978d636/n2.json"
+        },
+        "n3": {
+          "success_rate": 0.0,
+          "failures_by_cause": {
+            "bateria": 47,
+            "tiempo": 3
+          },
+          "beacons_visited_mean": 1.0,
+          "steps_mean": 333.44,
+          "collisions_per_episode": 36.28,
+          "final_battery_success": null,
+          "route_efficiency": null,
+          "return_mean": -51.3151,
+          "latency_ms_mean": 0.3766,
+          "latency_ms_p95": 0.4456,
+          "episodes": 50,
+          "suite_id": "suite-n3-v1",
+          "suite_sha256": "9c6be7827d981d561c393e223c30a38701fee9d1472498bb72208cb88c0df988",
+          "environment_hash": "8ece567b32d3a9713e3be7c0b8ca564aa10cd30eedaec6cb7cc01bbe04accca1",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:05:53+00:00",
+          "evaluation_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+          "results_path": "catalog/results/6376e42d713946daabb026e9c978d636/n3.json"
+        }
+      },
+      "curves": {
+        "training_success_rate": [
+          [
+            5181,
+            1.0
+          ],
+          [
+            10362,
+            1.0
+          ],
+          [
+            15544,
+            1.0
+          ],
+          [
+            20725,
+            1.0
+          ],
+          [
+            25906,
+            0.9655
+          ],
+          [
+            31087,
+            1.0
+          ],
+          [
+            36268,
+            1.0
+          ],
+          [
+            41450,
+            1.0
+          ],
+          [
+            46631,
+            1.0
+          ],
+          [
+            51812,
+            1.0
+          ],
+          [
+            56993,
+            1.0
+          ],
+          [
+            62174,
+            1.0
+          ],
+          [
+            67356,
+            1.0
+          ],
+          [
+            72537,
+            1.0
+          ],
+          [
+            77718,
+            1.0
+          ],
+          [
+            82899,
+            1.0
+          ],
+          [
+            88080,
+            1.0
+          ],
+          [
+            93262,
+            1.0
+          ],
+          [
+            98443,
+            1.0
+          ],
+          [
+            103624,
+            1.0
+          ],
+          [
+            108805,
+            1.0
+          ],
+          [
+            113986,
+            1.0
+          ],
+          [
+            119168,
+            1.0
+          ],
+          [
+            124349,
+            1.0
+          ],
+          [
+            129530,
+            1.0
+          ],
+          [
+            134711,
+            1.0
+          ],
+          [
+            139892,
+            1.0
+          ],
+          [
+            145074,
+            1.0
+          ],
+          [
+            150255,
+            1.0
+          ],
+          [
+            155436,
+            1.0
+          ]
+        ],
+        "training_reward": [
+          [
+            5181,
+            59.7909
+          ],
+          [
+            10362,
+            70.5003
+          ],
+          [
+            15544,
+            59.5886
+          ],
+          [
+            20725,
+            80.573
+          ],
+          [
+            25906,
+            62.8642
+          ],
+          [
+            31087,
+            92.1374
+          ],
+          [
+            36268,
+            85.9748
+          ],
+          [
+            41450,
+            93.7128
+          ],
+          [
+            46631,
+            98.835
+          ],
+          [
+            51812,
+            98.5025
+          ],
+          [
+            56993,
+            98.5073
+          ],
+          [
+            62174,
+            100.0161
+          ],
+          [
+            67356,
+            100.5976
+          ],
+          [
+            72537,
+            101.0875
+          ],
+          [
+            77718,
+            101.0583
+          ],
+          [
+            82899,
+            100.6064
+          ],
+          [
+            88080,
+            100.9528
+          ],
+          [
+            93262,
+            101.3513
+          ],
+          [
+            98443,
+            101.3344
+          ],
+          [
+            103624,
+            101.1044
+          ],
+          [
+            108805,
+            101.5028
+          ],
+          [
+            113986,
+            101.469
+          ],
+          [
+            119168,
+            101.2895
+          ],
+          [
+            124349,
+            101.2415
+          ],
+          [
+            129530,
+            101.5365
+          ],
+          [
+            134711,
+            101.6503
+          ],
+          [
+            139892,
+            101.658
+          ],
+          [
+            145074,
+            101.3137
+          ],
+          [
+            150255,
+            101.7139
+          ],
+          [
+            155436,
+            101.7413
+          ]
+        ]
+      }
+    },
+    {
+      "run_id": "37314d941d7541d3bdfc232a1af47466",
+      "experiment_id": "exp-003-n1",
+      "model_name": "PPO · exp-003-n1 · semilla 1",
+      "algorithm": "ppo",
+      "level_id": "n1",
+      "status": "completed",
+      "diagnosis": null,
+      "hypothesis": "Etapa 1 del curriculo de exp-003: PPO en N1 (1 baliza, 2 rocas) durante la mitad del presupuesto",
+      "change": "nivel N1 y mitad del presupuesto; su checkpoint es el padre de exp-003",
+      "reference": "exp-002",
+      "seed": 1,
+      "budget_timesteps": 150000,
+      "effective_budget_timesteps": 155648,
+      "training_time_s": 346.4,
+      "parent_run_id": null,
+      "environment_version": "robot-expedition-3d/1.0.0",
+      "environment_hash": "1e0b15706550acc04af62ddad0c5cc94df1b87747215711e88d281dd2125879e",
+      "git_commit": "5f46a09251b68b7aa88df9bd6f3a80a9e3d94062",
+      "commit_url": "https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition/commit/5f46a09251b68b7aa88df9bd6f3a80a9e3d94062",
+      "config_path": "configs/experiments/exp-003-n1.yaml",
+      "config_sha256": "8214b60da78485d701883d15269a8427b2d1ec13438abd2946b2998d6c0f743c",
+      "model_uri": "dvc://dagshub/models/37314d941d7541d3bdfc232a1af47466",
+      "model_sha256": "63261982390229451e7362b64bc0a50dda9c02f9a983d2a1b894abdb40a0f686",
+      "normalization_uri": "runs:/37314d941d7541d3bdfc232a1af47466/vecnormalize.pkl",
+      "mlflow_run_id": "37314d941d7541d3bdfc232a1af47466",
+      "mlflow_run_name": "exp-003-n1-seed-1",
+      "mlflow_url": null,
+      "evaluation_suite_id": "suite-n1-v1",
+      "metrics": {
+        "success_rate": 1.0
+      },
+      "metrics_by_level": {
+        "n1": {
+          "success_rate": 1.0,
+          "failures_by_cause": {},
+          "beacons_visited_mean": 1.0,
+          "steps_mean": 67.0,
+          "collisions_per_episode": 0.0,
+          "final_battery_success": 70.0502,
+          "route_efficiency": 0.9844,
+          "return_mean": 87.9158,
+          "latency_ms_mean": 0.4354,
+          "latency_ms_p95": 0.5565,
+          "episodes": 50,
+          "suite_id": "suite-n1-v1",
+          "suite_sha256": "446864daaf815a4c6a4cb2becbcb80dc7dbc4d2a9c7351ae2ff1f7e3af3156bc",
+          "environment_hash": "1e0b15706550acc04af62ddad0c5cc94df1b87747215711e88d281dd2125879e",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:03:22+00:00",
+          "evaluation_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+          "results_path": "catalog/results/37314d941d7541d3bdfc232a1af47466/n1.json"
+        },
+        "n2": {
+          "success_rate": 1.0,
+          "failures_by_cause": {},
+          "beacons_visited_mean": 2.0,
+          "steps_mean": 258.62,
+          "collisions_per_episode": 125.4,
+          "final_battery_success": 28.3376,
+          "route_efficiency": 0.7974,
+          "return_mean": 29.7897,
+          "latency_ms_mean": 0.4452,
+          "latency_ms_p95": 0.5812,
+          "episodes": 50,
+          "suite_id": "suite-n2-v1",
+          "suite_sha256": "c2c5b2c08e44bd55c19fb4f05e0f604651e4599500d65e2b3909a4894d896121",
+          "environment_hash": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:03:41+00:00",
+          "evaluation_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+          "results_path": "catalog/results/37314d941d7541d3bdfc232a1af47466/n2.json"
+        },
+        "n3": {
+          "success_rate": 0.2,
+          "failures_by_cause": {
+            "tiempo": 40
+          },
+          "beacons_visited_mean": 1.22,
+          "steps_mean": 375.32,
+          "collisions_per_episode": 34.54,
+          "final_battery_success": 29.106,
+          "route_efficiency": 0.7808,
+          "return_mean": 12.6987,
+          "latency_ms_mean": 0.4063,
+          "latency_ms_p95": 0.4781,
+          "episodes": 50,
+          "suite_id": "suite-n3-v1",
+          "suite_sha256": "9c6be7827d981d561c393e223c30a38701fee9d1472498bb72208cb88c0df988",
+          "environment_hash": "8ece567b32d3a9713e3be7c0b8ca564aa10cd30eedaec6cb7cc01bbe04accca1",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:04:08+00:00",
+          "evaluation_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+          "results_path": "catalog/results/37314d941d7541d3bdfc232a1af47466/n3.json"
+        }
+      },
+      "curves": {
+        "training_success_rate": [
+          [
+            5185,
+            0.0
+          ],
+          [
+            10370,
+            0.0
+          ],
+          [
+            15556,
+            0.0
+          ],
+          [
+            20741,
+            0.0
+          ],
+          [
+            25926,
+            0.0
+          ],
+          [
+            31111,
+            0.0
+          ],
+          [
+            36296,
+            0.0
+          ],
+          [
+            41482,
+            0.0
+          ],
+          [
+            46667,
+            0.0588
+          ],
+          [
+            51852,
+            0.0625
+          ],
+          [
+            57037,
+            0.35
+          ],
+          [
+            62222,
+            0.3913
+          ],
+          [
+            67408,
+            0.5417
+          ],
+          [
+            72593,
+            0.7407
+          ],
+          [
+            77778,
+            0.6667
+          ],
+          [
+            82963,
+            0.7241
+          ],
+          [
+            88148,
+            0.7143
+          ],
+          [
+            93334,
+            0.9714
+          ],
+          [
+            98519,
+            0.9394
+          ],
+          [
+            103704,
+            0.9756
+          ],
+          [
+            108889,
+            0.9773
+          ],
+          [
+            114074,
+            0.9762
+          ],
+          [
+            119260,
+            1.0
+          ],
+          [
+            124445,
+            1.0
+          ],
+          [
+            129630,
+            1.0
+          ],
+          [
+            134815,
+            1.0
+          ],
+          [
+            140000,
+            1.0
+          ],
+          [
+            145186,
+            1.0
+          ],
+          [
+            150371,
+            1.0
+          ],
+          [
+            155556,
+            1.0
+          ]
+        ],
+        "training_reward": [
+          [
+            5185,
+            -87.161
+          ],
+          [
+            10370,
+            -84.2874
+          ],
+          [
+            15556,
+            -89.6381
+          ],
+          [
+            20741,
+            -66.4887
+          ],
+          [
+            25926,
+            -65.5067
+          ],
+          [
+            31111,
+            -66.9069
+          ],
+          [
+            36296,
+            -59.0469
+          ],
+          [
+            41482,
+            -53.6568
+          ],
+          [
+            46667,
+            -37.6454
+          ],
+          [
+            51852,
+            -32.2102
+          ],
+          [
+            57037,
+            -10.1232
+          ],
+          [
+            62222,
+            2.9528
+          ],
+          [
+            67408,
+            22.8788
+          ],
+          [
+            72593,
+            44.7305
+          ],
+          [
+            77778,
+            34.3922
+          ],
+          [
+            82963,
+            47.0815
+          ],
+          [
+            88148,
+            47.2896
+          ],
+          [
+            93334,
+            72.4214
+          ],
+          [
+            98519,
+            69.5203
+          ],
+          [
+            103704,
+            79.1621
+          ],
+          [
+            108889,
+            79.5761
+          ],
+          [
+            114074,
+            79.6019
+          ],
+          [
+            119260,
+            84.0524
+          ],
+          [
+            124445,
+            85.3037
+          ],
+          [
+            129630,
+            85.1667
+          ],
+          [
+            134815,
+            86.645
+          ],
+          [
+            140000,
+            85.9028
+          ],
+          [
+            145186,
+            86.6406
+          ],
+          [
+            150371,
+            87.075
+          ],
+          [
+            155556,
+            86.9977
+          ]
+        ]
+      }
+    },
+    {
+      "run_id": "92cdc692fdca465b917fa7c5e8a9902d",
+      "experiment_id": "exp-004",
+      "model_name": "PPO · exp-004 · semilla 1",
+      "algorithm": "ppo",
+      "level_id": "n2",
+      "status": "completed",
+      "diagnosis": null,
+      "hypothesis": "Mas exploracion (ent_coef 0.01) evita que PPO se quede en la politica de girar en el sitio y sube el exito en N2",
+      "change": "ent_coef 0.0 -> 0.01",
+      "reference": "exp-002",
+      "seed": 1,
+      "budget_timesteps": 300000,
+      "effective_budget_timesteps": 303104,
+      "training_time_s": 732.7,
+      "parent_run_id": null,
+      "environment_version": "robot-expedition-3d/1.0.0",
+      "environment_hash": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+      "git_commit": "5f46a09251b68b7aa88df9bd6f3a80a9e3d94062",
+      "commit_url": "https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition/commit/5f46a09251b68b7aa88df9bd6f3a80a9e3d94062",
+      "config_path": "configs/experiments/exp-004.yaml",
+      "config_sha256": "9aeedd8f296d655a1cd718fb0bda008e9a228e03d761f8d0cd8816a393b1a299",
+      "model_uri": "dvc://dagshub/models/92cdc692fdca465b917fa7c5e8a9902d",
+      "model_sha256": "0d34e588ae74bc9c7bba4d343615b206e5b2f94222741bd1847801e260aae128",
+      "normalization_uri": "runs:/92cdc692fdca465b917fa7c5e8a9902d/vecnormalize.pkl",
+      "mlflow_run_id": "92cdc692fdca465b917fa7c5e8a9902d",
+      "mlflow_run_name": "exp-004-seed-1",
+      "mlflow_url": null,
+      "evaluation_suite_id": "suite-n2-v1",
+      "metrics": {
+        "success_rate": 1.0
+      },
+      "metrics_by_level": {
+        "n1": {
+          "success_rate": 1.0,
+          "failures_by_cause": {},
+          "beacons_visited_mean": 1.0,
+          "steps_mean": 63.0,
+          "collisions_per_episode": 0.0,
+          "final_battery_success": 71.51,
+          "route_efficiency": 1.0176,
+          "return_mean": 87.8955,
+          "latency_ms_mean": 0.3761,
+          "latency_ms_p95": 0.4782,
+          "episodes": 50,
+          "suite_id": "suite-n1-v1",
+          "suite_sha256": "446864daaf815a4c6a4cb2becbcb80dc7dbc4d2a9c7351ae2ff1f7e3af3156bc",
+          "environment_hash": "1e0b15706550acc04af62ddad0c5cc94df1b87747215711e88d281dd2125879e",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:05:57+00:00",
+          "evaluation_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+          "results_path": "catalog/results/92cdc692fdca465b917fa7c5e8a9902d/n1.json"
+        },
+        "n2": {
+          "success_rate": 1.0,
+          "failures_by_cause": {},
+          "beacons_visited_mean": 2.0,
+          "steps_mean": 84.58,
+          "collisions_per_episode": 0.0,
+          "final_battery_success": 62.2384,
+          "route_efficiency": 1.0612,
+          "return_mean": 101.7753,
+          "latency_ms_mean": 0.3604,
+          "latency_ms_p95": 0.4442,
+          "episodes": 50,
+          "suite_id": "suite-n2-v1",
+          "suite_sha256": "c2c5b2c08e44bd55c19fb4f05e0f604651e4599500d65e2b3909a4894d896121",
+          "environment_hash": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:06:03+00:00",
+          "evaluation_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+          "results_path": "catalog/results/92cdc692fdca465b917fa7c5e8a9902d/n2.json"
+        },
+        "n3": {
+          "success_rate": 0.0,
+          "failures_by_cause": {
+            "bateria": 49,
+            "tiempo": 1
+          },
+          "beacons_visited_mean": 1.0,
+          "steps_mean": 272.1,
+          "collisions_per_episode": 11.38,
+          "final_battery_success": null,
+          "route_efficiency": null,
+          "return_mean": -40.5709,
+          "latency_ms_mean": 0.3482,
+          "latency_ms_p95": 0.4132,
+          "episodes": 50,
+          "suite_id": "suite-n3-v1",
+          "suite_sha256": "9c6be7827d981d561c393e223c30a38701fee9d1472498bb72208cb88c0df988",
+          "environment_hash": "8ece567b32d3a9713e3be7c0b8ca564aa10cd30eedaec6cb7cc01bbe04accca1",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:06:20+00:00",
+          "evaluation_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+          "results_path": "catalog/results/92cdc692fdca465b917fa7c5e8a9902d/n3.json"
+        }
+      },
+      "curves": {
+        "training_success_rate": [
+          [
+            10103,
+            0.0
+          ],
+          [
+            20205,
+            0.0
+          ],
+          [
+            30308,
+            0.0
+          ],
+          [
+            40411,
+            0.0
+          ],
+          [
+            50513,
+            0.0
+          ],
+          [
+            60616,
+            0.0
+          ],
+          [
+            70719,
+            0.0
+          ],
+          [
+            80821,
+            0.0
+          ],
+          [
+            90924,
+            0.0606
+          ],
+          [
+            101027,
+            0.3438
+          ],
+          [
+            111129,
+            0.8571
+          ],
+          [
+            121232,
+            0.9362
+          ],
+          [
+            131335,
+            0.9273
+          ],
+          [
+            141437,
+            1.0
+          ],
+          [
+            151540,
+            1.0
+          ],
+          [
+            161643,
+            1.0
+          ],
+          [
+            171745,
+            1.0
+          ],
+          [
+            181848,
+            1.0
+          ],
+          [
+            191951,
+            1.0
+          ],
+          [
+            202053,
+            1.0
+          ],
+          [
+            212156,
+            1.0
+          ],
+          [
+            222259,
+            1.0
+          ],
+          [
+            232361,
+            1.0
+          ],
+          [
+            242464,
+            1.0
+          ],
+          [
+            252567,
+            1.0
+          ],
+          [
+            262669,
+            1.0
+          ],
+          [
+            272772,
+            1.0
+          ],
+          [
+            282875,
+            1.0
+          ],
+          [
+            292977,
+            1.0
+          ],
+          [
+            303080,
+            1.0
+          ]
+        ],
+        "training_reward": [
+          [
+            10103,
+            -94.1862
+          ],
+          [
+            20205,
+            -80.1341
+          ],
+          [
+            30308,
+            -73.5809
+          ],
+          [
+            40411,
+            -74.0879
+          ],
+          [
+            50513,
+            -59.7594
+          ],
+          [
+            60616,
+            -61.4826
+          ],
+          [
+            70719,
+            -50.1403
+          ],
+          [
+            80821,
+            -43.1596
+          ],
+          [
+            90924,
+            -27.5871
+          ],
+          [
+            101027,
+            6.0913
+          ],
+          [
+            111129,
+            69.7301
+          ],
+          [
+            121232,
+            80.879
+          ],
+          [
+            131335,
+            83.529
+          ],
+          [
+            141437,
+            96.8696
+          ],
+          [
+            151540,
+            96.6481
+          ],
+          [
+            161643,
+            99.6531
+          ],
+          [
+            171745,
+            99.2152
+          ],
+          [
+            181848,
+            100.089
+          ],
+          [
+            191951,
+            100.4142
+          ],
+          [
+            202053,
+            100.8628
+          ],
+          [
+            212156,
+            100.6444
+          ],
+          [
+            222259,
+            101.527
+          ],
+          [
+            232361,
+            101.3097
+          ],
+          [
+            242464,
+            101.6726
+          ],
+          [
+            252567,
+            101.5822
+          ],
+          [
+            262669,
+            101.7526
+          ],
+          [
+            272772,
+            101.7064
+          ],
+          [
+            282875,
+            101.6808
+          ],
+          [
+            292977,
+            101.4944
+          ],
+          [
+            303080,
+            101.6955
+          ]
+        ]
+      }
+    },
+    {
+      "run_id": "4b9b4353fd4f41c4b99a2d43ce290095",
+      "experiment_id": "exp-005",
+      "model_name": "PPO · exp-005 · semilla 1",
+      "algorithm": "ppo",
+      "level_id": "n3",
+      "status": "completed",
+      "diagnosis": null,
+      "hypothesis": "Intervencion del incidente: entrenar con el bloqueo del corredor y el sensor degradado (N3) recupera el exito en N3 sin perder mas de 5 puntos en N2",
+      "change": "nivel de entrenamiento N2 -> N3 (bloqueo, ruido 0.08 y rayo 4 muerto)",
+      "reference": "exp-002",
+      "seed": 1,
+      "budget_timesteps": 300000,
+      "effective_budget_timesteps": 303104,
+      "training_time_s": 605.6,
+      "parent_run_id": null,
+      "environment_version": "robot-expedition-3d/1.0.0",
+      "environment_hash": "8ece567b32d3a9713e3be7c0b8ca564aa10cd30eedaec6cb7cc01bbe04accca1",
+      "git_commit": "5f46a09251b68b7aa88df9bd6f3a80a9e3d94062",
+      "commit_url": "https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition/commit/5f46a09251b68b7aa88df9bd6f3a80a9e3d94062",
+      "config_path": "configs/experiments/exp-005.yaml",
+      "config_sha256": "9644ac718de492f827b82a1f9f1a4e8dc9c69502e2a47abc8bfe74adf35759d7",
+      "model_uri": "dvc://dagshub/models/4b9b4353fd4f41c4b99a2d43ce290095",
+      "model_sha256": "96f0b90573224c4ee96d42840b011726882eb71c48198481acdd9d3757fa191f",
+      "normalization_uri": "runs:/4b9b4353fd4f41c4b99a2d43ce290095/vecnormalize.pkl",
+      "mlflow_run_id": "4b9b4353fd4f41c4b99a2d43ce290095",
+      "mlflow_run_name": "exp-005-seed-1",
+      "mlflow_url": null,
+      "evaluation_suite_id": "suite-n3-v1",
+      "metrics": {
+        "success_rate": 1.0
+      },
+      "metrics_by_level": {
+        "n1": {
+          "success_rate": 0.02,
+          "failures_by_cause": {
+            "grieta": 45,
+            "tiempo": 2,
+            "volco": 2
+          },
+          "beacons_visited_mean": 1.0,
+          "steps_mean": 95.86,
+          "collisions_per_episode": 0.0,
+          "final_battery_success": 67.36,
+          "route_efficiency": 0.8907,
+          "return_mean": -24.9723,
+          "latency_ms_mean": 0.3913,
+          "latency_ms_p95": 0.4708,
+          "episodes": 50,
+          "suite_id": "suite-n1-v1",
+          "suite_sha256": "446864daaf815a4c6a4cb2becbcb80dc7dbc4d2a9c7351ae2ff1f7e3af3156bc",
+          "environment_hash": "1e0b15706550acc04af62ddad0c5cc94df1b87747215711e88d281dd2125879e",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:04:15+00:00",
+          "evaluation_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+          "results_path": "catalog/results/4b9b4353fd4f41c4b99a2d43ce290095/n1.json"
+        },
+        "n2": {
+          "success_rate": 0.16,
+          "failures_by_cause": {
+            "bateria": 28,
+            "grieta": 10,
+            "tiempo": 4
+          },
+          "beacons_visited_mean": 1.9,
+          "steps_mean": 341.86,
+          "collisions_per_episode": 23.66,
+          "final_battery_success": 5.4337,
+          "route_efficiency": 0.5254,
+          "return_mean": -11.355,
+          "latency_ms_mean": 0.3766,
+          "latency_ms_p95": 0.4538,
+          "episodes": 50,
+          "suite_id": "suite-n2-v1",
+          "suite_sha256": "c2c5b2c08e44bd55c19fb4f05e0f604651e4599500d65e2b3909a4894d896121",
+          "environment_hash": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:04:38+00:00",
+          "evaluation_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+          "results_path": "catalog/results/4b9b4353fd4f41c4b99a2d43ce290095/n2.json"
+        },
+        "n3": {
+          "success_rate": 1.0,
+          "failures_by_cause": {},
+          "beacons_visited_mean": 2.0,
+          "steps_mean": 110.38,
+          "collisions_per_episode": 0.0,
+          "final_battery_success": 53.5778,
+          "route_efficiency": 0.9018,
+          "return_mean": 100.2744,
+          "latency_ms_mean": 0.4025,
+          "latency_ms_p95": 0.4844,
+          "episodes": 50,
+          "suite_id": "suite-n3-v1",
+          "suite_sha256": "9c6be7827d981d561c393e223c30a38701fee9d1472498bb72208cb88c0df988",
+          "environment_hash": "8ece567b32d3a9713e3be7c0b8ca564aa10cd30eedaec6cb7cc01bbe04accca1",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:04:46+00:00",
+          "evaluation_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+          "results_path": "catalog/results/4b9b4353fd4f41c4b99a2d43ce290095/n3.json"
+        }
+      },
+      "curves": {
+        "training_success_rate": [
+          [
+            10097,
+            0.0
+          ],
+          [
+            20193,
+            0.0
+          ],
+          [
+            30290,
+            0.0
+          ],
+          [
+            40386,
+            0.0
+          ],
+          [
+            50483,
+            0.0
+          ],
+          [
+            60579,
+            0.0
+          ],
+          [
+            70676,
+            0.0
+          ],
+          [
+            80772,
+            0.0
+          ],
+          [
+            90869,
+            0.0
+          ],
+          [
+            100965,
+            0.0
+          ],
+          [
+            111062,
+            0.0
+          ],
+          [
+            121158,
+            0.0
+          ],
+          [
+            131255,
+            0.0
+          ],
+          [
+            141351,
+            0.0
+          ],
+          [
+            151448,
+            0.0
+          ],
+          [
+            161545,
+            0.0
+          ],
+          [
+            171641,
+            0.0
+          ],
+          [
+            181738,
+            0.0
+          ],
+          [
+            191834,
+            0.0345
+          ],
+          [
+            201931,
+            0.0
+          ],
+          [
+            212027,
+            0.0357
+          ],
+          [
+            222124,
+            0.0357
+          ],
+          [
+            232220,
+            0.0
+          ],
+          [
+            242317,
+            0.0
+          ],
+          [
+            252413,
+            0.0769
+          ],
+          [
+            262510,
+            0.2069
+          ],
+          [
+            272606,
+            0.4706
+          ],
+          [
+            282703,
+            0.7391
+          ],
+          [
+            292799,
+            0.9333
+          ],
+          [
+            302896,
+            0.9861
+          ]
+        ],
+        "training_reward": [
+          [
+            10097,
+            -87.2255
+          ],
+          [
+            20193,
+            -88.3354
+          ],
+          [
+            30290,
+            -73.646
+          ],
+          [
+            40386,
+            -66.7859
+          ],
+          [
+            50483,
+            -77.2323
+          ],
+          [
+            60579,
+            -67.5164
+          ],
+          [
+            70676,
+            -57.9818
+          ],
+          [
+            80772,
+            -58.374
+          ],
+          [
+            90869,
+            -58.3907
+          ],
+          [
+            100965,
+            -55.6202
+          ],
+          [
+            111062,
+            -55.7263
+          ],
+          [
+            121158,
+            -55.8377
+          ],
+          [
+            131255,
+            -55.0747
+          ],
+          [
+            141351,
+            -54.8943
+          ],
+          [
+            151448,
+            -52.2125
+          ],
+          [
+            161545,
+            -52.1815
+          ],
+          [
+            171641,
+            -52.6823
+          ],
+          [
+            181738,
+            -48.1506
+          ],
+          [
+            191834,
+            -37.9509
+          ],
+          [
+            201931,
+            -40.3801
+          ],
+          [
+            212027,
+            -34.0277
+          ],
+          [
+            222124,
+            -34.6974
+          ],
+          [
+            232220,
+            -39.8464
+          ],
+          [
+            242317,
+            -39.1734
+          ],
+          [
+            252413,
+            -27.9135
+          ],
+          [
+            262510,
+            -10.4976
+          ],
+          [
+            272606,
+            25.2224
+          ],
+          [
+            282703,
+            58.5428
+          ],
+          [
+            292799,
+            86.5525
+          ],
+          [
+            302896,
+            95.4537
+          ]
+        ]
+      }
+    },
+    {
+      "run_id": "f3b2dc4c3500435784db83e1e9ab7599",
+      "experiment_id": "exp-005",
+      "model_name": "PPO · exp-005 · semilla 2",
+      "algorithm": "ppo",
+      "level_id": "n3",
+      "status": "completed",
+      "diagnosis": null,
+      "hypothesis": "Intervencion del incidente: entrenar con el bloqueo del corredor y el sensor degradado (N3) recupera el exito en N3 sin perder mas de 5 puntos en N2",
+      "change": "nivel de entrenamiento N2 -> N3 (bloqueo, ruido 0.08 y rayo 4 muerto)",
+      "reference": "exp-002",
+      "seed": 2,
+      "budget_timesteps": 300000,
+      "effective_budget_timesteps": 303104,
+      "training_time_s": 775.6,
+      "parent_run_id": null,
+      "environment_version": "robot-expedition-3d/1.0.0",
+      "environment_hash": "8ece567b32d3a9713e3be7c0b8ca564aa10cd30eedaec6cb7cc01bbe04accca1",
+      "git_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+      "commit_url": "https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition/commit/df91b93655a931dbff3219a8dd14b9fcd830ae28",
+      "config_path": "configs/experiments/exp-005.yaml",
+      "config_sha256": "c8f780064725a5fbf23ffefc7edb0b5ac5fa05652b53797d6170d80344b7098d",
+      "model_uri": "dvc://dagshub/models/f3b2dc4c3500435784db83e1e9ab7599",
+      "model_sha256": "7bc1622b55ca008efe49d7b8953cccda0420d2e65edeb450c758e25f95883085",
+      "normalization_uri": "runs:/f3b2dc4c3500435784db83e1e9ab7599/vecnormalize.pkl",
+      "mlflow_run_id": "f3b2dc4c3500435784db83e1e9ab7599",
+      "mlflow_run_name": "exp-005-seed-2",
+      "mlflow_url": null,
+      "evaluation_suite_id": "suite-n3-v1",
+      "metrics": {
+        "success_rate": 1.0
+      },
+      "metrics_by_level": {
+        "n1": {
+          "success_rate": 0.7,
+          "failures_by_cause": {
+            "grieta": 5,
+            "tiempo": 9,
+            "volco": 1
+          },
+          "beacons_visited_mean": 1.0,
+          "steps_mean": 130.74,
+          "collisions_per_episode": 0.0,
+          "final_battery_success": 70.2714,
+          "route_efficiency": 0.9822,
+          "return_mean": 61.065,
+          "latency_ms_mean": 0.2459,
+          "latency_ms_p95": 0.2628,
+          "episodes": 50,
+          "suite_id": "suite-n1-v1",
+          "suite_sha256": "446864daaf815a4c6a4cb2becbcb80dc7dbc4d2a9c7351ae2ff1f7e3af3156bc",
+          "environment_hash": "1e0b15706550acc04af62ddad0c5cc94df1b87747215711e88d281dd2125879e",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:12:25+00:00",
+          "evaluation_commit": "72d616e9cf1c2ff5cc7af43bc201cc42955fdb40",
+          "results_path": "catalog/results/f3b2dc4c3500435784db83e1e9ab7599/n1.json"
+        },
+        "n2": {
+          "success_rate": 1.0,
+          "failures_by_cause": {},
+          "beacons_visited_mean": 2.0,
+          "steps_mean": 110.54,
+          "collisions_per_episode": 17.62,
+          "final_battery_success": 56.8592,
+          "route_efficiency": 0.9713,
+          "return_mean": 92.1869,
+          "latency_ms_mean": 0.2386,
+          "latency_ms_p95": 0.2488,
+          "episodes": 50,
+          "suite_id": "suite-n2-v1",
+          "suite_sha256": "c2c5b2c08e44bd55c19fb4f05e0f604651e4599500d65e2b3909a4894d896121",
+          "environment_hash": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:12:31+00:00",
+          "evaluation_commit": "72d616e9cf1c2ff5cc7af43bc201cc42955fdb40",
+          "results_path": "catalog/results/f3b2dc4c3500435784db83e1e9ab7599/n2.json"
+        },
+        "n3": {
+          "success_rate": 1.0,
+          "failures_by_cause": {},
+          "beacons_visited_mean": 2.0,
+          "steps_mean": 97.84,
+          "collisions_per_episode": 0.0,
+          "final_battery_success": 57.603,
+          "route_efficiency": 0.9763,
+          "return_mean": 100.4986,
+          "latency_ms_mean": 0.2397,
+          "latency_ms_p95": 0.2526,
+          "episodes": 50,
+          "suite_id": "suite-n3-v1",
+          "suite_sha256": "9c6be7827d981d561c393e223c30a38701fee9d1472498bb72208cb88c0df988",
+          "environment_hash": "8ece567b32d3a9713e3be7c0b8ca564aa10cd30eedaec6cb7cc01bbe04accca1",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:12:35+00:00",
+          "evaluation_commit": "72d616e9cf1c2ff5cc7af43bc201cc42955fdb40",
+          "results_path": "catalog/results/f3b2dc4c3500435784db83e1e9ab7599/n3.json"
+        }
+      },
+      "curves": {
+        "training_success_rate": [
+          [
+            10100,
+            0.0
+          ],
+          [
+            20201,
+            0.0
+          ],
+          [
+            30301,
+            0.0
+          ],
+          [
+            40402,
+            0.0
+          ],
+          [
+            50502,
+            0.0
+          ],
+          [
+            60602,
+            0.0
+          ],
+          [
+            70703,
+            0.0323
+          ],
+          [
+            80803,
+            0.0968
+          ],
+          [
+            90904,
+            0.6765
+          ],
+          [
+            101004,
+            0.825
+          ],
+          [
+            111104,
+            0.9535
+          ],
+          [
+            121205,
+            0.98
+          ],
+          [
+            131305,
+            0.9821
+          ],
+          [
+            141406,
+            1.0
+          ],
+          [
+            151506,
+            1.0
+          ],
+          [
+            161606,
+            1.0
+          ],
+          [
+            171707,
+            1.0
+          ],
+          [
+            181807,
+            1.0
+          ],
+          [
+            191908,
+            1.0
+          ],
+          [
+            202008,
+            0.9882
+          ],
+          [
+            212108,
+            1.0
+          ],
+          [
+            222209,
+            0.9775
+          ],
+          [
+            232309,
+            1.0
+          ],
+          [
+            242410,
+            1.0
+          ],
+          [
+            252510,
+            1.0
+          ],
+          [
+            262610,
+            0.9899
+          ],
+          [
+            272711,
+            1.0
+          ],
+          [
+            282811,
+            1.0
+          ],
+          [
+            292912,
+            1.0
+          ],
+          [
+            303012,
+            1.0
+          ]
+        ],
+        "training_reward": [
+          [
+            10100,
+            -105.0565
+          ],
+          [
+            20201,
+            -94.1351
+          ],
+          [
+            30301,
+            -75.8756
+          ],
+          [
+            40402,
+            -68.4842
+          ],
+          [
+            50502,
+            -66.6275
+          ],
+          [
+            60602,
+            -50.5133
+          ],
+          [
+            70703,
+            -45.7821
+          ],
+          [
+            80803,
+            -27.6006
+          ],
+          [
+            90904,
+            35.9827
+          ],
+          [
+            101004,
+            58.2293
+          ],
+          [
+            111104,
+            81.011
+          ],
+          [
+            121205,
+            86.8986
+          ],
+          [
+            131305,
+            90.6064
+          ],
+          [
+            141406,
+            95.6815
+          ],
+          [
+            151506,
+            95.6399
+          ],
+          [
+            161606,
+            98.1484
+          ],
+          [
+            171707,
+            98.7721
+          ],
+          [
+            181807,
+            98.9587
+          ],
+          [
+            191908,
+            99.0453
+          ],
+          [
+            202008,
+            96.4683
+          ],
+          [
+            212108,
+            99.2385
+          ],
+          [
+            222209,
+            94.1804
+          ],
+          [
+            232309,
+            99.9246
+          ],
+          [
+            242410,
+            99.9928
+          ],
+          [
+            252510,
+            99.353
+          ],
+          [
+            262610,
+            98.8079
+          ],
+          [
+            272711,
+            100.222
+          ],
+          [
+            282811,
+            99.9635
+          ],
+          [
+            292912,
+            100.2788
+          ],
+          [
+            303012,
+            99.9594
+          ]
+        ]
+      }
+    },
+    {
+      "run_id": "3dd6e0f778314110bb6d2cf1ca00b41f",
+      "experiment_id": "exp-005",
+      "model_name": "PPO · exp-005 · semilla 3",
+      "algorithm": "ppo",
+      "level_id": "n3",
+      "status": "completed",
+      "diagnosis": null,
+      "hypothesis": "Intervencion del incidente: entrenar con el bloqueo del corredor y el sensor degradado (N3) recupera el exito en N3 sin perder mas de 5 puntos en N2",
+      "change": "nivel de entrenamiento N2 -> N3 (bloqueo, ruido 0.08 y rayo 4 muerto)",
+      "reference": "exp-002",
+      "seed": 3,
+      "budget_timesteps": 300000,
+      "effective_budget_timesteps": 303104,
+      "training_time_s": 766.9,
+      "parent_run_id": null,
+      "environment_version": "robot-expedition-3d/1.0.0",
+      "environment_hash": "8ece567b32d3a9713e3be7c0b8ca564aa10cd30eedaec6cb7cc01bbe04accca1",
+      "git_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+      "commit_url": "https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition/commit/df91b93655a931dbff3219a8dd14b9fcd830ae28",
+      "config_path": "configs/experiments/exp-005.yaml",
+      "config_sha256": "dc5a7de495f82572151b6bf51aa709b054ab1d597ce7d62d4d0b9f49af5a614b",
+      "model_uri": "dvc://dagshub/models/3dd6e0f778314110bb6d2cf1ca00b41f",
+      "model_sha256": "6a828ddc062ce417dc892fc42c20990f39589d262c2ce8ddc34984fba717eef5",
+      "normalization_uri": "runs:/3dd6e0f778314110bb6d2cf1ca00b41f/vecnormalize.pkl",
+      "mlflow_run_id": "3dd6e0f778314110bb6d2cf1ca00b41f",
+      "mlflow_run_name": "exp-005-seed-3",
+      "mlflow_url": null,
+      "evaluation_suite_id": "suite-n3-v1",
+      "metrics": {
+        "success_rate": 1.0
+      },
+      "metrics_by_level": {
+        "n1": {
+          "success_rate": 0.78,
+          "failures_by_cause": {
+            "volco": 2,
+            "tiempo": 4,
+            "grieta": 5
+          },
+          "beacons_visited_mean": 1.0,
+          "steps_mean": 92.96,
+          "collisions_per_episode": 0.0,
+          "final_battery_success": 70.48,
+          "route_efficiency": 0.9843,
+          "return_mean": 65.9213,
+          "latency_ms_mean": 0.2398,
+          "latency_ms_p95": 0.2452,
+          "episodes": 50,
+          "suite_id": "suite-n1-v1",
+          "suite_sha256": "446864daaf815a4c6a4cb2becbcb80dc7dbc4d2a9c7351ae2ff1f7e3af3156bc",
+          "environment_hash": "1e0b15706550acc04af62ddad0c5cc94df1b87747215711e88d281dd2125879e",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:12:40+00:00",
+          "evaluation_commit": "72d616e9cf1c2ff5cc7af43bc201cc42955fdb40",
+          "results_path": "catalog/results/3dd6e0f778314110bb6d2cf1ca00b41f/n1.json"
+        },
+        "n2": {
+          "success_rate": 0.16,
+          "failures_by_cause": {
+            "tiempo": 42
+          },
+          "beacons_visited_mean": 1.18,
+          "steps_mean": 366.74,
+          "collisions_per_episode": 308.0,
+          "final_battery_success": 46.7025,
+          "route_efficiency": 0.8897,
+          "return_mean": -124.223,
+          "latency_ms_mean": 0.2378,
+          "latency_ms_p95": 0.2418,
+          "episodes": 50,
+          "suite_id": "suite-n2-v1",
+          "suite_sha256": "c2c5b2c08e44bd55c19fb4f05e0f604651e4599500d65e2b3909a4894d896121",
+          "environment_hash": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:12:57+00:00",
+          "evaluation_commit": "72d616e9cf1c2ff5cc7af43bc201cc42955fdb40",
+          "results_path": "catalog/results/3dd6e0f778314110bb6d2cf1ca00b41f/n2.json"
+        },
+        "n3": {
+          "success_rate": 1.0,
+          "failures_by_cause": {},
+          "beacons_visited_mean": 2.0,
+          "steps_mean": 95.84,
+          "collisions_per_episode": 0.0,
+          "final_battery_success": 58.0868,
+          "route_efficiency": 0.9854,
+          "return_mean": 100.5707,
+          "latency_ms_mean": 0.2399,
+          "latency_ms_p95": 0.2466,
+          "episodes": 50,
+          "suite_id": "suite-n3-v1",
+          "suite_sha256": "9c6be7827d981d561c393e223c30a38701fee9d1472498bb72208cb88c0df988",
+          "environment_hash": "8ece567b32d3a9713e3be7c0b8ca564aa10cd30eedaec6cb7cc01bbe04accca1",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:13:01+00:00",
+          "evaluation_commit": "72d616e9cf1c2ff5cc7af43bc201cc42955fdb40",
+          "results_path": "catalog/results/3dd6e0f778314110bb6d2cf1ca00b41f/n3.json"
+        }
+      },
+      "curves": {
+        "training_success_rate": [
+          [
+            10101,
+            0.0
+          ],
+          [
+            20203,
+            0.0
+          ],
+          [
+            30304,
+            0.0
+          ],
+          [
+            40405,
+            0.0
+          ],
+          [
+            50507,
+            0.0
+          ],
+          [
+            60608,
+            0.0
+          ],
+          [
+            70709,
+            0.0303
+          ],
+          [
+            80811,
+            0.0645
+          ],
+          [
+            90912,
+            0.3333
+          ],
+          [
+            101013,
+            0.6571
+          ],
+          [
+            111115,
+            0.9487
+          ],
+          [
+            121216,
+            0.9545
+          ],
+          [
+            131317,
+            1.0
+          ],
+          [
+            141419,
+            1.0
+          ],
+          [
+            151520,
+            1.0
+          ],
+          [
+            161621,
+            1.0
+          ],
+          [
+            171723,
+            1.0
+          ],
+          [
+            181824,
+            1.0
+          ],
+          [
+            191925,
+            1.0
+          ],
+          [
+            202027,
+            1.0
+          ],
+          [
+            212128,
+            0.9891
+          ],
+          [
+            222229,
+            1.0
+          ],
+          [
+            232331,
+            1.0
+          ],
+          [
+            242432,
+            1.0
+          ],
+          [
+            252533,
+            1.0
+          ],
+          [
+            262635,
+            1.0
+          ],
+          [
+            272736,
+            1.0
+          ],
+          [
+            282837,
+            1.0
+          ],
+          [
+            292939,
+            1.0
+          ],
+          [
+            303040,
+            1.0
+          ]
+        ],
+        "training_reward": [
+          [
+            10101,
+            -96.8345
+          ],
+          [
+            20203,
+            -83.9959
+          ],
+          [
+            30304,
+            -66.3155
+          ],
+          [
+            40405,
+            -77.1022
+          ],
+          [
+            50507,
+            -67.6786
+          ],
+          [
+            60608,
+            -57.232
+          ],
+          [
+            70709,
+            -44.445
+          ],
+          [
+            80811,
+            -37.1911
+          ],
+          [
+            90912,
+            -0.3298
+          ],
+          [
+            101013,
+            40.1265
+          ],
+          [
+            111115,
+            75.8341
+          ],
+          [
+            121216,
+            82.4466
+          ],
+          [
+            131317,
+            93.5431
+          ],
+          [
+            141419,
+            94.4737
+          ],
+          [
+            151520,
+            96.4611
+          ],
+          [
+            161621,
+            97.7065
+          ],
+          [
+            171723,
+            98.9547
+          ],
+          [
+            181824,
+            99.2735
+          ],
+          [
+            191925,
+            99.4585
+          ],
+          [
+            202027,
+            99.6281
+          ],
+          [
+            212128,
+            97.001
+          ],
+          [
+            222229,
+            99.8534
+          ],
+          [
+            232331,
+            100.2615
+          ],
+          [
+            242432,
+            99.6791
+          ],
+          [
+            252533,
+            100.3881
+          ],
+          [
+            262635,
+            100.0053
+          ],
+          [
+            272736,
+            100.3378
+          ],
+          [
+            282837,
+            100.2883
+          ],
+          [
+            292939,
+            100.478
+          ],
+          [
+            303040,
+            100.561
+          ]
+        ]
+      }
+    },
+    {
+      "run_id": "baseline-rule",
+      "experiment_id": "baseline",
+      "model_name": "Regla (referencia)",
+      "algorithm": "rule",
+      "level_id": "todos",
+      "status": "baseline",
+      "hypothesis": "Girar hacia el objetivo y esquivar con los rayos",
+      "change": "sin entrenamiento",
+      "environment_version": "robot-expedition-3d/1.0.0",
+      "metrics": {},
+      "metrics_by_level": {
+        "n1": {
+          "success_rate": 1.0,
+          "failures_by_cause": {},
+          "beacons_visited_mean": 1.0,
+          "steps_mean": 81.56,
+          "collisions_per_episode": 0.0,
+          "final_battery_success": 68.7282,
+          "route_efficiency": 0.976,
+          "return_mean": 87.3843,
+          "latency_ms_mean": 0.0159,
+          "latency_ms_p95": 0.0187,
+          "episodes": 50,
+          "suite_id": "suite-n1-v1",
+          "suite_sha256": "446864daaf815a4c6a4cb2becbcb80dc7dbc4d2a9c7351ae2ff1f7e3af3156bc",
+          "environment_hash": "1e0b15706550acc04af62ddad0c5cc94df1b87747215711e88d281dd2125879e",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:02:07+00:00",
+          "evaluation_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+          "results_path": "catalog/results/baseline-rule/n1.json"
+        },
+        "n2": {
+          "success_rate": 1.0,
+          "failures_by_cause": {},
+          "beacons_visited_mean": 2.0,
+          "steps_mean": 98.76,
+          "collisions_per_episode": 0.0,
+          "final_battery_success": 59.6292,
+          "route_efficiency": 1.0273,
+          "return_mean": 101.4421,
+          "latency_ms_mean": 0.0168,
+          "latency_ms_p95": 0.0193,
+          "episodes": 50,
+          "suite_id": "suite-n2-v1",
+          "suite_sha256": "c2c5b2c08e44bd55c19fb4f05e0f604651e4599500d65e2b3909a4894d896121",
+          "environment_hash": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:02:13+00:00",
+          "evaluation_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+          "results_path": "catalog/results/baseline-rule/n2.json"
+        },
+        "n3": {
+          "success_rate": 0.98,
+          "failures_by_cause": {
+            "bateria": 1
+          },
+          "beacons_visited_mean": 2.0,
+          "steps_mean": 165.7,
+          "collisions_per_episode": 9.68,
+          "final_battery_success": 41.6257,
+          "route_efficiency": 0.8598,
+          "return_mean": 89.7884,
+          "latency_ms_mean": 0.0159,
+          "latency_ms_p95": 0.0184,
+          "episodes": 50,
+          "suite_id": "suite-n3-v1",
+          "suite_sha256": "9c6be7827d981d561c393e223c30a38701fee9d1472498bb72208cb88c0df988",
+          "environment_hash": "8ece567b32d3a9713e3be7c0b8ca564aa10cd30eedaec6cb7cc01bbe04accca1",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:02:22+00:00",
+          "evaluation_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+          "results_path": "catalog/results/baseline-rule/n3.json"
+        }
+      },
+      "curves": {}
+    },
+    {
+      "run_id": "baseline-random",
+      "experiment_id": "baseline",
+      "model_name": "Aleatoria (referencia)",
+      "algorithm": "random",
+      "level_id": "todos",
+      "status": "baseline",
+      "hypothesis": "Acción uniforme: cota inferior",
+      "change": "sin entrenamiento",
+      "environment_version": "robot-expedition-3d/1.0.0",
+      "metrics": {},
+      "metrics_by_level": {
+        "n1": {
+          "success_rate": 0.0,
+          "failures_by_cause": {
+            "bateria": 19,
+            "tiempo": 21,
+            "grieta": 7,
+            "volco": 3
+          },
+          "beacons_visited_mean": 0.08,
+          "steps_mean": 348.22,
+          "collisions_per_episode": 133.12,
+          "final_battery_success": null,
+          "route_efficiency": null,
+          "return_mean": -98.7795,
+          "latency_ms_mean": 0.0094,
+          "latency_ms_p95": 0.0112,
+          "episodes": 50,
+          "suite_id": "suite-n1-v1",
+          "suite_sha256": "446864daaf815a4c6a4cb2becbcb80dc7dbc4d2a9c7351ae2ff1f7e3af3156bc",
+          "environment_hash": "1e0b15706550acc04af62ddad0c5cc94df1b87747215711e88d281dd2125879e",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:02:39+00:00",
+          "evaluation_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+          "results_path": "catalog/results/baseline-random/n1.json"
+        },
+        "n2": {
+          "success_rate": 0.0,
+          "failures_by_cause": {
+            "tiempo": 34,
+            "grieta": 12,
+            "bateria": 4
+          },
+          "beacons_visited_mean": 0.08,
+          "steps_mean": 336.04,
+          "collisions_per_episode": 157.72,
+          "final_battery_success": null,
+          "route_efficiency": null,
+          "return_mean": -97.6515,
+          "latency_ms_mean": 0.0088,
+          "latency_ms_p95": 0.0118,
+          "episodes": 50,
+          "suite_id": "suite-n2-v1",
+          "suite_sha256": "c2c5b2c08e44bd55c19fb4f05e0f604651e4599500d65e2b3909a4894d896121",
+          "environment_hash": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:02:57+00:00",
+          "evaluation_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+          "results_path": "catalog/results/baseline-random/n2.json"
+        },
+        "n3": {
+          "success_rate": 0.0,
+          "failures_by_cause": {
+            "grieta": 11,
+            "tiempo": 29,
+            "volco": 4,
+            "bateria": 6
+          },
+          "beacons_visited_mean": 0.06,
+          "steps_mean": 329.08,
+          "collisions_per_episode": 150.96,
+          "final_battery_success": null,
+          "route_efficiency": null,
+          "return_mean": -99.7277,
+          "latency_ms_mean": 0.0096,
+          "latency_ms_p95": 0.0135,
+          "episodes": 50,
+          "suite_id": "suite-n3-v1",
+          "suite_sha256": "9c6be7827d981d561c393e223c30a38701fee9d1472498bb72208cb88c0df988",
+          "environment_hash": "8ece567b32d3a9713e3be7c0b8ca564aa10cd30eedaec6cb7cc01bbe04accca1",
+          "partial": false,
+          "evaluated_at": "2026-11-03T02:03:14+00:00",
+          "evaluation_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+          "results_path": "catalog/results/baseline-random/n3.json"
+        }
+      },
+      "curves": {}
+    }
+  ]
+}

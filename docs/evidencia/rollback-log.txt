@@ -1,0 +1,28 @@
+== 2026-11-03T02:20:15Z · 0. Estado inicial
+  /version -> catalog-v2 · n2 = 92cdc692fdca465b917fa7c5e8a9902d · commit 5c5acb857f
+  /evaluate 92cdc692 en N2 (suite-n2-v1, 50 episodios): éxito 100%, fallos {}, choques/ep 0.0, modelo sha 0d34e588ae74
+
+== 2026-11-03T02:20:19Z · 1. Promoción manual errónea (simulacro)
+recomendados: {'n1': 'a1752d56c065467d8592d52cb229cad6', 'n2': '4b9b4353fd4f41c4b99a2d43ce290095', 'n3': '3dd6e0f778314110bb6d2cf1ca00b41f'} · versión servida: catalog-v3
+  /version -> catalog-v3 · n2 = 4b9b4353fd4f41c4b99a2d43ce290095 · commit 5c5acb857f
+
+== 2026-11-03T02:20:19Z · 2. Detección: el recomendado servido en N2 se degrada
+  /evaluate 4b9b4353 en N2 (suite-n2-v1, 50 episodios): éxito 16%, fallos {'bateria': 28, 'grieta': 10, 'tiempo': 4}, choques/ep 23.66, modelo sha 96f0b9057322
+
+== 2026-11-03T02:20:35Z · 3. Rollback con el flow de Prefect a la versión anterior identificada (catalog-v2: 92cdc692fdca465b917fa7c5e8a9902d)
+  21:20:40.681 | INFO    | Task run 'rollback-4a5' - Finished in state Completed()
+  21:20:40.713 | INFO    | Task run '4-evaluar-ad0' - Finished in state Completed()
+  21:20:40.746 | INFO    | Task run '8-version-servida-240' - Finished in state Completed()
+  21:20:40.760 | INFO    | Flow run 'hot-kakapo' - Finished in state Completed()
+  {"evidence": "docs/evidencia/pipeline/20261103T022040Z-rollback-n2.json"}
+  /version -> catalog-v4 · n2 = 92cdc692fdca465b917fa7c5e8a9902d · commit 5c5acb857f
+
+== 2026-11-03T02:20:42Z · 4. Comprobación: el modelo restaurado funciona
+  /evaluate 92cdc692 en N2 (suite-n2-v1, 50 episodios): éxito 100%, fallos {}, choques/ep 0.0, modelo sha 0d34e588ae74
+
+== Historial del catálogo
+  v1   2026-11-03T02:13:03+00:00 publish  nicol        {'n1': 'a1752d56c065467d8592d52cb229cad6', 'n2': '92cdc692fdca465b917fa7c5e8a9902d', 'n3': '3dd6e0f778314110bb6d2cf1ca00b41f'}  ·  paso 10: intervencion exp-005 (semillas 2 y 3) por el pipeline
+  v2   2026-11-03T02:14:42+00:00 publish  nicol        {'n1': 'a1752d56c065467d8592d52cb229cad6', 'n2': '92cdc692fdca465b917fa7c5e8a9902d', 'n3': '3dd6e0f778314110bb6d2cf1ca00b41f'}  ·  paso 6: finalistas exp-001 y exp-002 con 3 semillas
+  v3   2026-11-03T02:20:19+00:00 promote  nicol        {'n1': 'a1752d56c065467d8592d52cb229cad6', 'n2': '4b9b4353fd4f41c4b99a2d43ce290095', 'n3': '3dd6e0f778314110bb6d2cf1ca00b41f'}  ·  n2: 92cdc692fdca465b917fa7c5e8a9902d -> 4b9b4353fd4f41c4b99a2d43ce290095. SIMULACRO: promoción manual de exp-005 s1 a N2 sin pasar los criterios
+  v4   2026-11-03T02:20:40+00:00 rollback nicol        {'n1': 'a1752d56c065467d8592d52cb229cad6', 'n2': '92cdc692fdca465b917fa7c5e8a9902d', 'n3': '3dd6e0f778314110bb6d2cf1ca00b41f'}  ·  n2: 4b9b4353fd4f41c4b99a2d43ce290095 -> 92cdc692fdca465b917fa7c5e8a9902d. el modelo promovido cae a 16 % en N2 (paso 2 del simulacro); se restaura el recomendado de catalog-v2
+recomendados: {'n1': 'a1752d56c065467d8592d52cb229cad6', 'n2': '92cdc692fdca465b917fa7c5e8a9902d', 'n3': '3dd6e0f778314110bb6d2cf1ca00b41f'} · versión servida: catalog-v5

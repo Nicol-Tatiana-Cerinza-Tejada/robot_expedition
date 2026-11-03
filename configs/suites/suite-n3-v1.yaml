@@ -1,0 +1,7 @@
+suite_id: suite-n3-v1
+version: 1
+level_id: n3
+description: "Suite fija de evaluacion del nivel N3: 50 episodios con semillas que no se usan al entrenar"
+episodes: 50
+seed_start: 300000
+max_steps: 400

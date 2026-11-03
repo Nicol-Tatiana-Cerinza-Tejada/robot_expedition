@@ -1,0 +1,18 @@
+experiment_id: exp-005
+hypothesis: "Intervencion del incidente: entrenar con el bloqueo del corredor y el sensor degradado (N3) recupera el exito en N3 sin perder mas de 5 puntos en N2"
+change: "nivel de entrenamiento N2 -> N3 (bloqueo, ruido 0.08 y rayo 4 muerto)"
+reference: exp-002
+level_id: n3
+algorithm: ppo
+budget_timesteps: 300000
+seeds: [1, 2, 3]
+hyperparams:
+  learning_rate: 0.0003
+  n_steps: 2048
+  batch_size: 64
+  gamma: 0.99
+normalize_obs: true
+parent_run_id: null
+environment:
+  max_steps: 400
+  rock_jitter: 0.0

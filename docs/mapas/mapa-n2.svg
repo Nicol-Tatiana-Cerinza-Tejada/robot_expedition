@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 820" width="720" height="820" font-family="DejaVu Sans, Arial, sans-serif">
+<!-- Generado por scripts/draw_level_maps.py desde robot_expedition/envs/beacon_expedition.py y configs/levels/n2.yaml. Escala: 1 m = 50 px. -->
+<defs><pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M 50 0 L 0 0 0 50" fill="none" stroke="#c9a77a" stroke-width="0.6"/></pattern><pattern id="sand" width="8" height="8" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.1" fill="#a8743a"/><circle cx="6" cy="6" r="1.1" fill="#a8743a"/></pattern><radialGradient id="dune"><stop offset="0" stop-color="#b9763f" stop-opacity=".75"/><stop offset="1" stop-color="#b9763f" stop-opacity="0"/></radialGradient></defs>
+<rect width="720" height="820" fill="#fbf6ef"/>
+<text x="360.0" y="26.0" font-size="17" text-anchor="middle" font-weight="bold" fill="#2b2118">Robot Expedition · nivel N2</text>
+<text x="360.0" y="48.0" font-size="13" text-anchor="middle" font-weight="normal" fill="#2b2118">Mision completa con dos balizas y terreno 3D</text>
+<rect x="60.0" y="70.0" width="600.0" height="600.0" fill="#e6c49c"/>
+<rect x="60.0" y="70.0" width="600.0" height="600.0" fill="url(#grid)" stroke="#6b6b70" stroke-width="6"/>
+<circle cx="385.0" cy="190.0" r="100.0" fill="url(#dune)"/>
+<text x="385.0" y="194.0" font-size="11" text-anchor="middle" font-weight="normal" fill="#6d3f17">duna 0.30 m</text>
+<circle cx="410.0" cy="480.0" r="80.0" fill="url(#dune)"/>
+<text x="410.0" y="484.0" font-size="11" text-anchor="middle" font-weight="normal" fill="#6d3f17">duna 0.22 m</text>
+<circle cx="190.0" cy="510.0" r="90.0" fill="url(#dune)"/>
+<text x="190.0" y="514.0" font-size="11" text-anchor="middle" font-weight="normal" fill="#6d3f17">duna 0.25 m</text>
+<circle cx="210.0" cy="275.0" r="70.0" fill="url(#dune)"/>
+<text x="210.0" y="279.0" font-size="11" text-anchor="middle" font-weight="normal" fill="#6d3f17">duna 0.15 m</text>
+<circle cx="600.0" cy="440.0" r="60.0" fill="url(#dune)"/>
+<text x="600.0" y="444.0" font-size="11" text-anchor="middle" font-weight="normal" fill="#6d3f17">duna 0.15 m</text>
+<circle cx="590.0" cy="290.0" r="50.0" fill="url(#dune)"/>
+<text x="590.0" y="294.0" font-size="11" text-anchor="middle" font-weight="normal" fill="#6d3f17">duna 0.12 m</text>
+<rect x="360.0" y="560.0" width="100.0" height="70.0" fill="url(#sand)" stroke="#a8743a" stroke-dasharray="4 3"/>
+<text x="410.0" y="644.0" font-size="11" text-anchor="middle" font-weight="normal" fill="#2b2118">arena (arrastre)</text>
+<rect x="210.0" y="185.0" width="50.0" height="20.0" fill="#2b1d14"/>
+<text x="235.0" y="179.0" font-size="11" text-anchor="middle" font-weight="normal" fill="#2b2118">grieta (0.5 m)</text>
+<rect x="85.0" y="320.0" width="100.0" height="100.0" fill="#9fd3a8" fill-opacity=".6" stroke="#2f7d3c" stroke-width="2"/>
+<text x="135.0" y="436.0" font-size="13" text-anchor="middle" font-weight="bold" fill="#2f7d3c">BASE</text>
+<rect x="285.0" y="255.0" width="50.0" height="80.0" fill="#8c8c92" stroke="#55555a" stroke-width="2"/>
+<text x="310.0" y="299.0" font-size="13" text-anchor="middle" font-weight="bold" fill="#fff">R1</text>
+<rect x="280.0" y="470.0" width="60.0" height="50.0" fill="#8c8c92" stroke="#55555a" stroke-width="2"/>
+<text x="310.0" y="499.0" font-size="13" text-anchor="middle" font-weight="bold" fill="#fff">R2</text>
+<rect x="440.0" y="320.0" width="40.0" height="100.0" fill="#8c8c92" stroke="#55555a" stroke-width="2"/>
+<text x="460.0" y="374.0" font-size="13" text-anchor="middle" font-weight="bold" fill="#fff">R3</text>
+<rect x="185.0" y="570.0" width="50.0" height="50.0" fill="#8c8c92" stroke="#55555a" stroke-width="2"/>
+<text x="210.0" y="599.0" font-size="13" text-anchor="middle" font-weight="bold" fill="#fff">R4</text>
+<rect x="565.0" y="100.0" width="40.0" height="40.0" fill="#8c8c92" stroke="#55555a" stroke-width="2"/>
+<text x="585.0" y="124.0" font-size="13" text-anchor="middle" font-weight="bold" fill="#fff">R5</text>
+<circle cx="535.0" cy="195.0" r="30.0" fill="#ffd34d" fill-opacity=".5" stroke="#b07b00" stroke-width="2"/>
+<text x="535.0" y="200.0" font-size="13" text-anchor="middle" font-weight="bold" fill="#2b2118">B1</text>
+<circle cx="535.0" cy="545.0" r="30.0" fill="#ffd34d" fill-opacity=".5" stroke="#b07b00" stroke-width="2"/>
+<text x="535.0" y="550.0" font-size="13" text-anchor="middle" font-weight="bold" fill="#2b2118">B2</text>
+<line x1="135.0" y1="370.0" x2="135.0" y2="430.0" stroke="#3a6ea5" stroke-width="1" />
+<line x1="135.0" y1="370.0" x2="158.0" y2="425.4" stroke="#3a6ea5" stroke-width="1" />
+<line x1="135.0" y1="370.0" x2="177.4" y2="412.4" stroke="#3a6ea5" stroke-width="1" />
+<line x1="135.0" y1="370.0" x2="190.4" y2="393.0" stroke="#3a6ea5" stroke-width="1" />
+<line x1="135.0" y1="370.0" x2="195.0" y2="370.0" stroke="#3a6ea5" stroke-width="1" />
+<line x1="135.0" y1="370.0" x2="190.4" y2="347.0" stroke="#3a6ea5" stroke-width="1" />
+<line x1="135.0" y1="370.0" x2="177.4" y2="327.6" stroke="#3a6ea5" stroke-width="1" />
+<line x1="135.0" y1="370.0" x2="158.0" y2="314.6" stroke="#3a6ea5" stroke-width="1" />
+<line x1="135.0" y1="370.0" x2="135.0" y2="310.0" stroke="#3a6ea5" stroke-width="1" />
+<rect x="122.5" y="362.0" width="25.0" height="16.0" fill="#f4f1ea" stroke="#333" stroke-width="1.5"/>
+<path d="M 135.0 370.0 L 535.0 195.0 L 535.0 545.0 L 135.0 370.0" fill="none" stroke="#3a6ea5" stroke-width="1.5" stroke-dasharray="7 5" opacity=".7"/>
+<text x="60.0" y="704.0" font-size="13" text-anchor="start" font-weight="normal" fill="#2b2118">Balizas: 2 · rocas activas: 5 de 5 (punteadas = inactivas) · dunas: sí · bloqueo: no</text>
+<text x="60.0" y="724.0" font-size="13" text-anchor="start" font-weight="normal" fill="#2b2118">Sensores: ruido de rayos σ = 0.02 m · todos los rayos sanos</text>
+<text x="60.0" y="744.0" font-size="13" text-anchor="start" font-weight="normal" fill="#2b2118">Línea azul punteada: ruta de referencia de centro a centro.</text>
+<text x="60.0" y="764.0" font-size="13" text-anchor="start" font-weight="normal" fill="#2b2118">x ∈ [0, 12] m, y ∈ [-6, 6] m; el rover sale del centro de la base mirando a +x.</text>
+</svg>

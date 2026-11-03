@@ -9,10 +9,11 @@ import {
   normalizeReplayBundle,
 } from './data'
 import { ExpeditionScene } from './scene/expedition-scene'
-import type { CatalogData, EpisodeData, ExpeditionMap, ReplayFrame, RunOption } from './types'
+import type { CatalogData, CatalogRun, EpisodeData, ExpeditionMap, MonitorData, ReplayFrame, RunOption } from './types'
 import { FRAME_INDEX } from './types'
 import { LearningCurve } from './ui/curve'
 import { MissionHud, required } from './ui/hud'
+import { RegistryView } from './ui/registry'
 
 type UnknownRecord = Record<string, unknown>
 
@@ -31,6 +32,8 @@ const evaluateButton = required<HTMLButtonElement>('#evaluateButton')
 const manualButton = required<HTMLButtonElement>('#manualButton')
 const demoReplayButton = required<HTMLButtonElement>('#demoReplayButton')
 const keypadButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-action]'))
+const trainedValue = required<HTMLElement>('#trainedValue')
+const configValue = required<HTMLElement>('#configValue')
 
 const scene = new ExpeditionScene(required<HTMLElement>('#scene'), {
   onFrame: (snapshot) => hud.updateFrame(snapshot),
@@ -48,6 +51,17 @@ let apiOnline = false
 let manualSessionId: string | undefined
 let manualEpisode: EpisodeData | undefined
 let manualBusy = false
+let lastVersion: Record<string, unknown> | undefined
+
+const registry = new RegistryView({
+  onEvaluate: (run, levelId) => { void evaluateFromRegistry(run, levelId) },
+  onRefreshMonitor: () => { void refreshMonitor() },
+})
+
+const setProvenance = (trained: string, config: string) => {
+  trainedValue.textContent = trained
+  configValue.textContent = config
+}
 
 scene.setMap(currentMap)
 scene.setSpeed(4)
@@ -122,6 +136,7 @@ const loadEpisode = (
 const loadReplay = (value: unknown, label: string) => {
   const bundle = normalizeReplayBundle(value)
   loadEpisode(bundle.episodes[0], bundle.map, 'replay', `REPLAY · ${label}`)
+  setProvenance('replay', label)
   scene.setPlaying(true)
   if (apiOnline) {
     hud.hideNotice()
@@ -151,15 +166,19 @@ const fillCatalog = (data: CatalogData) => {
     option.textContent = 'Catálogo vacío'
     runSelect.append(option)
   }
-  if (data.recommendedRunId && data.runs.some((run) => run.runId === data.recommendedRunId)) {
-    runSelect.value = data.recommendedRunId
+  const recommended = data.recommendedByLevel?.[levelSelect.value] ?? data.recommendedRunId
+  if (recommended && data.runs.some((run) => run.runId === recommended)) {
+    runSelect.value = recommended
   }
   runSelect.disabled = !data.runs.length
   evaluateButton.disabled = !data.runs.length
   required<HTMLElement>('#catalogCount').textContent = `${data.runs.length} run${data.runs.length === 1 ? '' : 's'}`
   const run = selectedRun()
-  if (run) levelSelect.value = run.levelId
+  if (run && hasLevel(run.levelId)) levelSelect.value = run.levelId
 }
+
+// Los baselines sirven en cualquier nivel (level_id "todos"): solo se copia un nivel que exista.
+const hasLevel = (levelId: string) => [...levelSelect.options].some((option) => option.value === levelId)
 
 const connectApi = async () => {
   try {
@@ -180,7 +199,9 @@ const connectApi = async () => {
     if (catalogResult.status === 'rejected') throw catalogResult.reason
     const normalizedCatalog = normalizeCatalog(catalogResult.value)
     fillCatalog(normalizedCatalog)
+    registry.setCatalog(catalogResult.value)
     if (versionResult.status === 'fulfilled') {
+      lastVersion = isRecord(versionResult.value) ? versionResult.value : undefined
       apiEnvironmentVersion = environmentVersionFrom(versionResult.value)
         ?? normalizedCatalog.servedVersion
         ?? apiEnvironmentVersion
@@ -190,6 +211,7 @@ const connectApi = async () => {
     manualButton.disabled = false
     if (normalizedCatalog.runs.length) hud.hideNotice()
     else hud.showNotice('Catálogo vacío', 'La API responde, pero /catalog todavía no contiene modelos recuperables.')
+    void refreshMonitor()
   } catch (error) {
     apiOnline = false
     hud.setConnection('offline', 'API sin respuesta')
@@ -205,6 +227,13 @@ const evaluateSelectedRun = async () => {
     return
   }
 
+  const rich = registry.run(run.runId)
+  if (rich && !registry.canServe(rich)) {
+    hud.showNotice('Modelo no evaluable',
+      `El run ${run.runId} tiene estado ${rich.status} o un ambiente incompatible (${rich.environment_version}). Se conserva como evidencia, pero no se sirve.`)
+    return
+  }
+
   setBusy(evaluateButton, true, 'Evaluar modelo', 'Evaluando…')
   try {
     const result = await api.evaluate(run.runId, levelSelect.value, parseSeeds())
@@ -216,12 +245,50 @@ const evaluateSelectedRun = async () => {
       levelId: levelSelect.value,
     })
     loadEpisode(episode, mapFromPayload(result) ?? currentMap, 'api')
-    hud.hideNotice()
+    const trained = rich?.level_id ?? run.levelId
+    const crossLevel = trained !== 'todos' && trained !== levelSelect.value
+    setProvenance(
+      crossLevel ? `${trained.toUpperCase()} · evaluado en ${levelSelect.value.toUpperCase()}` : trained.toUpperCase(),
+      rich?.config_path ? `${rich.experiment_id} · semilla ${rich.seed ?? '—'}` : rich?.experiment_id ?? '—',
+    )
+    if (crossLevel) {
+      hud.showNotice('Evaluación en otro nivel',
+        `Este modelo se entrenó en ${trained.toUpperCase()} y se está evaluando en ${levelSelect.value.toUpperCase()}. El contrato de observación y acciones es el mismo; el resultado mide transferencia.`)
+    } else {
+      hud.hideNotice()
+    }
   } catch (error) {
     hud.showNotice('La evaluación falló', errorMessage(error))
   } finally {
     setBusy(evaluateButton, false, 'Evaluar modelo', 'Evaluando…')
     evaluateButton.disabled = !catalog.runs.length
+    void refreshMonitor()
+  }
+}
+
+async function evaluateFromRegistry(run: CatalogRun, levelId: string) {
+  if (!api) {
+    hud.showNotice('API no configurada', 'Conecta la API HTTPS para cargar y evaluar modelos.')
+    return
+  }
+  if (![...runSelect.options].some((option) => option.value === run.run_id)) {
+    hud.showNotice('Run no disponible', `El run ${run.run_id} no está en el catálogo servido por la API.`)
+    return
+  }
+  runSelect.value = run.run_id
+  if (hasLevel(levelId)) levelSelect.value = levelId
+  document.querySelector('#mission')?.scrollIntoView({ behavior: 'smooth' })
+  await evaluateSelectedRun()
+}
+
+async function refreshMonitor() {
+  if (!api) return
+  try {
+    const [monitor, version] = await Promise.all([api.monitor(), api.version()])
+    lastVersion = isRecord(version) ? version : lastVersion
+    registry.renderMonitor(monitor as MonitorData, lastVersion)
+  } catch (error) {
+    registry.renderMonitor(undefined, lastVersion, errorMessage(error))
   }
 }
 
@@ -246,6 +313,7 @@ const startManualMode = async () => {
       },
     )
     loadEpisode(manualEpisode, response.map ? normalizeMap(response.map) : currentMap, 'api', 'API · MANUAL')
+    setProvenance('sin modelo', 'control manual')
     setManualControls(true)
     hud.hideNotice()
   } catch (error) {
@@ -269,17 +337,20 @@ async function sendManualAction(action: number) {
     if (!frame) throw new Error('/sim/step no devolvió un cuadro compatible.')
     const frames = [...manualEpisode.frames, frame]
     const finished = Boolean(response.terminated || response.truncated)
+    const map = response.map ? normalizeMap(response.map) : currentMap
+    // La etapa 3 es siempre "volver a la base": en N1 se pasa de 1 a 3, con una sola baliza.
+    const visitedNow = Math.min(frame[FRAME_INDEX.stage] - 1, map.beacons.length)
     manualEpisode = {
       ...manualEpisode,
       frames,
       steps: frames.length - 1,
       battery: frame[FRAME_INDEX.battery],
       reward: frames.reduce((total, item) => total + item[FRAME_INDEX.reward], 0),
-      visited: Math.max(manualEpisode.visited, frame[FRAME_INDEX.stage] - 1),
+      visited: Math.max(manualEpisode.visited, visitedNow),
       success: response.end === 'exito' || manualEpisode.success,
       end: typeof response.end === 'string' ? response.end : finished ? 'finished' : 'running',
     }
-    loadEpisode(manualEpisode, response.map ? normalizeMap(response.map) : currentMap, 'api', 'API · MANUAL')
+    loadEpisode(manualEpisode, map, 'api', 'API · MANUAL')
     scene.seek(frames.length - 1)
     if (finished) {
       manualSessionId = undefined
@@ -322,7 +393,11 @@ required<HTMLButtonElement>('#lightModeButton').addEventListener('click', (event
 
 runSelect.addEventListener('change', () => {
   const run = selectedRun()
-  if (run) levelSelect.value = run.levelId
+  if (run && hasLevel(run.levelId)) levelSelect.value = run.levelId
+})
+levelSelect.addEventListener('change', () => {
+  const recommended = catalog.recommendedByLevel?.[levelSelect.value]
+  if (recommended && [...runSelect.options].some((option) => option.value === recommended)) runSelect.value = recommended
 })
 evaluateButton.addEventListener('click', () => { void evaluateSelectedRun() })
 manualButton.addEventListener('click', () => { void startManualMode() })

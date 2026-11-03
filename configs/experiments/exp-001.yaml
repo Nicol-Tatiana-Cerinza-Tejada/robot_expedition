@@ -1,0 +1,17 @@
+experiment_id: exp-001
+hypothesis: "Q-learning tabular (2592 estados discretos) aprende a completar la mision en N2 y fija el baseline aprendido"
+change: "referencia aprendida: Q-learning con la observacion discretizada"
+reference: baseline-rule
+level_id: n2
+algorithm: qlearning
+budget_timesteps: 300000
+seeds: [1, 2, 3]
+hyperparams:
+  alpha: 0.2
+  gamma: 0.98
+  epsilon_min: 0.05
+normalize_obs: false
+parent_run_id: null
+environment:
+  max_steps: 400
+  rock_jitter: 0.0

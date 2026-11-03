@@ -1,192 +1,273 @@
 # Robot Expedition
 
 Un rover en Marte debe **visitar la baliza 1, luego la baliza 2 y volver a la
-base antes de agotar la batería**. Todo es 3D: la física la calcula MuJoCo
-(gravedad de Marte, dunas, una grieta en la que se puede caer, rocas y ruedas
-con motor) y la vista es Three.js. La ficha de diseño está en
-[`docs/ambiente-v0.1.md`](docs/ambiente-v0.1.md) y el mapa en
-[`docs/mapa-ambiente-v0.1.svg`](docs/mapa-ambiente-v0.1.svg).
+base antes de agotar la batería**, sin caer en la grieta ni volcar.
 
-El repositorio tiene dos ambientes Gymnasium, los dos en MuJoCo 3D:
+- **Física:** MuJoCo en 3D (gravedad de Marte, dunas, una grieta real, rocas y
+  ruedas con motor).
+- **Vista:** Three.js.
+- **Contexto:** proyecto final de MLOps (Universidad Externado). Equipo:
+  Suleily, Tomás, Natalia y Nicol.
 
-| Ambiente | Clase | Agente |
-|---|---|---|
-| Expedición con rover: misión completa en terreno 3D | `BeaconExpeditionEnv` | Q-learning tabular (`python -m robot_expedition`) |
-| Bípedo (10 motores) | `RobotExpeditionEnv` | `qlearning_agent.py` (no logra caminar) o PPO (`train.py`) |
+| | |
+|---|---|
+| Web del docente (Vercel) | <https://web-five-gules-83.vercel.app> |
+| API (FastAPI, HTTPS) | `https://nicoltct-robot-expedition-api.hf.space` (ver [Despliegue](#despliegue)) |
+| Ficha del ambiente y niveles | [docs/ambiente-v1.md](docs/ambiente-v1.md) |
+| Experimentos y decisiones | [docs/experimentos.md](docs/experimentos.md) |
+| Incidente y rollback | [docs/incidente.md](docs/incidente.md) · [docs/evidencia/rollback.md](docs/evidencia/rollback.md) |
+| Informe y guion de defensa | [docs/informe.md](docs/informe.md) · [docs/guion-defensa.md](docs/guion-defensa.md) |
+| Contratos (observación, manifiesto, catálogo y API) | [docs/contratos.md](docs/contratos.md) |
+| Checklist de entrega | [docs/checklist-entrega.md](docs/checklist-entrega.md) |
+
+## Arquitectura
+
+```mermaid
+flowchart LR
+  subgraph Vercel
+    W[Web Vite + TS + Three.js<br/>catálogo · comparar · evaluar · monitoreo]
+  end
+  subgraph "Hugging Face Space (Docker, HTTPS)"
+    A[API FastAPI<br/>/catalog /evaluate /sim /version /monitor]
+    E[Ambiente MuJoCo<br/>mismo código del entrenamiento]
+    M[(models/ verificados<br/>por SHA-256)]
+    C[(catalog/catalog.json)]
+  end
+  subgraph "PC del equipo"
+    T[pipelines/train.py<br/>PPO · Q-learning]
+    P[Prefect flow<br/>validar → pytest → entrenar → evaluar →<br/>registrar → seleccionar → publicar → verificar]
+    ML[(MLflow<br/>mlflow.db + mlruns)]
+  end
+  R[(GitHub: código, manifiestos,<br/>punteros DVC, release de modelos)]
+  D[(DagsHub: remoto DVC)]
+  W -- HTTPS + CORS --> A
+  A --> E
+  A --> M
+  A --> C
+  P --> T --> ML
+  T -- manifiesto + dvc add --> R
+  T -- dvc push --> D
+  P -- publica --> C
+  R -- build_space.py --> A
+```
+
+**Una sola autoridad para la física:** la API usa el mismo ambiente Python
+que el entrenamiento y la suite de evaluación (`pipelines/`). La web no simula
+nada; solo dibuja los cuadros que devuelve la API.
 
 ## Instalación
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install gymnasium mujoco numpy matplotlib pytest
-```
-
-## Web Vite + Three.js
-
-La aplicación del docente está en `web/`. Presenta el terreno, el rover, los
-nueve rayos, el rastro y las métricas del episodio. Consume el catálogo y las
-evaluaciones de la API; si la API no responde muestra un error visible y no
-reemplaza los resultados con datos de ejemplo. Los archivos locales se cargan
-manualmente y quedan identificados como `REPLAY`. El botón **Ver demo REPLAY**
-carga y reproduce la evidencia real de `docs/demo/expedition_replays.json`; no
-la presenta como una evaluación en vivo.
-
-Versiones verificadas para este frontend:
-
-- Node.js **26.13.0 LTS** (`web/.nvmrc`; Vercel usa la línea `26.x`).
-- npm **11.20.0**.
-- Vite **8.3.5**.
-- Three.js y `@types/three` **0.187.0**.
+Usa Python **3.12**, torch CPU y Node **26** (para la web).
 
 ```bash
-cd web
-cp .env.example .env.local
-# Reemplazar VITE_API_BASE_URL por la API HTTPS real
-npm ci
-npm run dev
-npm run build
+python3.12 -m venv .venv && source .venv/bin/activate        # Windows: py -3.12 -m venv .venv ; .\.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+python -m pip install torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu
+python -m pip install -r requirements.txt
+python -m pytest -q                                          # 58 pruebas
 ```
 
-El control manual usa las flechas y los endpoints `POST /sim/reset` y
-`POST /sim/step`. El modo ligero desactiva sombras y reduce la densidad de
-píxeles para equipos con menos capacidad gráfica.
+Las variables están en [`.env.example`](.env.example); cópialo como `.env`.
+Ninguna es secreta salvo las credenciales de DVC y DagsHub, que solo van en
+`.env` local o como secretos del Space.
 
-Despliegue en Vercel:
+## Recuperar los modelos y reproducir una evaluación
 
-- Root Directory: `web`
-- Build Command: `npm run build`
-- Output Directory: `dist`
-- Variable: `VITE_API_BASE_URL` con la URL HTTPS del backend
-
-URL de la web: <https://web-five-gules-83.vercel.app>
-
-La URL ya publica el frontend. La variable `VITE_API_BASE_URL` se añadirá en
-Vercel cuando el equipo entregue la URL HTTPS de la API; hasta entonces la web
-muestra explícitamente que la API no está configurada.
-
-## CLI: entrenar, evaluar y ver el proceso
-
-Todos los comandos se ejecutan desde la raíz del repositorio:
+Sin cuentas ni credenciales:
 
 ```bash
-python -m robot_expedition train          # 2000 episodios, ~4 min; muestra el avance en la terminal
-python -m robot_expedition evaluate       # las 3 métricas de la ficha en 50 episodios nuevos
-python -m robot_expedition evaluate --perturbation   # con el corredor bloqueado
-python -m robot_expedition demo --viewer  # un episodio en el visor 3D nativo de MuJoCo
-python -m robot_expedition transitions    # transiciones reales en tabla Markdown
-python -m robot_expedition plot           # logs/expedition_learning.png
-python -m robot_expedition serve          # vista 3D en http://localhost:8000/expedicion_3d.html
+curl -LO https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition/releases/download/models-v2/robot-expedition-models-v2.zip
+python -m zipfile -e robot-expedition-models-v2.zip .        # models/<run_id>/ + manifests/ + SHA256SUMS.txt
+sha256sum -c SHA256SUMS.txt                                  # o: python scripts/package_models.py lo genera
+# Reevaluar un run del catálogo (por ejemplo, el primer Q-learning) con la suite fija de N2:
+python pipelines/evaluate.py --policy qlearning --model models/4d91d98f05b248cfaa699285cc7680f0/qlearning.npz --level n2
+python pipelines/evaluate.py --policy ppo --level n3 \
+  --model models/a1752d56c065467d8592d52cb229cad6/ppo_model.zip \
+  --vecnormalize models/a1752d56c065467d8592d52cb229cad6/vecnormalize.pkl
 ```
 
-Use `python -m robot_expedition <comando> --help` para ver las opciones
-(`--episodes`, `--seed`, `--ray-noise`, `--jitter`, `--max-steps`, ...).
+Los casos coinciden uno a uno con `catalog/results/<run_id>/<nivel>.json`
+([prueba](docs/evidencia/rollback.md#3-reconstrucción-desde-un-clon-limpio)).
 
-Lo que genera cada comando:
-- `models/qlearning_balizas.npz`: la tabla Q.
-- `logs/expedition_history.csv`: una fila por episodio.
-- `logs/expedition_replays.json`: trayectorias grabadas para la vista 3D.
-- `logs/expedition_live.json`: el último episodio, para el modo en vivo.
-
-### Vista 3D (Three.js)
-
-`expedicion_3d.html` reproduce las **trayectorias reales** que graba el CLI.
-Cada cuadro guarda la pose 3D completa de MuJoCo: posición x, y, z y
-orientación como cuaternión. Así se ve al rover subir, inclinarse en las dunas
-o caer en la grieta. La página muestra también el mismo terreno (heightfield),
-los 9 rayos, el rastro coloreado por etapa, las balizas que se ponen verdes al
-visitarlas, los choques, el bloqueo y la curva de aprendizaje. El botón «Recorrer todo el aprendizaje» pasa por
-los episodios grabados, desde el robot que explora al azar hasta el que
-cumple la misión.
+**Con DVC** (el remoto de DagsHub de Tomás pide credenciales):
 
 ```bash
-python -m robot_expedition serve      # terminal 1
-# abrir http://localhost:8000/expedicion_3d.html
+dvc remote modify --local dagshub auth basic
+dvc remote modify --local dagshub user "$DAGSHUB_USER"
+dvc remote modify --local dagshub password "$DAGSHUB_TOKEN"
+dvc pull models/<run_id>.dvc
 ```
 
-Para verlo **en vivo** mientras entrena, active «En vivo» en la página y en
-otra terminal ejecute:
+**MLflow:** `robot-expedition-mlflow-v2.zip` (misma release) trae `mlflow.db`
+y `mlruns/`.
 
 ```bash
-python -m robot_expedition train --live-delay 0.5
+mlflow ui --backend-store-uri sqlite:///mlflow.db
 ```
 
-Si todavía no hay `logs/`, la página usa los datos de ejemplo de `docs/demo/`.
+Ahí están los runs, los parámetros, las métricas `training/*` y
+`evaluation/*`, el registro de modelos y el experimento
+`robot-expedition-incidentes`.
 
-### Pruebas
+## Flujo de trabajo
+
+### 1. Entrenar (un run de MLflow por semilla)
 
 ```bash
-python -m pytest -q
+python pipelines/train.py --config configs/experiments/exp-002.yaml            # semillas del YAML
+python pipelines/train.py --config configs/experiments/exp-002.yaml --seed 2
 ```
 
-Las pruebas verifican las reglas de la ficha: el orden de las balizas, que
-cada bono se dé una sola vez, los choques, la grieta, la batería, el límite de
-tiempo, la perturbación y que no se gane girando en el sitio.
+Cada run deja estas piezas:
+- un run de MLflow con parámetros, `training/*` (con exploración) y
+  `evaluation/*` (suite fija, determinista);
+- artefactos y modelo registrado;
+- `manifests/<run_id>.json` con commit, SHA-256 del config, del modelo y del
+  ambiente, normalización, suite y estado (`completed`, `failed` o
+  `interrupted`, con diagnóstico);
+- `models/<run_id>.dvc`.
 
-## Bípedo (MuJoCo)
+Para entrenar varios runs en paralelo hay que levantar un servidor MLflow
+(`mlflow server --backend-store-uri sqlite:///$PWD/mlflow.db --port 5055`) y
+usar [`scripts/run_experiment.sh`](scripts/run_experiment.sh).
 
-### Ejecutar una prueba
+**Prueba rápida** (8 pasos):
 
 ```bash
-source .venv/bin/activate
-python -c "from robot_expedition import RobotExpeditionEnv; e=RobotExpeditionEnv(); o,i=e.reset(seed=7); print(o.shape, i); print(e.step(e.action_space.sample())[1:])"
+python pipelines/train.py --config configs/experiments/exp-002.yaml --seed 1 \
+  --budget-timesteps 8 --eval-episodes 1 --max-episode-steps 2 --n-steps 2 --batch-size 4
 ```
 
-El agente controla diez motores: cadera (balanceo y avance), rodilla y tobillo
-(avance y balanceo) en cada pierna. La observacion combina pose, velocidades,
-comandos, IMU, contactos, distancias a obstaculos, bateria y progreso.
-
-El episodio termina por caida, bateria agotada o mision cumplida; tambien se
-trunca al alcanzar el limite de pasos. La recompensa favorece avance, postura
-vertical y eficiencia energetica, penalizando inclinacion y control excesivo.
-
-Para PPO se requieren dependencias adicionales de PyTorch y Stable-Baselines3.
-
-### Agente Q-learning del bípedo
-
-`qlearning_agent.py` discretiza variables físicas relevantes (posición, altura,
-velocidad, postura, obstáculo cercano, batería y progreso) y aprende sobre ocho
-acciones motoras discretas. Durante el entrenamiento imprime la recompensa,
-progreso, éxitos, estados conocidos y `epsilon`, para observar cómo cambia la
-exploración.
+### 2. Evaluar con la suite fija
 
 ```bash
-source .venv/bin/activate
-python qlearning_agent.py train --episodes 100 --max-steps 500
-python qlearning_agent.py plot
-python qlearning_agent.py evaluate --episodes 10
+python pipelines/evaluate.py --policy rule --level n2                 # suite-n2-v1: 50 episodios, semillas 200000+
+python pipelines/evaluate.py --baselines                              # aleatorio y regla en N1, N2 y N3
+python pipelines/evaluate.py --policy ppo --model ... --level n2 --suite test-final   # test reservado (semillas en EXPEDITION_TEST_SEEDS)
 ```
 
-Los artefactos quedan en `models/qlearning_robot.npz`,
-`logs/qlearning_history.csv` y `logs/qlearning_learning.png`. Para ver el robot
-durante la evaluación usa `--render`.
+### 3. Pipeline con Prefect
 
-### Páginas del bípedo (Three.js y paneles)
-
-La página `visualize_3d.html` muestra el bípedo, Marte, obstáculos, meta y las
-métricas del entrenamiento real. Genera el historial y sirve el repositorio:
+Usa Prefect **3.4.20**. Sin servidor, el flow arranca uno temporal; para ver
+la interfaz:
 
 ```bash
-source .venv/bin/activate
-python qlearning_agent.py train --episodes 100 --max-steps 500
-python -m http.server 8000
+prefect server start                       # interfaz en http://127.0.0.1:4200
+export PREFECT_API_URL=http://127.0.0.1:4200/api
 ```
-
-Abre `http://localhost:8000/visualize_3d.html`. La página usa Three.js desde
-CDN y carga `logs/qlearning_history.csv` para reproducir las pruebas y el
-aprendizaje.
-
-Para observar el entrenamiento en vivo, abre `http://localhost:8000/training_dashboard.html`
-en una terminal y ejecuta el agente en otra:
 
 ```bash
-python -m http.server 8000
-source .venv/bin/activate
-python qlearning_agent.py train --episodes 100 --report-every 1
+python pipelines/flow.py --config configs/experiments/exp-005.yaml --seed 2 --seed 3   # entrena y publica
+python pipelines/flow.py --runs <run_id> --api-url https://<api>                         # sin entrenar: evalúa, verifica y comprueba la API
+python pipelines/flow.py --rollback n2 --to <run_id> --reason "..." --api-url https://<api>
 ```
 
-La interfaz lee `logs/qlearning_live.json` después de cada época.
+Etapas, todas tasks de Prefect:
+1. validar perfil, rutas y esquema de manifiestos;
+2. `pytest`;
+3. entrenar (cada semilla en un subproceso);
+4. evaluar en las suites de N1, N2 y N3;
+5. verificar SHA-256, puntero DVC y run de MLflow;
+6. y 7. aplicar los criterios de [`configs/selection.yaml`](configs/selection.yaml)
+   y publicar `catalog/catalog.json`;
+8. comprobar `/version` y `/catalog` de la API.
 
-Nota (28 oct): con 300 episodios este agente no logra que el bípedo camine (0
-éxitos, cae antes de 80 pasos). Por eso la misión completa se entrena en el
-ambiente del rover de arriba.
+Cada ejecución deja su evidencia en
+[`docs/evidencia/pipeline/`](docs/evidencia/pipeline).
+
+### 4. Catálogo, selección y rollback
+
+```bash
+python pipelines/catalog.py build          # evalúa lo pendiente, selecciona y publica (misma versión si nada cambia)
+python pipelines/catalog.py history        # catalog-v1 … vN: quién, cuándo, qué y por qué
+python pipelines/catalog.py rollback --level n2 --to <run_id_servido_antes> --reason "..."
+python pipelines/catalog.py unpin --level n2 --reason "..."
+```
+
+Un rollback solo acepta un run que **ya fue** el recomendado de ese nivel.
+Promover uno nuevo a mano es `promote` y también queda registrado. El
+simulacro completo, con evidencia, está en
+[`scripts/simulacro_rollback.sh`](scripts/simulacro_rollback.sh).
+
+### 5. API y web en local
+
+```bash
+python -m uvicorn api.main:app --reload --port 8000
+cd web && echo "VITE_API_BASE_URL=http://127.0.0.1:8000" > .env.local && npm ci && npm run dev   # http://localhost:5173
+```
+
+La web tiene estas secciones:
+- **Simulación:** escena 3D, evaluación y control manual con las flechas.
+- **Catálogo:** filtros por nivel y estado. Cada run muestra hipótesis,
+  cambio, semilla, pasos, tiempo, métricas por nivel, commit, MLflow y
+  decisión de selección, con un enlace `/run/<run_id>`.
+- **Comparar:** dos o más runs con la misma suite, más las curvas de
+  entrenamiento.
+- **Monitoreo:** éxito del recomendado por escenario, causas de fallo, versión
+  servida, latencia y errores por ruta.
+
+Un error de la API se muestra como error y un archivo local se rotula
+`REPLAY`. La API está documentada en [docs/despliegue-api.md](docs/despliegue-api.md).
+
+## Despliegue
+
+**API en Hugging Face Spaces** (Docker, HTTPS):
+
+```bash
+python scripts/build_space.py --out /tmp/space --release v1.0    # copia código, catálogo y pesos verificados; fija commit y CORS
+huggingface-cli upload NicolTcT/robot-expedition-api /tmp/space . --repo-type space
+```
+
+La primera vez se crea el Space con:
+
+```bash
+huggingface-cli repo create robot-expedition-api --type space --space_sdk docker
+```
+
+**Web en Vercel:**
+
+| Ajuste | Valor |
+|---|---|
+| Root Directory | `web` |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+| `VITE_API_BASE_URL` | `https://nicoltct-robot-expedition-api.hf.space` |
+
+`vercel.json` reescribe `/run/<id>` a `index.html` para que los enlaces
+profundos funcionen al recargar.
+
+**Al cambiar el catálogo** (selección o rollback):
+1. commit de `catalog/`;
+2. `build_space.py` y subir de nuevo;
+3. `flow.py --runs <run> --api-url <API>` para confirmar `in_sync: true`.
+
+## Estructura
+
+| Ruta | Contenido |
+|---|---|
+| `robot_expedition/envs/beacon_expedition.py` | Ambiente Gymnasium 3D (MuJoCo) |
+| `configs/levels/`, `configs/suites/`, `configs/experiments/`, `configs/selection.yaml` | Niveles, suites fijas, experimentos y criterios |
+| `pipelines/` | `train.py`, `evaluate.py`, `policies.py`, `catalog.py` y `flow.py` (Prefect) |
+| `api/` | FastAPI: `main.py` (rutas y monitoreo) y `store.py` (catálogo y carga verificada) |
+| `web/` | Frontend Vite + TypeScript + Three.js |
+| `manifests/`, `models/*.dvc`, `catalog/` | Trazabilidad: manifiestos, punteros DVC, catálogo versionado, historial y resultados por caso |
+| `scripts/` | Mapas, incidente, reportes, empaquetado, Space, sincronización de MLflow y simulacro |
+| `docs/` | Fichas, contratos, experimentos, incidente, evidencia, informe y defensa |
+| `tests/` | 58 pruebas: reglas del ambiente, niveles, evaluación, entrenamiento, API y catálogo |
+
+## Anexo: CLI original y bípedo
+
+Lo que sigue es anterior al proyecto final y se conserva como historial.
+
+**CLI del rover** (Q-learning de la ficha v0.1):
+
+```bash
+python -m robot_expedition train
+python -m robot_expedition evaluate --perturbation
+python -m robot_expedition serve      # expedicion_3d.html en http://localhost:8000
+```
+
+**Bípedo de 10 motores:** `RobotExpeditionEnv`, `qlearning_agent.py`,
+`visualize_3d.html` y `training_dashboard.html`. El 28 de octubre, con
+300 episodios de Q-learning, no logró caminar. Por eso la misión se entrena
+con el rover ([ficha v0.1](docs/ambiente-v0.1.md#posibles-trampas-y-decisiones-pendientes)).

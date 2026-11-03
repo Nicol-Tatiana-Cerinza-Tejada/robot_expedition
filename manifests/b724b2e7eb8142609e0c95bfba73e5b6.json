@@ -1,0 +1,39 @@
+{
+  "action_spec": "Discrete(5)",
+  "algorithm": "qlearning",
+  "budget_timesteps": 300000,
+  "checkpoint_uri": "runs:/b724b2e7eb8142609e0c95bfba73e5b6/checkpoint",
+  "config_sha256": "55b4f6f22d2934ec181079d4047659630b71d3777da8d660a566ca8053f92db1",
+  "diagnosis": null,
+  "effective_budget_timesteps": 300000,
+  "environment_hash": "7fc4127586a715c8168651b203c98fbc462fb8214363cafa71d1056c76a35d61",
+  "environment_version": "robot-expedition-3d/1.0.0",
+  "evaluation_suite_id": "suite-n2-v1",
+  "experiment_id": "exp-001",
+  "git_commit": "df91b93655a931dbff3219a8dd14b9fcd830ae28",
+  "level_id": "n2",
+  "metrics": {
+    "collisions_per_episode": 0.0,
+    "evaluation_episodes": 50,
+    "evaluation_partial": false,
+    "evaluation_reward": 100.2029,
+    "failures_by_cause": {},
+    "steps_mean": 130.62,
+    "success_rate": 1.0
+  },
+  "model_sha256": "c15a8fd99d713df02350931b4c4d9601959d405beb36ea208caf2123f789e788",
+  "model_uri": "dvc://dagshub/models/b724b2e7eb8142609e0c95bfba73e5b6",
+  "normalization_uri": null,
+  "obs_spec": "20 floats, ver docs/contratos.md",
+  "origin": {
+    "config_path": "configs/experiments/exp-001.yaml",
+    "repository": "https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition.git",
+    "type": "experiment_config"
+  },
+  "parent_run_id": null,
+  "run_id": "b724b2e7eb8142609e0c95bfba73e5b6",
+  "runtime_ref": "requirements.txt + python 3.12.16",
+  "seed": 3,
+  "source_config_sha256": "662e1881390132d21167aaa1ca5aed02eedf18d30b40f84e34f48288900f5ad2",
+  "status": "completed"
+}

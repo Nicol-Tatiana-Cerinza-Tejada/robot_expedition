@@ -1,0 +1,6 @@
+suite_id: test-final
+version: 1
+level_id: null          # sirve para cualquier nivel; se elige con --level
+description: "Test final reservado: se usa una sola vez por finalista y nunca para ajustar parametros"
+seeds_source: reserved  # semillas en EXPEDITION_TEST_SEEDS o en test-final.local.yaml (fuera de Git)
+max_steps: 400

@@ -1,0 +1,62 @@
+{
+  "started_at": "2026-11-03T02:20:40+00:00",
+  "level_id": "n2",
+  "to_run_id": "92cdc692fdca465b917fa7c5e8a9902d",
+  "reason": "el modelo promovido cae a 16 % en N2 (paso 2 del simulacro); se restaura el recomendado de catalog-v2",
+  "actor": "nicol",
+  "rollback": {
+    "changed": true,
+    "catalog_version": 4,
+    "action": "rollback",
+    "at": "2026-11-03T02:20:40+00:00",
+    "actor": "nicol",
+    "git_commit": "5c5acb857f67384ce59147b677d5331070c3a386",
+    "reason": "n2: 4b9b4353fd4f41c4b99a2d43ce290095 -> 92cdc692fdca465b917fa7c5e8a9902d. el modelo promovido cae a 16 % en N2 (paso 2 del simulacro); se restaura el recomendado de catalog-v2",
+    "recommended_before": {
+      "n1": "a1752d56c065467d8592d52cb229cad6",
+      "n2": "4b9b4353fd4f41c4b99a2d43ce290095",
+      "n3": "3dd6e0f778314110bb6d2cf1ca00b41f"
+    },
+    "recommended_after": {
+      "n1": "a1752d56c065467d8592d52cb229cad6",
+      "n2": "92cdc692fdca465b917fa7c5e8a9902d",
+      "n3": "3dd6e0f778314110bb6d2cf1ca00b41f"
+    },
+    "content_sha256": "f8cc0e12da07572809eb21982431408238d7dee4f26daf4ffb66f0429de1c67a"
+  },
+  "4_evaluar": {
+    "baseline-rule": {
+      "n1": "catalog/results/baseline-rule/n1.json",
+      "n2": "catalog/results/baseline-rule/n2.json",
+      "n3": "catalog/results/baseline-rule/n3.json"
+    },
+    "baseline-random": {
+      "n1": "catalog/results/baseline-random/n1.json",
+      "n2": "catalog/results/baseline-random/n2.json",
+      "n3": "catalog/results/baseline-random/n3.json"
+    },
+    "92cdc692fdca465b917fa7c5e8a9902d": {
+      "n1": "catalog/results/92cdc692fdca465b917fa7c5e8a9902d/n1.json",
+      "n2": "catalog/results/92cdc692fdca465b917fa7c5e8a9902d/n2.json",
+      "n3": "catalog/results/92cdc692fdca465b917fa7c5e8a9902d/n3.json"
+    }
+  },
+  "8_version_servida": {
+    "checked": true,
+    "api_url": "http://127.0.0.1:8000",
+    "api_git_commit": "5c5acb857f67384ce59147b677d5331070c3a386",
+    "served_version": "catalog-v4",
+    "local_version": "catalog-v4",
+    "served_recommended": {
+      "n1": "a1752d56c065467d8592d52cb229cad6",
+      "n2": "92cdc692fdca465b917fa7c5e8a9902d",
+      "n3": "3dd6e0f778314110bb6d2cf1ca00b41f"
+    },
+    "local_recommended": {
+      "n1": "a1752d56c065467d8592d52cb229cad6",
+      "n2": "92cdc692fdca465b917fa7c5e8a9902d",
+      "n3": "3dd6e0f778314110bb6d2cf1ca00b41f"
+    },
+    "in_sync": true
+  }
+}

@@ -20,6 +20,12 @@
             <small>Mission control / Mars surface</small>
           </span>
         </a>
+        <nav class="topnav" aria-label="Secciones">
+          <a href="#mission">Simulación</a>
+          <a href="#catalogo">Catálogo</a>
+          <a href="#comparar">Comparar</a>
+          <a href="#monitoreo">Monitoreo</a>
+        </nav>
         <div class="topbar-status">
           <span class="eyebrow">Estado de enlace</span>
           <span id="apiStatus" class="connection connection-offline">
@@ -99,6 +105,8 @@
               <div><dt>Modelo</dt><dd id="modelValue">—</dd></div>
               <div><dt>Ambiente</dt><dd id="environmentValue">—</dd></div>
               <div><dt>Nivel</dt><dd id="levelValue">—</dd></div>
+              <div><dt>Entrenado en</dt><dd id="trainedValue">—</dd></div>
+              <div><dt>Configuración</dt><dd id="configValue">—</dd></div>
             </dl>
           </section>
 
@@ -178,6 +186,92 @@
           </section>
         </aside>
       </main>
+
+      <section id="catalogo" class="registry" aria-labelledby="catalogTitle">
+        <div class="registry-head">
+          <div>
+            <span class="eyebrow">Registro de experimentos</span>
+            <h2 id="catalogTitle">Catálogo de runs</h2>
+            <p id="catalogMeta" class="section-copy">Sin catálogo.</p>
+          </div>
+          <div class="registry-filters">
+            <label class="field">
+              <span>Nivel</span>
+              <select id="registryLevel">
+                <option value="todos">Todos</option>
+                <option value="n1">N1</option>
+                <option value="n2">N2</option>
+                <option value="n3">N3</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Estado</span>
+              <select id="registryStatus">
+                <option value="todos">Todos</option>
+                <option value="completed">Completado</option>
+                <option value="failed">Fallido</option>
+                <option value="interrupted">Interrumpido</option>
+                <option value="rejected">Rechazado</option>
+                <option value="baseline">Referencia</option>
+              </select>
+            </label>
+            <span id="registryCount" class="count-chip">0 runs</span>
+          </div>
+        </div>
+        <div class="table-scroll">
+          <table class="registry-table">
+            <thead>
+              <tr>
+                <th><span class="sr-only">Comparar</span>⇄</th>
+                <th>run_id</th>
+                <th>Experimento</th>
+                <th>Algoritmo</th>
+                <th>Entrenado en</th>
+                <th>Semilla</th>
+                <th id="successHeader">Éxito</th>
+                <th>Estado</th>
+                <th><span class="sr-only">Acciones</span></th>
+              </tr>
+            </thead>
+            <tbody id="registryRows"></tbody>
+          </table>
+        </div>
+        <article id="runDetail" class="run-detail" hidden></article>
+      </section>
+
+      <section id="comparar" class="registry" aria-labelledby="compareTitle">
+        <div class="registry-head">
+          <div>
+            <span class="eyebrow">Candidatos lado a lado</span>
+            <h2 id="compareTitle">Comparar runs</h2>
+          </div>
+          <div class="registry-filters">
+            <label class="field">
+              <span>Suite</span>
+              <select id="compareLevel">
+                <option value="n1">N1</option>
+                <option value="n2" selected>N2</option>
+                <option value="n3">N3</option>
+              </select>
+            </label>
+            <span id="compareCount" class="count-chip">0 seleccionados</span>
+            <button id="clearCompare" class="secondary-button" type="button">Limpiar</button>
+          </div>
+        </div>
+        <div id="compareView"></div>
+      </section>
+
+      <section id="monitoreo" class="registry" aria-labelledby="monitorTitle">
+        <div class="registry-head">
+          <div>
+            <span class="eyebrow">Operación</span>
+            <h2 id="monitorTitle">Monitoreo</h2>
+            <p class="section-copy">Éxito del modelo recomendado por escenario, versión servida y salud de la API.</p>
+          </div>
+          <button id="refreshMonitor" class="secondary-button" type="button">Actualizar</button>
+        </div>
+        <div id="monitorView"><p class="section-copy">Conecta la API para ver el monitoreo.</p></div>
+      </section>
     </div>
     <script type="module" src="/src/main.ts"></script>
   </body>

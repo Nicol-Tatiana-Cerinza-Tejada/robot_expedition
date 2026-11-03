@@ -253,9 +253,17 @@ export const normalizeCatalog = (value: unknown): CatalogData => {
       ? Object.values(recommended).find((item): item is string => typeof item === 'string')
       : undefined
 
+  const recommendedByLevel: Record<string, string> = {}
+  if (isRecord(recommended)) {
+    for (const [level, runId] of Object.entries(recommended)) {
+      if (typeof runId === 'string') recommendedByLevel[level] = runId
+    }
+  }
+
   return {
     runs,
     recommendedRunId,
+    recommendedByLevel,
     servedVersion: asString(nested.served_version) || undefined,
   }
 }
