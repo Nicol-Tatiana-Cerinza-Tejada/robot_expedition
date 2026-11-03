@@ -1,0 +1,18 @@
+experiment_id: exp-003
+hypothesis: "Un curriculo N1 -> N2 (150k pasos en N1 y 150k en N2) alcanza en N2 al menos el exito de PPO entrenado solo en N2 con el mismo presupuesto total"
+change: "curriculo: continua el checkpoint de exp-003-n1 (padre) en N2 con la mitad del presupuesto"
+reference: exp-002
+level_id: n2
+algorithm: ppo
+budget_timesteps: 150000
+seeds: [1]
+hyperparams:
+  learning_rate: 0.0003
+  n_steps: 2048
+  batch_size: 64
+  gamma: 0.99
+normalize_obs: true
+parent_run_id: 37314d941d7541d3bdfc232a1af47466   # exp-003-n1, semilla 1
+environment:
+  max_steps: 400
+  rock_jitter: 0.0
