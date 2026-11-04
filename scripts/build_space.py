@@ -31,6 +31,8 @@ def main() -> None:
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--release", default=None)
     parser.add_argument("--origins", default=VERCEL, help="ALLOWED_ORIGINS de producción")
+    parser.add_argument("--sdk", choices=["docker", "gradio"], default="docker",
+                        help="gradio: Space gratuito sin Docker; app.py arranca la misma API FastAPI en el puerto 7860")
     args = parser.parse_args()
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     release = args.release or subprocess.check_output(["git", "describe", "--tags", "--always"], cwd=ROOT, text=True).strip()
@@ -55,19 +57,43 @@ def main() -> None:
                 target.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(path, target)
         copied += 1
-    dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
-    dockerfile = dockerfile.replace("ARG GIT_COMMIT=desconocido", f"ARG GIT_COMMIT={commit}")
-    dockerfile = dockerfile.replace("ARG RELEASE=sin-release", f"ARG RELEASE={release}")
-    dockerfile = dockerfile.replace("ENV GIT_COMMIT=$GIT_COMMIT", f"ENV ALLOWED_ORIGINS={args.origins} GIT_COMMIT=$GIT_COMMIT")
-    (out / "Dockerfile").write_text(dockerfile, encoding="utf-8")
-    (out / ".dockerignore").write_text("**/__pycache__\n*.pyc\n", encoding="utf-8")
+    if args.sdk == "docker":
+        dockerfile = (ROOT / "Dockerfile").read_text(encoding="utf-8")
+        dockerfile = dockerfile.replace("ARG GIT_COMMIT=desconocido", f"ARG GIT_COMMIT={commit}")
+        dockerfile = dockerfile.replace("ARG RELEASE=sin-release", f"ARG RELEASE={release}")
+        dockerfile = dockerfile.replace("ENV GIT_COMMIT=$GIT_COMMIT", f"ENV ALLOWED_ORIGINS={args.origins} GIT_COMMIT=$GIT_COMMIT")
+        (out / "Dockerfile").write_text(dockerfile, encoding="utf-8")
+        (out / ".dockerignore").write_text("**/__pycache__\n*.pyc\n", encoding="utf-8")
+        header = "sdk: docker\napp_port: 7860"
+    else:
+        # SDK gradio: Hugging Face instala requirements.txt y ejecuta app.py; no hace falta usar Gradio.
+        api_reqs = [line for line in (ROOT / "api" / "requirements.txt").read_text(encoding="utf-8").splitlines()
+                    if line.strip() and not line.startswith("#") and not line.startswith("dvc")]
+        (out / "requirements.txt").write_text(
+            "--extra-index-url https://download.pytorch.org/whl/cpu\ntorch==2.15.0\n" + "\n".join(api_reqs) + "\n",
+            encoding="utf-8")
+        (out / "packages.txt").write_text("libgl1\n", encoding="utf-8")
+        (out / "app.py").write_text(f'''"""Arranque de la API en un Space con SDK gradio (generado por scripts/build_space.py)."""
+import os
+
+os.environ.setdefault("GIT_COMMIT", "{commit}")
+os.environ.setdefault("RELEASE", "{release}")
+os.environ.setdefault("ALLOWED_ORIGINS", "{args.origins}")
+
+import uvicorn  # noqa: E402
+
+from api.main import app  # noqa: E402
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 7860)))
+''', encoding="utf-8")
+        header = "sdk: gradio\napp_file: app.py\npython_version: \"3.12\""
     (out / "README.md").write_text(f"""---
 title: Robot Expedition API
 emoji: 🤖
 colorFrom: red
 colorTo: yellow
-sdk: docker
-app_port: 7860
+{header}
 pinned: false
 ---
 
@@ -79,7 +105,7 @@ Código: https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition
 `/catalog`, `/runs/{{run_id}}`, `/evaluate`, `/sim/reset`, `/sim/step`, `/monitor`.
 Web: {args.origins}
 """, encoding="utf-8")
-    print(f"{out}: commit {commit[:10]}, release {release}, {copied} modelos verificados")
+    print(f"{out}: SDK {args.sdk}, commit {commit[:10]}, release {release}, {copied} modelos verificados")
 
 
 if __name__ == "__main__":

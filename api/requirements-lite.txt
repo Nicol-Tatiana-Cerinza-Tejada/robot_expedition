@@ -1,0 +1,8 @@
+# API sin torch (planes gratuitos con 512 MB): los PPO se sirven con su adaptador numpy
+# validado (POLICY_BACKEND=numpy, catalog/adapters/, docs/evidencia/adaptador-numpy.json).
+gymnasium==1.1.1
+mujoco==3.3.6
+numpy==2.2.6
+PyYAML==6.0.3
+fastapi==0.119.0
+uvicorn==0.38.0

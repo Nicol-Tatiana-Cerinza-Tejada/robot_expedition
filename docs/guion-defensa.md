@@ -5,8 +5,8 @@ tiempo asignado; cada bloque nombra a quien lo presenta, pero **todos** deben
 poder responder las preguntas de la sección final.
 
 **Antes de empezar:**
-1. Abrir `https://nicoltct-robot-expedition-api.hf.space/health`. Si el Space
-   está dormido, despierta en unos 30 s.
+1. Abrir `https://robot-expedition-api.onrender.com/health`. Si el servicio
+   está dormido (plan gratuito de Render), despierta en cerca de 1 min.
 2. Abrir la web en Vercel y comprobar que la insignia dice *API disponible*.
 
 ## 1. Problema, misión, decisiones y límites del ambiente · Suleily
@@ -139,7 +139,7 @@ usarlo y responde 409 si no coincide (prueba
 **¿Dónde están los pesos?**
 - Punteros DVC en Git (`models/<run_id>.dvc`) y remoto en DagsHub.
 - Copia pública en la release `models-v2` con `SHA256SUMS.txt`.
-- Dentro de la imagen del Space.
+- La API desplegada los descarga de esa release y verifica el SHA-256.
 
 **¿Qué pasa si se publica dos veces el catálogo?**
 Con el mismo contenido, misma versión: `changed: false`. Con contenido
@@ -159,9 +159,9 @@ limitación conocida: hay techo y falta una métrica secundaria.
 ### Desplegar y reproducir
 
 **¿Cómo se despliega?**
-- **API:** `scripts/build_space.py` arma el Space (código, catálogo y pesos
-  verificados; fija el commit y CORS) y se sube a Hugging Face (Docker, HTTPS).
-- **Web:** Vercel (Root `web`, `VITE_API_BASE_URL` con la URL del Space).
+- **API:** Render con `render.yaml` (plan gratuito, HTTPS). Sin torch: los PPO
+  usan su adaptador numpy, validado con los mismos 150 casos por modelo.
+- **Web:** Vercel (Root `web`, `VITE_API_BASE_URL` con la URL de Render).
 
 **¿Cómo reproduzco una evaluación desde la release?**
 1. Clonar el repositorio.
@@ -175,6 +175,11 @@ Los 50 casos coinciden con `catalog/results/<run_id>/n2.json`
 **¿Cómo se corre el pipeline?**
 `python pipelines/flow.py --config configs/experiments/exp-00X.yaml` (Prefect
 3.4.20). Las 8 etapas dejan evidencia en `docs/evidencia/pipeline/`.
+
+**¿El adaptador numpy no cambia el modelo?**
+No. Usa los mismos pesos y la misma normalización, y reproduce los 150 casos de
+cada PPO en las tres suites ([evidencia](evidencia/adaptador-numpy.json)). Además
+guarda el SHA-256 del modelo original y la API lo compara con el manifiesto.
 
 **¿Por qué no se ejecuta la red en el navegador?**
 Exportar la red no traslada el ambiente. La API usa el mismo MuJoCo y las

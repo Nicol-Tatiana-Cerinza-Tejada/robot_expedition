@@ -86,7 +86,7 @@ Ver [incidente.md](incidente.md).
 | Entrenamiento | 12 runs, **125 min de CPU** en un portátil de 12 hilos, sin GPU. PPO: unos 13 min por run de 300k pasos. Q-learning: unos 9 min |
 | Evaluación | 50 episodios en unos 15–30 s por modelo y nivel |
 | Inferencia | 0.03 ms (Q-learning) y 0.25–0.4 ms (PPO) por decisión, con decisiones a 2 Hz |
-| Servicios | Gratuitos: Vercel, Hugging Face Spaces (CPU básica), GitHub Releases y DagsHub |
+| Servicios | Gratuitos: Vercel, Render (plan gratuito), GitHub Releases y DagsHub |
 
 ## 6. Límites
 

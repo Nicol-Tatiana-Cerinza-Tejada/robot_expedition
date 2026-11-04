@@ -148,3 +148,24 @@ def test_published_catalog_feeds_the_api(paths, monkeypatch):
     runs = {r["run_id"] for r in client.get("/catalog").json()["runs"]}
     assert {"old", "new", "baseline-rule"} <= runs
     assert json.loads(paths.catalog.read_text())["content_sha256"] == client.get("/catalog").json()["content_sha256"]
+
+
+def test_numpy_adapter_matches_sb3_ppo(tmp_path):
+    """El adaptador sin torch toma las mismas acciones que PPO.predict(deterministic=True)."""
+    import numpy as np
+    from stable_baselines3 import PPO
+    from stable_baselines3.common.vec_env import DummyVecEnv, VecNormalize
+    from pipelines.policies import NumpyPPOPolicy, PPOPolicy, export_ppo_numpy
+    from robot_expedition.envs.beacon_expedition import BeaconExpeditionEnv
+
+    venv = VecNormalize(DummyVecEnv([lambda: BeaconExpeditionEnv(level="n1")]), norm_reward=False)
+    venv.obs_rms.mean = np.linspace(-1, 1, 20)
+    venv.obs_rms.var = np.linspace(0.5, 2, 20)
+    model = PPO("MlpPolicy", venv, seed=0, n_steps=8, batch_size=8)
+    model.save(tmp_path / "ppo_model.zip")
+    venv.save(tmp_path / "vecnormalize.pkl")
+    adapter = NumpyPPOPolicy(export_ppo_numpy(tmp_path / "ppo_model.zip", tmp_path / "vecnormalize.pkl",
+                                              tmp_path / "adapter.npz"))
+    original = PPOPolicy(tmp_path / "ppo_model.zip", tmp_path / "vecnormalize.pkl")
+    obs = np.random.default_rng(0).uniform(-3, 6, size=(500, 20)).astype(np.float32)
+    assert [adapter(o) for o in obs] == [original(o) for o in obs]

@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import hashlib
 import math
+import os
 import pickle
 from pathlib import Path
 
@@ -135,6 +136,64 @@ class PPOPolicy:
                 "vecnormalize_sha256": sha256_file(self.vecnormalize_path)}
 
 
+class NumpyPPOPolicy:
+    """Adaptador sin torch de un PPO MlpPolicy (20 -> 64 -> 64 -> 5, tanh) + VecNormalize.
+
+    Reproduce PPO.predict(deterministic=True): normaliza la observacion igual que
+    VecNormalize.normalize_obs y toma el argmax de los logits. Se exporta con
+    export_ppo_numpy y su compatibilidad se valida con scripts/export_numpy_policies.py
+    (mismos casos que el modelo original en las suites fijas).
+    """
+
+    name = "ppo"
+
+    def __init__(self, adapter_path: str | Path):
+        self.adapter_path = Path(adapter_path)
+        data = np.load(self.adapter_path)
+        self.layers = [(data["w0"], data["b0"]), (data["w1"], data["b1"])]
+        self.action = (data["wa"], data["ba"])
+        self.norm = bool(data["norm_obs"])
+        self.mean, self.var = data["obs_mean"], data["obs_var"]
+        self.clip, self.eps = float(data["clip_obs"]), float(data["epsilon"])
+        self.source_sha256 = str(data["source_sha256"])
+
+    def __call__(self, obs) -> int:
+        x = np.asarray(obs, dtype=np.float32)
+        if self.norm:
+            x = np.clip((x - self.mean) / np.sqrt(self.var + self.eps), -self.clip, self.clip).astype(np.float32)
+        for w, b in self.layers:
+            x = np.tanh(w @ x + b)
+        w, b = self.action
+        return int(np.argmax(w @ x + b))
+
+    def describe(self) -> dict:
+        return {"policy": self.name, "kind": "modelo aprendido (adaptador numpy validado)",
+                "adapter_path": str(self.adapter_path), "adapter_sha256": sha256_file(self.adapter_path),
+                "model_sha256": self.source_sha256}
+
+
+def export_ppo_numpy(model_path: Path, vecnormalize_path: Path | None, out: Path) -> Path:
+    """Exporta los pesos de la politica PPO y la normalizacion a un .npz (necesita torch y SB3)."""
+    from stable_baselines3 import PPO
+    model = PPO.load(model_path, device="cpu")
+    sd = {k: v.detach().cpu().numpy().astype(np.float32) for k, v in model.policy.state_dict().items()}
+    arrays = {"w0": sd["mlp_extractor.policy_net.0.weight"], "b0": sd["mlp_extractor.policy_net.0.bias"],
+              "w1": sd["mlp_extractor.policy_net.2.weight"], "b1": sd["mlp_extractor.policy_net.2.bias"],
+              "wa": sd["action_net.weight"], "ba": sd["action_net.bias"]}
+    norm = None
+    if vecnormalize_path and Path(vecnormalize_path).exists():
+        with open(vecnormalize_path, "rb") as fh:
+            norm = pickle.load(fh)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    np.savez(out, **arrays, norm_obs=bool(norm is not None and norm.norm_obs),
+             obs_mean=(norm.obs_rms.mean if norm is not None else np.zeros(20)),
+             obs_var=(norm.obs_rms.var if norm is not None else np.ones(20)),
+             clip_obs=(norm.clip_obs if norm is not None else np.inf), epsilon=(norm.epsilon if norm is not None else 0.0),
+             source_sha256=sha256_file(model_path),
+             vecnormalize_sha256=sha256_file(vecnormalize_path) if norm is not None else "")
+    return out
+
+
 def make_policy(name: str, model: str | None = None, vecnormalize: str | None = None):
     if name == "random":
         return RandomPolicy()
@@ -168,8 +227,16 @@ def model_files(models_dir: Path, manifest: dict) -> tuple[Path, Path | None]:
     return model_dir / "ppo_model.zip", model_dir / "vecnormalize.pkl"
 
 
+def adapter_path(models_dir: Path, run_id: str) -> Path:
+    """Adaptador numpy de un PPO: catalog/adapters/<run_id>.npz (versionado en Git)."""
+    return Path(models_dir).parent / "catalog" / "adapters" / f"{run_id}.npz"
+
+
 def verified_policy(models_dir: Path, manifest: dict):
-    """Politica de un run entrenado, solo si sus pesos coinciden con el SHA-256 del manifiesto."""
+    """Politica de un run entrenado, solo si sus pesos coinciden con el SHA-256 del manifiesto.
+
+    Con POLICY_BACKEND=numpy (servidor sin torch), un PPO se ejecuta con su adaptador
+    numpy validado, que tambien debe declarar el SHA-256 del modelo del manifiesto."""
     run_id = manifest["run_id"]
     if manifest.get("status") != "completed" or not manifest.get("model_sha256"):
         raise ModelUnavailable(f"el run {run_id} tiene estado {manifest.get('status')} y no tiene "
@@ -183,4 +250,12 @@ def verified_policy(models_dir: Path, manifest: dict):
                                   f"{manifest['model_sha256'][:12]}…: el modelo no es el registrado")
     if manifest["algorithm"] == "qlearning":
         return QTablePolicy(weights)
+    if os.environ.get("POLICY_BACKEND") == "numpy":
+        adapter = adapter_path(models_dir, run_id)
+        if not adapter.exists():
+            raise ModelUnavailable(f"falta el adaptador numpy de {run_id} (scripts/export_numpy_policies.py)")
+        policy = NumpyPPOPolicy(adapter)
+        if policy.source_sha256 != manifest["model_sha256"]:
+            raise ModelIntegrityError(f"el adaptador de {run_id} se exportó de otro modelo")
+        return policy
     return PPOPolicy(weights, normalization if normalization and normalization.exists() else None)

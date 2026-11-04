@@ -12,7 +12,7 @@ base antes de agotar la batería**, sin caer en la grieta ni volcar.
 | | |
 |---|---|
 | Web del docente (Vercel) | <https://web-five-gules-83.vercel.app> |
-| API (FastAPI, HTTPS) | `https://nicoltct-robot-expedition-api.hf.space` (ver [Despliegue](#despliegue)) |
+| API (FastAPI, HTTPS) | `https://robot-expedition-api.onrender.com` (ver [Despliegue](#despliegue)) |
 | Ficha del ambiente y niveles | [docs/ambiente-v1.md](docs/ambiente-v1.md) |
 | Experimentos y decisiones | [docs/experimentos.md](docs/experimentos.md) |
 | Incidente y rollback | [docs/incidente.md](docs/incidente.md) · [docs/evidencia/rollback.md](docs/evidencia/rollback.md) |
@@ -27,7 +27,7 @@ flowchart LR
   subgraph Vercel
     W[Web Vite + TS + Three.js<br/>catálogo · comparar · evaluar · monitoreo]
   end
-  subgraph "Hugging Face Space (Docker, HTTPS)"
+  subgraph "Render (plan gratuito, HTTPS, sin torch)"
     A[API FastAPI<br/>/catalog /evaluate /sim /version /monitor]
     E[Ambiente MuJoCo<br/>mismo código del entrenamiento]
     M[(models/ verificados<br/>por SHA-256)]
@@ -211,18 +211,22 @@ Un error de la API se muestra como error y un archivo local se rotula
 
 ## Despliegue
 
-**API en Hugging Face Spaces** (Docker, HTTPS):
+**API en Render** (plan gratuito, HTTPS). Hugging Face cobra los Spaces en nuestra cuenta.
 
-```bash
-python scripts/build_space.py --out /tmp/space --release v1.0    # copia código, catálogo y pesos verificados; fija commit y CORS
-huggingface-cli upload NicolTcT/robot-expedition-api /tmp/space . --repo-type space
-```
+1. Entrar a <https://dashboard.render.com> con GitHub → **New → Blueprint** → elegir este
+   repositorio. Render lee [`render.yaml`](render.yaml) y crea el servicio `robot-expedition-api`.
+2. Esperar el primer build (unos 3–5 min) y abrir `https://robot-expedition-api.onrender.com/health`.
 
-La primera vez se crea el Space con:
+El servicio no instala torch: los PPO se sirven con su **adaptador numpy**
+(`catalog/adapters/<run_id>.npz`, `POLICY_BACKEND=numpy`). El adaptador da los mismos 150
+casos por modelo que el original de Stable-Baselines3 en las tres suites
+([evidencia](docs/evidencia/adaptador-numpy.json); se regenera con
+`python scripts/export_numpy_policies.py`). Así la API usa unos 100 MB en vez de 470 MB.
+Los pesos se descargan de la release `models-v2` y se verifican con el SHA-256 del manifiesto.
+El plan gratuito se duerme tras 15 min sin tráfico: la primera solicitud tarda cerca de 1 min.
 
-```bash
-huggingface-cli repo create robot-expedition-api --type space --space_sdk docker
-```
+Alternativa con Docker (Hugging Face Spaces u otro servidor): `python scripts/build_space.py --out /tmp/space`
+(`--sdk gradio` para un Space sin Docker).
 
 **Web en Vercel:**
 
@@ -231,7 +235,7 @@ huggingface-cli repo create robot-expedition-api --type space --space_sdk docker
 | Root Directory | `web` |
 | Build Command | `npm run build` |
 | Output Directory | `dist` |
-| `VITE_API_BASE_URL` | `https://nicoltct-robot-expedition-api.hf.space` |
+| `VITE_API_BASE_URL` | `https://robot-expedition-api.onrender.com` |
 
 `vercel.json` reescribe `/run/<id>` a `index.html` para que los enlaces
 profundos funcionen al recargar.

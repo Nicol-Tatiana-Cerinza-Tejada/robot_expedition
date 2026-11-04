@@ -1,0 +1,22 @@
+# Despliegue de la API en Render (plan gratuito: 512 MB, se duerme tras 15 min sin trafico).
+# Sin torch: los PPO se sirven con su adaptador numpy validado (docs/evidencia/adaptador-numpy.json).
+services:
+  - type: web
+    name: robot-expedition-api
+    runtime: python
+    plan: free
+    branch: main
+    buildCommand: pip install -r api/requirements-lite.txt
+    startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: POLICY_BACKEND
+        value: numpy
+      - key: API_MODELS_URL
+        value: https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition/releases/download/models-v2/robot-expedition-models-v2.zip
+      - key: ALLOWED_ORIGINS
+        value: https://web-five-gules-83.vercel.app
+      - key: RELEASE
+        value: v1.0
