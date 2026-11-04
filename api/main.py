@@ -123,6 +123,20 @@ def policy_for(run_id: str):
 
 
 # ------------------------------------------------------------------ estado
+@app.get("/")
+def root():
+    """Portada de la API: que es y donde esta cada cosa (la raiz no es un 404)."""
+    return {
+        "service": "Robot Expedition API",
+        "description": "Simulación 3D (MuJoCo) y evaluación de modelos del proyecto final de MLOps.",
+        "web": "https://web-five-gules-83.vercel.app",
+        "docs": "/docs",
+        "routes": ["/health", "/version", "/catalog", "/runs/{run_id}", "/evaluate",
+                   "/sim/reset", "/sim/step", "/monitor"],
+        "repository": "https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition",
+    }
+
+
 @app.get("/health")
 def health():
     return {"status": "ok", "uptime_s": round(time.time() - STARTED, 1), "sessions": len(sessions)}

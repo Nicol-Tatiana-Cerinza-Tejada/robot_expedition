@@ -19,6 +19,11 @@ def assert_frame(frame):
     assert 1 <= frame[7] <= 3
 
 
+def test_root_points_to_docs_and_routes():
+    body = client.get("/").json()
+    assert body["docs"] == "/docs" and "/evaluate" in body["routes"]
+
+
 def test_health_version_and_monitor():
     assert client.get("/health").json()["status"] == "ok"
     version = client.get("/version").json()
