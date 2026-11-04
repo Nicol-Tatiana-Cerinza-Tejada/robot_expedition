@@ -218,6 +218,10 @@ python scripts/build_space.py --out /tmp/space --release v1.0    # copia código
 huggingface-cli upload NicolTcT/robot-expedition-api /tmp/space . --repo-type space
 ```
 
+Si Hugging Face cobra el SDK Docker en tu cuenta, crea el Space con **SDK Gradio** (gratis)
+y arma la carpeta con `--sdk gradio`. Su `app.py` arranca la misma API FastAPI en el
+puerto 7860, sin usar Gradio.
+
 La primera vez se crea el Space con:
 
 ```bash
