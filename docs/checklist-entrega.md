@@ -9,12 +9,12 @@
 | # | Comprobación | Estado | Evidencia o pendiente |
 |---|---|---|---|
 | 1 | La URL abre y permite acceder al nivel y al experimento seleccionado | ✅ local · ⏳ Vercel | Recorrido en Chrome headless contra la API local: catálogo filtrable por nivel, detalle, enlace `/run/<id>` que sobrevive a la recarga, evaluación y monitoreo, sin errores de consola. Falta repetirlo en `https://web-five-gules-83.vercel.app` cuando la API esté publicada |
-| 2 | La API usa HTTPS y admite el origen del frontend con CORS apropiado | ✅ código · ⏳ despliegue | `test_cors_allows_the_vercel_origin_only`. La imagen del Space fija `ALLOWED_ORIGINS` solo a la URL de Vercel (`scripts/build_space.py`). HTTPS lo da Hugging Face Spaces. **Pendiente:** publicar el Space (Nicol, ver README → Despliegue) |
-| 3 | Las rutas de producción no apuntan a `localhost` ni a `127.0.0.1` | ✅ | `web/src/api.ts` rechaza en producción una API en localhost o sin HTTPS. **Pendiente:** `VITE_API_BASE_URL` en Vercel = URL del Space (Natalia) |
-| 4 | Los modelos y escenarios se recuperan sin depender de carpetas personales | ✅ | Release `models-v2` (ZIP público con `SHA256SUMS.txt`), DVC (DagsHub) y pesos dentro de la imagen del Space. Prueba de reconstrucción en un clon limpio: [rollback.md §3](evidencia/rollback.md#3-reconstrucción-desde-un-clon-limpio) |
+| 2 | La API usa HTTPS y admite el origen del frontend con CORS apropiado | ✅ código · ⏳ despliegue | `test_cors_allows_the_vercel_origin_only`. `render.yaml` fija `ALLOWED_ORIGINS` solo a la URL de Vercel. HTTPS lo da Render. **Pendiente:** crear el servicio en Render (Nicol, ver README → Despliegue) |
+| 3 | Las rutas de producción no apuntan a `localhost` ni a `127.0.0.1` | ✅ | `web/src/api.ts` rechaza en producción una API en localhost o sin HTTPS. **Pendiente:** `VITE_API_BASE_URL` en Vercel = URL de Render (Natalia) |
+| 4 | Los modelos y escenarios se recuperan sin depender de carpetas personales | ✅ | Release `models-v2` (ZIP público con `SHA256SUMS.txt`), DVC (DagsHub) y la API los descarga de la release y verifica su SHA-256. Prueba de reconstrucción en un clon limpio: [rollback.md §3](evidencia/rollback.md#3-reconstrucción-desde-un-clon-limpio) |
 | 5 | Se puede evaluar un modelo antiguo y el recomendado, con sus contratos correctos | ✅ | La API verifica el SHA-256 de cada modelo contra su manifiesto (409 si no coincide) y la versión del ambiente. La web avisa cuando un modelo se evalúa en un nivel distinto al de entrenamiento. Probado con `4d91d98f` (Q-learning, primer run) y `92cdc692` (recomendado de N2) |
 | 6 | Un error de servicio se muestra como error; un replay se identifica como replay | ✅ | Avisos de la web para `ApiError` (404, 409, 422 y 503, y más de 12 s). El modo `REPLAY` se rotula en la insignia y en el aviso. Pruebas `test_evaluate_errors`, `test_tampered_model_is_rejected` y `test_missing_weights_is_a_clear_error` |
-| 7 | La release y el deployment identifican el código entregado | ⏳ | `/version` devuelve `git_commit`, `release`, `served_version` y los hashes del ambiente (`build_space.py` los fija en la imagen). **Pendiente:** tag `v1.0` en `main` tras los merges y redesplegar el Space con `--release v1.0` |
+| 7 | La release y el deployment identifican el código entregado | ⏳ | `/version` devuelve `git_commit`, `release`, `served_version` y los hashes del ambiente (`build_space.py` los fija en la imagen). **Pendiente:** tag `v1.0` en `main` tras los merges (hecho: `07c28fd`) |
 
 ## Paquete final (sección 17)
 
@@ -32,8 +32,8 @@
 ## Antes de la sustentación
 
 - [ ] Merge de los PR a `main` y tag `v1.0`.
-- [ ] Publicar el Space y comprobar `/health` y `/version` por HTTPS.
+- [ ] Crear el servicio en Render y comprobar `/health` y `/version` por HTTPS.
 - [ ] `VITE_API_BASE_URL` en Vercel y redeploy; repetir el recorrido desde otra ventana.
-- [ ] Mantener el Space activo durante la revisión. Los Spaces gratuitos se
-      duermen tras 48 h sin uso: abrir `/health` antes de la demo.
+- [ ] Render gratuito se duerme tras 15 min sin tráfico: abrir `/health` un
+      minuto antes de la demo.
 - [ ] Cada integrante practica las preguntas de [guion-defensa.md](guion-defensa.md).

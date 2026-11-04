@@ -133,7 +133,7 @@ def version():
     catalog = store.catalog()
     return {
         "api_version": API_VERSION,
-        "git_commit": os.environ.get("GIT_COMMIT") or _git("rev-parse", "HEAD"),
+        "git_commit": os.environ.get("GIT_COMMIT") or os.environ.get("RENDER_GIT_COMMIT") or _git("rev-parse", "HEAD"),
         "release": os.environ.get("RELEASE") or _git("describe", "--tags", "--always"),
         "environment_version": ENVIRONMENT_VERSION,
         "environment_hashes": {level: environment_hash(level) for level in LEVELS},
@@ -141,6 +141,7 @@ def version():
         "recommended_run_id": catalog.get("recommended_run_id"),
         "catalog_source": catalog.get("source"),
         "python": sys.version.split()[0],
+        "policy_backend": os.environ.get("POLICY_BACKEND", "sb3"),
     }
 
 
