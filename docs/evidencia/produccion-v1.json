@@ -1,0 +1,61 @@
+{
+  "schema": "robot-expedition-production-smoke/v1",
+  "generated_at": "2026-11-05T15:16:18+00:00",
+  "status": "pass",
+  "web_url": "https://web-five-gules-83.vercel.app",
+  "api_url": "https://robot-expedition-api.onrender.com",
+  "checks": [
+    {
+      "name": "web",
+      "status": "pass",
+      "detail": "portada y bundle /assets/index-ByzdASs0.js"
+    },
+    {
+      "name": "health",
+      "status": "pass",
+      "detail": "API disponible por HTTPS"
+    },
+    {
+      "name": "version",
+      "status": "pass",
+      "detail": "v1.0 · 6504ddc1 · catalog-v6"
+    },
+    {
+      "name": "catalog-cors",
+      "status": "pass",
+      "detail": "14 runs; origen permitido https://web-five-gules-83.vercel.app"
+    },
+    {
+      "name": "evaluate",
+      "status": "pass",
+      "detail": "run 92cdc692fdca · 85 cuadros"
+    },
+    {
+      "name": "manual",
+      "status": "pass",
+      "detail": "reset y una acción de flecha completados"
+    },
+    {
+      "name": "deep-link",
+      "status": "pass",
+      "detail": "/run/92cdc692fdca465b917fa7c5e8a9902d"
+    }
+  ],
+  "production": {
+    "web_asset": "https://web-five-gules-83.vercel.app/assets/index-ByzdASs0.js",
+    "api_version": "1.0.0",
+    "git_commit": "6504ddc11e7438379880953abcc6162abcda4db8",
+    "release": "v1.0",
+    "served_version": "catalog-v6",
+    "environment_version": "robot-expedition-3d/1.0.0",
+    "recommended_run_id": {
+      "n1": "a1752d56c065467d8592d52cb229cad6",
+      "n2": "92cdc692fdca465b917fa7c5e8a9902d",
+      "n3": "3dd6e0f778314110bb6d2cf1ca00b41f"
+    },
+    "catalog_runs": 14,
+    "evaluated_run_id": "92cdc692fdca465b917fa7c5e8a9902d",
+    "evaluation_frames": 85,
+    "evaluation_success_rate": 1.0
+  }
+}
