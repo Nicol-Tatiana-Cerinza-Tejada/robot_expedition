@@ -76,7 +76,7 @@ Ninguna es secreta salvo las credenciales de DVC y DagsHub, que solo van en
 Sin cuentas ni credenciales:
 
 ```bash
-curl -LO https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition/releases/download/models-v2/robot-expedition-models-v2.zip
+curl -LO https://github.com/nataliariosmoreno11-dev/robot_expedition/releases/download/models-v2/robot-expedition-models-v2.zip
 python -m zipfile -e robot-expedition-models-v2.zip .        # models/<run_id>/ + manifests/ + SHA256SUMS.txt
 sha256sum -c SHA256SUMS.txt                                  # o: python scripts/package_models.py lo genera
 # Reevaluar un run del catálogo (por ejemplo, el primer Q-learning) con la suite fija de N2:

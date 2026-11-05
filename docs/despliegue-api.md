@@ -87,13 +87,13 @@ La API no guarda pesos en Git. Para cada run del catálogo:
    coincide, responde 409 y no evalúa.
 
 El `Dockerfile` trae por defecto
-`API_MODELS_URL=https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition/releases/download/models-v2/robot-expedition-models-v2.zip`.
+`API_MODELS_URL=https://github.com/nataliariosmoreno11-dev/robot_expedition/releases/download/models-v2/robot-expedition-models-v2.zip`.
 Ese ZIP lo genera `python scripts/package_models.py` y contiene los modelos de
 `exp-001` a `exp-005` con su manifiesto. El docente lo puede usar igual, sin
 cuentas:
 
 ```bash
-curl -LO https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition/releases/download/models-v2/robot-expedition-models-v2.zip
+curl -LO https://github.com/nataliariosmoreno11-dev/robot_expedition/releases/download/models-v2/robot-expedition-models-v2.zip
 python -m zipfile -e robot-expedition-models-v2.zip .
 ```
 

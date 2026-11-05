@@ -15,7 +15,7 @@ services:
       - key: POLICY_BACKEND
         value: numpy
       - key: API_MODELS_URL
-        value: https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition/releases/download/models-v2/robot-expedition-models-v2.zip
+        value: https://github.com/nataliariosmoreno11-dev/robot_expedition/releases/download/models-v2/robot-expedition-models-v2.zip
       - key: ALLOWED_ORIGINS
         value: https://web-five-gules-83.vercel.app
       - key: RELEASE
