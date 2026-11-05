@@ -133,7 +133,7 @@ def root():
         "docs": "/docs",
         "routes": ["/health", "/version", "/catalog", "/runs/{run_id}", "/evaluate",
                    "/sim/reset", "/sim/step", "/monitor"],
-        "repository": "https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition",
+        "repository": "https://github.com/nataliariosmoreno11-dev/robot_expedition",
     }
 
 

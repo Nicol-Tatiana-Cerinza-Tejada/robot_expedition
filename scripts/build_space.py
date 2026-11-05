@@ -100,7 +100,7 @@ pinned: false
 # Robot Expedition · API
 
 API de simulación y evaluación (FastAPI + MuJoCo) del proyecto final de MLOps.
-Código: https://github.com/Nicol-Tatiana-Cerinza-Tejada/robot_expedition
+Código: https://github.com/nataliariosmoreno11-dev/robot_expedition
 (commit `{commit}`, release `{release}`). Rutas: `/health`, `/version`,
 `/catalog`, `/runs/{{run_id}}`, `/evaluate`, `/sim/reset`, `/sim/step`, `/monitor`.
 Web: {args.origins}
