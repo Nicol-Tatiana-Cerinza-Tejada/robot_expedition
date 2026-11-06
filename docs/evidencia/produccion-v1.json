@@ -1,6 +1,6 @@
 {
   "schema": "robot-expedition-production-smoke/v1",
-  "generated_at": "2026-11-05T15:16:18+00:00",
+  "generated_at": "2026-11-06T01:54:30+00:00",
   "status": "pass",
   "web_url": "https://web-five-gules-83.vercel.app",
   "api_url": "https://robot-expedition-api.onrender.com",
@@ -18,7 +18,7 @@
     {
       "name": "version",
       "status": "pass",
-      "detail": "v1.0 · 6504ddc1 · catalog-v6"
+      "detail": "v1.0 · a7e2c9c6 · catalog-v6"
     },
     {
       "name": "catalog-cors",
@@ -44,7 +44,7 @@
   "production": {
     "web_asset": "https://web-five-gules-83.vercel.app/assets/index-ByzdASs0.js",
     "api_version": "1.0.0",
-    "git_commit": "6504ddc11e7438379880953abcc6162abcda4db8",
+    "git_commit": "a7e2c9c63a496d1bcded31f2f7bbba7491bae3ba",
     "release": "v1.0",
     "served_version": "catalog-v6",
     "environment_version": "robot-expedition-3d/1.0.0",
