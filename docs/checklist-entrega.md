@@ -14,7 +14,7 @@
 | 4 | Los modelos y escenarios se recuperan sin depender de carpetas personales | ✅ | Release `models-v2` (ZIP público con `SHA256SUMS.txt`), DVC (DagsHub) y la API los descarga de la release y verifica su SHA-256. Prueba de reconstrucción en un clon limpio: [rollback.md §3](evidencia/rollback.md#3-reconstrucción-desde-un-clon-limpio) |
 | 5 | Se puede evaluar un modelo antiguo y el recomendado, con sus contratos correctos | ✅ | La API verifica el SHA-256 de cada modelo contra su manifiesto (409 si no coincide) y la versión del ambiente. La web avisa cuando un modelo se evalúa en un nivel distinto al de entrenamiento. Probado con `4d91d98f` (Q-learning, primer run) y `92cdc692` (recomendado de N2) |
 | 6 | Un error de servicio se muestra como error; un replay se identifica como replay | ✅ | Avisos de la web para `ApiError` (404, 409, 422 y 503, y más de 12 s). El modo `REPLAY` se rotula en la insignia y en el aviso. Pruebas `test_evaluate_errors`, `test_tampered_model_is_rejected` y `test_missing_weights_is_a_clear_error` |
-| 7 | La release y el deployment identifican el código entregado | ✅ release · ⏳ último commit | Producción informa `release=v1.0`, `git_commit=6504ddc1` y `served_version=catalog-v6`. El tag existe. **Pendiente:** Nicol debe desplegar el último commit de `main` en Render para incorporar los cambios posteriores al tag |
+| 7 | La release y el deployment identifican el código entregado | ✅ | Producción informa `release=v1.0`, `git_commit=a7e2c9c6` y `served_version=catalog-v6`; el commit coincide con el merge más reciente de `main`. [Evidencia](evidencia/produccion-v1.json) |
 
 ## Paquete final (sección 17)
 
@@ -36,8 +36,8 @@
 - [x] `VITE_API_BASE_URL` en Vercel y redeploy; comprobar portada, catálogo,
       evaluación, control manual y enlace directo con
       `python scripts/smoke_production.py`.
-- [ ] Nicol: desplegar el último commit de `main` en Render y volver a ejecutar
-      `python scripts/smoke_production.py --output docs/evidencia/produccion-v1.json`.
+- [x] Desplegar el último commit de `main` en Render y registrar la ejecución
+      final en [evidencia/produccion-v1.json](evidencia/produccion-v1.json).
 - [ ] Render gratuito se duerme tras 15 min sin tráfico: abrir `/health` un
       minuto antes de la demo.
 - [ ] Cada integrante practica las preguntas de [guion-defensa.md](guion-defensa.md).
