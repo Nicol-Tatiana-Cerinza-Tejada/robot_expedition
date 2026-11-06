@@ -217,6 +217,16 @@ Un error de la API se muestra como error y un archivo local se rotula
    repositorio. Render lee [`render.yaml`](render.yaml) y crea el servicio `robot-expedition-api`.
 2. Esperar el primer build (unos 3–5 min) y abrir `https://robot-expedition-api.onrender.com/health`.
 
+Para verificar de forma reproducible la integración publicada (Vercel, CORS,
+catálogo, evaluación, control manual y enlaces directos):
+
+```bash
+python scripts/smoke_production.py
+```
+
+La última ejecución registrada está en
+[`docs/evidencia/produccion-v1.json`](docs/evidencia/produccion-v1.json).
+
 El servicio no instala torch: los PPO se sirven con su **adaptador numpy**
 (`catalog/adapters/<run_id>.npz`, `POLICY_BACKEND=numpy`). El adaptador da los mismos 150
 casos por modelo que el original de Stable-Baselines3 en las tres suites
